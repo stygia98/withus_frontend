@@ -77,6 +77,12 @@ export async function api<T>(path: `/api/${string}`, init: RequestInit = {}): Pr
   if (!res.ok) throw await toError(res);
 
   const body = (await res.json()) as ApiResponse<T>;
-  if (!body.success) throw new ApiError(body.error?.code ?? "UNKNOWN", body.error?.message ?? "", res.status, body.error?.details);
+  if (!body.success)
+    throw new ApiError(
+      body.error?.code ?? "UNKNOWN",
+      body.error?.message ?? "",
+      res.status,
+      body.error?.details,
+    );
   return body.data;
 }

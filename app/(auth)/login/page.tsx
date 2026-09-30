@@ -46,7 +46,13 @@ export default function LoginPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">비밀번호</Label>
-              <Input id="password" name="password" type="password" autoComplete="current-password" required />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+              />
             </div>
             <Button type="submit" className="w-full" disabled={pending}>
               {pending ? "로그인 중..." : "로그인"}
