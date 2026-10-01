@@ -9,7 +9,7 @@ import { PeriodFilter } from "@/components/analytics/period-filter";
 import { DailySendsChart } from "@/components/dashboard/daily-sends-chart";
 import { StatTile } from "@/components/dashboard/stat-tile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { api, type Page } from "@/lib/api-client";
+import { ApiError, api, type Page } from "@/lib/api-client";
 import {
   type CampaignSummaryItem,
   type DailySend,
@@ -68,12 +68,21 @@ export function DashboardView() {
 }
 
 function KpiRow({ range }: { range: DateRange }) {
-  const { data, isError } = useQuery({
+  const { data, error } = useQuery({
     queryKey: queryKeys.dashboard.summary(range.from, range.to),
     queryFn: () => api<DashboardSummary>(`/api/v1/dashboard/summary${rangeQuery(range)}`),
     placeholderData: keepPreviousData,
   });
-  if (isError) return <ErrorText>KPI 를 불러오지 못했습니다.</ErrorText>;
+  // 기간 초과(최대 366일) 같은 입력 오류는 서버 메시지를 그대로 보여 준다
+  if (error) {
+    return (
+      <ErrorText>
+        {error instanceof ApiError && error.status === 400
+          ? error.message
+          : "KPI 를 불러오지 못했습니다."}
+      </ErrorText>
+    );
+  }
   const kpi = data?.kpi;
   // 서버가 실제로 적용한 기간(생략 시 기본값)을 보여 준다
   const shown = describeRange(data ? { from: data.from, to: data.to } : range);

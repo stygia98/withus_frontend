@@ -25,19 +25,15 @@ export function PeriodFilter({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div
-        role="radiogroup"
-        aria-label="조회 기간"
-        className="bg-muted inline-flex rounded-lg p-0.5"
-      >
+      {/* 선택 상태는 aria-pressed 로 알린다 (radio 역할은 화살표 키 이동까지 구현해야 해서 쓰지 않음) */}
+      <div role="group" aria-label="조회 기간" className="bg-muted inline-flex rounded-lg p-0.5">
         {presets.map((p) => {
           const selected = value.preset === p;
           return (
             <button
               key={p}
               type="button"
-              role="radio"
-              aria-checked={selected}
+              aria-pressed={selected}
               onClick={() => onChange({ ...value, preset: p })}
               className={cn(
                 "rounded-md px-3 py-1 text-sm transition-colors",
