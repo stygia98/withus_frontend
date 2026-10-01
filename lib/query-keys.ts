@@ -18,6 +18,14 @@ export const queryKeys = {
   // 팀원3: tracking, coupon, ai
   dashboard: {
     all: ["dashboard"] as const,
+    summary: (from?: string, to?: string) => ["dashboard", "summary", from, to] as const,
+    dailySends: (days: number) => ["dashboard", "daily-sends", days] as const,
+    queue: ["dashboard", "queue"] as const,
+    events: ["dashboard", "events"] as const,
+    activeCampaigns: ["dashboard", "active-campaigns"] as const,
+  },
+  analytics: {
+    campaign: (campaignId: number) => ["analytics", "campaign", campaignId] as const,
   },
   coupons: {
     all: ["coupons"] as const,
