@@ -70,11 +70,11 @@ export default function CustomerDetailPage() {
     onError: (err) => toast.error(err instanceof ApiError ? err.message : "삭제하지 못했습니다."),
   });
 
-  if (customer.isPending) return <main className="p-6 text-muted-foreground">불러오는 중...</main>;
+  if (customer.isPending) return <div className="p-6 text-muted-foreground">불러오는 중...</div>;
   if (customer.isError) {
     const notFound = customer.error instanceof ApiError && customer.error.status === 404;
     return (
-      <main className="space-y-2 p-6">
+      <div className="space-y-2 p-6">
         <p>
           {notFound
             ? "고객을 찾을 수 없습니다. 삭제된 고객일 수 있습니다."
@@ -83,13 +83,13 @@ export default function CustomerDetailPage() {
         <Link href="/customers" className="text-sm underline">
           목록으로
         </Link>
-      </main>
+      </div>
     );
   }
   const c = customer.data;
 
   return (
-    <main className="space-y-6 p-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
           <Link href="/customers" className="text-sm text-muted-foreground hover:underline">
@@ -221,7 +221,7 @@ export default function CustomerDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </main>
+    </div>
   );
 }
 

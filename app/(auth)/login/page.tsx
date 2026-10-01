@@ -24,7 +24,9 @@ export default function LoginPage() {
         method: "POST",
         body: JSON.stringify({ email: form.get("email"), password: form.get("password") }),
       });
-      router.replace("/");
+      // 인증 가드가 넘겨준 원래 화면으로 돌아간다. 다른 사이트로 보내지 않도록 내부 경로만 허용
+      const next = new URLSearchParams(window.location.search).get("next");
+      router.replace(next?.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "로그인에 실패했습니다.");
     } finally {
