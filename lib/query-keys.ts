@@ -4,6 +4,10 @@ export const queryKeys = {
   // 팀원1: customer, segment
   customers: {
     all: ["customers"] as const,
+    lists: ["customers", "list"] as const,
+    list: (params: Record<string, string | number>) => ["customers", "list", params] as const,
+    detail: (id: number) => ["customers", "detail", id] as const,
+    consentHistory: (id: number) => ["customers", "detail", id, "consent-history"] as const,
   },
   segments: {
     all: ["segments"] as const,
