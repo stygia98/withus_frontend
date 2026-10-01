@@ -30,6 +30,8 @@ export const queryKeys = {
   },
   analytics: {
     campaign: (campaignId: number) => ["analytics", "campaign", campaignId] as const,
+    // AI-03 성과 요약 (최근 1건)
+    report: (campaignId: number) => ["analytics", "report", campaignId] as const,
   },
   coupons: {
     all: ["coupons"] as const,
