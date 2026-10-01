@@ -68,3 +68,31 @@ export function formatRate(rate: number): string {
 export function formatCount(n: number): string {
   return n.toLocaleString("ko-KR");
 }
+
+/** 워크플로우 단계별 성과 (GET /analytics/campaigns/{id}/steps) */
+export type StepAnalytics = {
+  stepId: number;
+  nodeType: "SEND_EMAIL" | "SEND_SMS";
+  templateId: number | null;
+  templateName: string | null;
+  couponId: number | null;
+  kpi: SendKpi;
+};
+
+export type CampaignSteps = {
+  campaignId: number;
+  name: string;
+  type: "ONE_TIME" | "WORKFLOW";
+  steps: StepAnalytics[];
+};
+
+/** 캠페인 응답의 funnel 과 같은 순서로 KPI 에서 전환 흐름을 만든다 (단계별 차트용) */
+export function funnelOf(kpi: SendKpi): FunnelStage[] {
+  return [
+    { stage: "ATTEMPTED", count: kpi.attempted },
+    { stage: "SENT", count: kpi.sent },
+    { stage: "OPENED", count: kpi.uniqueOpens },
+    { stage: "CLICKED", count: kpi.uniqueClicks },
+    { stage: "CONVERTED", count: kpi.couponUsed },
+  ];
+}

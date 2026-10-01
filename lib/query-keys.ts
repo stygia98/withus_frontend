@@ -36,9 +36,15 @@ export const queryKeys = {
   },
   analytics: {
     campaign: (campaignId: number) => ["analytics", "campaign", campaignId] as const,
+    // AI-03 성과 요약 (최근 1건)
+    report: (campaignId: number) => ["analytics", "report", campaignId] as const,
+    steps: (campaignId: number) => ["analytics", "steps", campaignId] as const,
   },
   coupons: {
     all: ["coupons"] as const,
+    list: (page: number) => ["coupons", "list", page] as const,
+    // 고객 공개 페이지 /c/[token] — 관리자 쿠폰 캐시와 섞이지 않게 별도 키
+    publicCard: (token: string) => ["public-coupon", token] as const,
   },
   // PL: auth
   auth: {
