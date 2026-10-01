@@ -145,3 +145,13 @@ export type Purchase = {
   couponName: string | null;
   purchasedAt: string;
 };
+
+/** GET /public/unsubscribe/{token} (API_SPEC 8장). 이메일·휴대폰 원문은 오지 않는다 */
+export type UnsubscribeInfo = {
+  customerName: string | null;
+  channels: Channel[];
+  unsubscribedChannels: Channel[];
+};
+
+/** POST /public/unsubscribe/{token} 응답. channels 는 실제 처리한 채널 */
+export type UnsubscribeResult = { channels: Channel[]; processedAt: string };
