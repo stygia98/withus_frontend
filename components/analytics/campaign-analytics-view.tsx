@@ -4,13 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 
 import { CampaignReportCard } from "@/components/analytics/campaign-report-card";
 import { FunnelChart } from "@/components/analytics/funnel-chart";
+import { StepAnalyticsCard } from "@/components/analytics/step-analytics-card";
 import { StatTile } from "@/components/dashboard/stat-tile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApiError, api } from "@/lib/api-client";
 import { type CampaignAnalytics, formatCount, formatRate } from "@/lib/dashboard";
 import { queryKeys } from "@/lib/query-keys";
 
-/** 캠페인 성과 (PRD 4장 /analytics/[campaignId], F-09). KPI 카드, 전환 흐름, AI-03 성과 요약 */
+/** 캠페인 성과 (PRD 4장 /analytics/[campaignId], F-09). KPI 카드, 전환 흐름, 단계별 성과(워크플로우), AI-03 성과 요약 */
 export function CampaignAnalyticsView({ campaignId }: { campaignId: number }) {
   const { data, error, isPending } = useQuery({
     queryKey: queryKeys.analytics.campaign(campaignId),
@@ -68,6 +69,7 @@ export function CampaignAnalyticsView({ campaignId }: { campaignId: number }) {
           <FunnelChart funnel={data.funnel} />
         </CardContent>
       </Card>
+      <StepAnalyticsCard campaignId={campaignId} />
       <CampaignReportCard campaignId={campaignId} kpi={kpi} />
       {/* PRD 8.1: 오픈율 한계 안내 문구를 리포트에 표시한다 */}
       <p className="text-muted-foreground text-xs">

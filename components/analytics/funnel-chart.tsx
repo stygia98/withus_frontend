@@ -15,7 +15,13 @@ const config = {
 } satisfies ChartConfig;
 
 /** 전환 흐름: 순서 있는 단계의 크기 비교 → 가로 막대 한 계열. 각 막대 끝에 값과 시도 대비 비율을 적는다 */
-export function FunnelChart({ funnel }: { funnel: FunnelStage[] }) {
+export function FunnelChart({
+  funnel,
+  caption = "캠페인 전환 흐름",
+}: {
+  funnel: FunnelStage[];
+  caption?: string;
+}) {
   const attempted = funnel.find((s) => s.stage === "ATTEMPTED")?.count ?? 0;
   const data = funnel.map((s) => {
     const share = attempted > 0 ? s.count / attempted : 0;
@@ -30,7 +36,12 @@ export function FunnelChart({ funnel }: { funnel: FunnelStage[] }) {
 
   return (
     <>
-      <ChartContainer config={config} className="aspect-auto h-64 w-full">
+      {/* 행 수에 맞춰 높이를 정한다 (단계가 적은 문자 흐름도 막대 간격이 같게) */}
+      <ChartContainer
+        config={config}
+        className="aspect-auto w-full"
+        style={{ height: data.length * 48 + 16 }}
+      >
         <BarChart
           data={data}
           layout="vertical"
@@ -43,7 +54,14 @@ export function FunnelChart({ funnel }: { funnel: FunnelStage[] }) {
             cursor={{ fillOpacity: 0.3 }}
             content={<ChartTooltipContent hideLabel={false} />}
           />
-          <Bar dataKey="count" fill="var(--color-count)" radius={[0, 4, 4, 0]} maxBarSize={28}>
+          {/* 0 인 단계도 막대 끝 값("0 (0.0%)")이 보이도록 최소 2px 로 그린다 */}
+          <Bar
+            dataKey="count"
+            fill="var(--color-count)"
+            radius={[0, 4, 4, 0]}
+            maxBarSize={28}
+            minPointSize={2}
+          >
             {/* 값 글자는 계열 색이 아니라 본문 색으로 쓴다 */}
             <LabelList
               dataKey="display"
@@ -55,7 +73,7 @@ export function FunnelChart({ funnel }: { funnel: FunnelStage[] }) {
         </BarChart>
       </ChartContainer>
       <table className="sr-only">
-        <caption>캠페인 전환 흐름</caption>
+        <caption>{caption}</caption>
         <thead>
           <tr>
             <th scope="col">단계</th>
