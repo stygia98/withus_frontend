@@ -8,9 +8,16 @@ export const queryKeys = {
     list: (params: Record<string, string | number>) => ["customers", "list", params] as const,
     detail: (id: number) => ["customers", "detail", id] as const,
     consentHistory: (id: number) => ["customers", "detail", id, "consent-history"] as const,
+    activity: (id: number) => ["customers", "detail", id, "activity"] as const,
+    purchases: (id: number) => ["customers", "detail", id, "purchases"] as const,
   },
   segments: {
     all: ["segments"] as const,
+    lists: ["segments", "list"] as const,
+    list: (params: Record<string, string | number>) => ["segments", "list", params] as const,
+    detail: (id: number) => ["segments", "detail", id] as const,
+    fields: ["segments", "fields"] as const,
+    preview: (rule: unknown) => ["segments", "preview", rule] as const,
   },
   // 팀원2: campaign(템플릿 포함), workflow
   templates: {

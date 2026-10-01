@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { CustomerFormDialog } from "@/components/customer/customer-form-dialog";
 import { type CustomerListItem, REGIONS, regionName } from "@/components/customer/types";
+import { UploadDialog } from "@/components/customer/upload-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +29,7 @@ import {
 import { api, type Page } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 
-// 고객 목록 (PRD 4장 /customers). 업로드 모달은 업로드 기능 PR에서 추가한다
+// 고객 목록 (PRD 4장 /customers)
 const PAGE_SIZE = 20;
 
 type Filters = {
@@ -77,6 +78,7 @@ export default function CustomersPage() {
   const [filters, setFilters] = useState<Filters>(EMPTY);
   const [page, setPage] = useState(0);
   const [creating, setCreating] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   // 빈 값은 보내지 않는다 (서버에서 조건 없음)
   const params: Record<string, string | number> = { page, size: PAGE_SIZE };
@@ -100,7 +102,12 @@ export default function CustomersPage() {
     <main className="space-y-4 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">고객</h1>
-        <Button onClick={() => setCreating(true)}>고객 등록</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setUploading(true)}>
+            업로드
+          </Button>
+          <Button onClick={() => setCreating(true)}>고객 등록</Button>
+        </div>
       </div>
 
       <form
@@ -212,6 +219,7 @@ export default function CustomersPage() {
         </div>
       )}
 
+      <UploadDialog open={uploading} onOpenChange={setUploading} />
       <CustomerFormDialog
         open={creating}
         onOpenChange={setCreating}
