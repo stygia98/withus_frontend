@@ -1,12 +1,12 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { ActivityCards } from "@/components/customer/activity-cards";
 import { ConsentDialog } from "@/components/customer/consent-dialog";
 import { CustomerFormDialog } from "@/components/customer/customer-form-dialog";
 import {
@@ -15,6 +15,7 @@ import {
   type Channel,
   type ConsentHistory,
   type Customer,
+  formatDateTime,
   regionName,
 } from "@/components/customer/types";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +40,7 @@ import {
 import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 
-// 고객 상세 (PRD 4장 /customers/[id]). 발송·이벤트·쿠폰 이력, 구매 등록은 해당 기능 PR에서 추가한다
+// 고객 상세 (PRD 4장 /customers/[id]). 구매 등록은 해당 기능 PR에서 추가한다
 export default function CustomerDetailPage() {
   const id = Number(useParams<{ id: string }>().id);
   const router = useRouter();
@@ -190,6 +191,8 @@ export default function CustomerDetailPage() {
         </CardContent>
       </Card>
 
+      <ActivityCards customerId={id} />
+
       <CustomerFormDialog open={editing} onOpenChange={setEditing} customer={c} />
       <ConsentDialog
         customer={c}
@@ -231,8 +234,4 @@ function Item({ label, value }: { label: string; value: string }) {
 
 function ynLabel(yn: "Y" | "N") {
   return yn === "Y" ? "동의" : "거부";
-}
-
-function formatDateTime(iso: string) {
-  return format(new Date(iso), "yyyy-MM-dd HH:mm");
 }

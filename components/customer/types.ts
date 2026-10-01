@@ -1,5 +1,7 @@
 // 고객 API 타입 (백엔드 customer 패키지 DTO, Swagger 기준)
 
+import { format } from "date-fns";
+
 export type Yn = "Y" | "N";
 export type Channel = "EMAIL" | "SMS";
 
@@ -73,4 +75,64 @@ export const CONSENT_SOURCE_LABEL: Record<ConsentHistory["source"], string> = {
   UNSUBSCRIBE: "수신거부 페이지",
   BOUNCE: "메일 반송",
   COMPLAINT: "스팸 신고",
+};
+
+export function formatDateTime(iso: string) {
+  return format(new Date(iso), "yyyy-MM-dd HH:mm");
+}
+
+/** GET /customers/{id}/activity — 고객 상세의 발송·이벤트·쿠폰 이력 */
+export type CustomerActivity = {
+  /** 최근 100건, 최신순 */
+  sends: SendActivity[];
+  /** 최신 발급순 */
+  coupons: CouponActivity[];
+};
+
+export type SendStatus = "PENDING" | "SENDING" | "SENT" | "FAILED" | "SKIPPED" | "BOUNCED";
+
+export type SendActivity = {
+  sendLogId: number;
+  campaignId: number | null;
+  /** NOTICE 는 null */
+  campaignName: string | null;
+  channel: Channel;
+  kind: "CAMPAIGN" | "NOTICE" | "TEST";
+  status: SendStatus;
+  errorMessage: string | null;
+  createdAt: string;
+  sentAt: string | null;
+  /** 봇 제외 첫 오픈·클릭 시각 */
+  openedAt: string | null;
+  clickedAt: string | null;
+};
+
+export type CouponStatus = "USABLE" | "USED" | "EXPIRED" | "NOT_STARTED";
+
+export type CouponActivity = {
+  issueId: number;
+  couponId: number;
+  couponName: string;
+  /** 오늘 기준 */
+  status: CouponStatus;
+  validFrom: string;
+  validTo: string;
+  issuedAt: string;
+  usedAt: string | null;
+};
+
+export const SEND_STATUS_LABEL: Record<SendStatus, string> = {
+  PENDING: "대기",
+  SENDING: "발송 중",
+  SENT: "발송됨",
+  FAILED: "실패",
+  SKIPPED: "제외",
+  BOUNCED: "반송",
+};
+
+export const COUPON_STATUS_LABEL: Record<CouponStatus, string> = {
+  USABLE: "사용 가능",
+  USED: "사용함",
+  EXPIRED: "만료",
+  NOT_STARTED: "시작 전",
 };
