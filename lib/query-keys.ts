@@ -8,6 +8,7 @@ export const queryKeys = {
     list: (params: Record<string, string | number>) => ["customers", "list", params] as const,
     detail: (id: number) => ["customers", "detail", id] as const,
     consentHistory: (id: number) => ["customers", "detail", id, "consent-history"] as const,
+    activity: (id: number) => ["customers", "detail", id, "activity"] as const,
   },
   segments: {
     all: ["segments"] as const,
