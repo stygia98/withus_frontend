@@ -22,6 +22,9 @@ export const queryKeys = {
   // 팀원2: campaign(템플릿 포함), workflow
   templates: {
     all: ["templates"] as const,
+    list: (filter: { channel?: "EMAIL" | "SMS"; page: number; size: number }) =>
+      ["templates", "list", filter] as const,
+    detail: (templateId: number) => ["templates", "detail", templateId] as const,
   },
   campaigns: {
     all: ["campaigns"] as const,
