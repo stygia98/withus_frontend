@@ -38,7 +38,7 @@ export function CouponListView() {
   const today = format(new Date(), "yyyy-MM-dd");
 
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">쿠폰</h1>
@@ -124,7 +124,7 @@ export function CouponListView() {
           </Button>
         </nav>
       )}
-    </main>
+    </div>
   );
 }
 

@@ -121,7 +121,7 @@ export function CouponForm() {
   }
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
       <header>
         <h1 className="text-2xl font-semibold">새 쿠폰</h1>
         <p className="text-muted-foreground text-sm">
@@ -216,7 +216,7 @@ export function CouponForm() {
           </form>
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }
 

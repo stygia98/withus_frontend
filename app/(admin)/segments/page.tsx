@@ -32,7 +32,7 @@ export default function SegmentsPage() {
   });
 
   return (
-    <main className="space-y-4 p-6">
+    <div className="space-y-4 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">세그먼트</h1>
         <Link href="/segments/new" className={buttonVariants()}>
@@ -98,7 +98,7 @@ export default function SegmentsPage() {
           </Button>
         </div>
       )}
-    </main>
+    </div>
   );
 }
 
