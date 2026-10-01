@@ -53,4 +53,7 @@ export const queryKeys = {
   auth: {
     me: ["auth", "me"] as const,
   },
+  members: {
+    all: ["members"] as const,
+  },
 };
