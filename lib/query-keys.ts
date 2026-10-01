@@ -39,6 +39,7 @@ export const queryKeys = {
   coupons: {
     all: ["coupons"] as const,
     list: (page: number) => ["coupons", "list", page] as const,
+    issues: (couponId: number, page: number) => ["coupons", "issues", couponId, page] as const,
     // 고객 공개 페이지 /c/[token] — 관리자 쿠폰 캐시와 섞이지 않게 별도 키
     publicCard: (token: string) => ["public-coupon", token] as const,
   },
