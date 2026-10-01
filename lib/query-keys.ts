@@ -29,10 +29,12 @@ export const queryKeys = {
     activeCampaigns: ["dashboard", "active-campaigns"] as const,
   },
   analytics: {
-    campaign: (campaignId: number) => ["analytics", "campaign", campaignId] as const,
+    campaign: (campaignId: number, from?: string, to?: string) =>
+      ["analytics", "campaign", campaignId, from, to] as const,
     // AI-03 성과 요약 (최근 1건)
     report: (campaignId: number) => ["analytics", "report", campaignId] as const,
-    steps: (campaignId: number) => ["analytics", "steps", campaignId] as const,
+    steps: (campaignId: number, from?: string, to?: string) =>
+      ["analytics", "steps", campaignId, from, to] as const,
   },
   coupons: {
     all: ["coupons"] as const,
