@@ -136,3 +136,12 @@ export const COUPON_STATUS_LABEL: Record<CouponStatus, string> = {
   EXPIRED: "만료",
   NOT_STARTED: "시작 전",
 };
+
+/** GET·POST /customers/{id}/purchases. 쿠폰을 쓰지 않았으면 couponIssueId·couponName 은 null */
+export type Purchase = {
+  purchaseId: number;
+  amount: number;
+  couponIssueId: number | null;
+  couponName: string | null;
+  purchasedAt: string;
+};

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { ActivityCards } from "@/components/customer/activity-cards";
 import { ConsentDialog } from "@/components/customer/consent-dialog";
 import { CustomerFormDialog } from "@/components/customer/customer-form-dialog";
+import { PurchaseCard } from "@/components/customer/purchase-card";
 import {
   CHANNEL_LABEL,
   CONSENT_SOURCE_LABEL,
@@ -40,7 +41,7 @@ import {
 import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 
-// 고객 상세 (PRD 4장 /customers/[id]). 구매 등록은 해당 기능 PR에서 추가한다
+// 고객 상세 (PRD 4장 /customers/[id]). 인적사항·수신동의·동의 이력·구매·발송/이벤트/쿠폰 이력
 export default function CustomerDetailPage() {
   const id = Number(useParams<{ id: string }>().id);
   const router = useRouter();
@@ -191,6 +192,7 @@ export default function CustomerDetailPage() {
         </CardContent>
       </Card>
 
+      <PurchaseCard customerId={id} />
       <ActivityCards customerId={id} />
 
       <CustomerFormDialog open={editing} onOpenChange={setEditing} customer={c} />

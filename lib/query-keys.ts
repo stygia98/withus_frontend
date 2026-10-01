@@ -9,6 +9,7 @@ export const queryKeys = {
     detail: (id: number) => ["customers", "detail", id] as const,
     consentHistory: (id: number) => ["customers", "detail", id, "consent-history"] as const,
     activity: (id: number) => ["customers", "detail", id, "activity"] as const,
+    purchases: (id: number) => ["customers", "detail", id, "purchases"] as const,
   },
   segments: {
     all: ["segments"] as const,
