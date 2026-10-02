@@ -37,6 +37,9 @@ export const queryKeys = {
       size: number;
     }) => ["campaigns", "list", filter] as const,
     detail: (campaignId: number) => ["campaigns", "detail", campaignId] as const,
+    workflow: (campaignId: number) => ["campaigns", "detail", campaignId, "workflow"] as const,
+    instances: (campaignId: number, filter: { status?: string; page: number; size: number }) =>
+      ["campaigns", "detail", campaignId, "instances", filter] as const,
     estimate: (campaignId: number, startAt: string) =>
       ["campaigns", "detail", campaignId, "estimate", startAt] as const,
   },
