@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PERIOD_LABEL, type Period, type PeriodPreset } from "@/lib/period";
+import { PERIOD_LABEL, type Period, type PeriodPreset, customRangeError } from "@/lib/period";
 
 /**
  * 기간 필터 (PRD F-09). 프리셋은 한 줄 버튼, "직접 지정"을 고르면 시작·종료 날짜 입력이 옆에 나온다.
@@ -17,16 +17,17 @@ export function PeriodFilter({
   onChange: (next: Period) => void;
   presets: PeriodPreset[];
 }) {
-  const invalidCustom =
-    value.preset === "CUSTOM" &&
-    value.customFrom !== "" &&
-    value.customTo !== "" &&
-    value.customFrom > value.customTo;
+  // 시작 > 종료, 366일 초과는 요청을 보내지 않고 여기서 안내한다 (lib/period.ts isComplete 와 같은 검사)
+  const customError = customRangeError(value);
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       {/* 선택 상태는 aria-pressed 로 알린다 (radio 역할은 화살표 키 이동까지 구현해야 해서 쓰지 않음) */}
-      <div role="group" aria-label="조회 기간" className="inline-flex gap-1">
+      <div
+        role="group"
+        aria-label="조회 기간"
+        className="bg-muted inline-flex gap-0.5 rounded-lg p-0.5"
+      >
         {presets.map((p) => {
           const selected = value.preset === p;
           return (
@@ -34,10 +35,14 @@ export function PeriodFilter({
               key={p}
               type="button"
               size="sm"
-              variant={selected ? "secondary" : "ghost"}
+              variant="ghost"
               aria-pressed={selected}
               onClick={() => onChange({ ...value, preset: p })}
-              className={selected ? "font-medium" : "text-muted-foreground"}
+              className={
+                selected
+                  ? "bg-background text-foreground hover:bg-background font-medium shadow-sm"
+                  : "text-muted-foreground"
+              }
             >
               {PERIOD_LABEL[p]}
             </Button>
@@ -63,9 +68,9 @@ export function PeriodFilter({
             min={value.customFrom || undefined}
             onChange={(e) => onChange({ ...value, customTo: e.target.value })}
           />
-          {invalidCustom && (
+          {customError && (
             <span role="alert" className="text-destructive text-sm">
-              종료일은 시작일보다 빠를 수 없습니다.
+              {customError}
             </span>
           )}
         </div>

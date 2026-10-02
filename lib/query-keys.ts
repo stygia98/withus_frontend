@@ -31,20 +31,21 @@ export const queryKeys = {
   // 팀원3: tracking, coupon, ai
   dashboard: {
     all: ["dashboard"] as const,
-    // periodKey: 프리셋("7"·"30") 또는 직접 지정 "from~to". 날짜는 조회 시점에 계산한다 (lib/period.ts)
-    summary: (periodKey: string) => ["dashboard", "summary", periodKey] as const,
+    // asOf: 서울 기준 오늘. 기간을 생략(서버 기본값)해도 자정이 지나면 키가 바뀌어 새로 조회한다
+    summary: (from: string | undefined, to: string | undefined, asOf: string) =>
+      ["dashboard", "summary", from, to, asOf] as const,
     dailySends: (days: number) => ["dashboard", "daily-sends", days] as const,
     queue: ["dashboard", "queue"] as const,
     events: ["dashboard", "events"] as const,
     activeCampaigns: ["dashboard", "active-campaigns"] as const,
   },
   analytics: {
-    campaign: (campaignId: number, periodKey: string) =>
-      ["analytics", "campaign", campaignId, periodKey] as const,
+    campaign: (campaignId: number, from?: string, to?: string) =>
+      ["analytics", "campaign", campaignId, from, to] as const,
     // AI-03 성과 요약 (최근 1건)
     report: (campaignId: number) => ["analytics", "report", campaignId] as const,
-    steps: (campaignId: number, periodKey: string) =>
-      ["analytics", "steps", campaignId, periodKey] as const,
+    steps: (campaignId: number, from?: string, to?: string) =>
+      ["analytics", "steps", campaignId, from, to] as const,
   },
   coupons: {
     all: ["coupons"] as const,

@@ -1,12 +1,12 @@
 "use client";
 
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
 import Link from "next/link";
 
 import { PeriodFilter } from "@/components/analytics/period-filter";
 import { DailySendsChart } from "@/components/dashboard/daily-sends-chart";
 import { StatTile } from "@/components/dashboard/stat-tile";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApiError, api, type Page } from "@/lib/api-client";
 import {
@@ -19,6 +19,7 @@ import {
   formatCount,
   formatRate,
 } from "@/lib/dashboard";
+import { formatSeoul } from "@/lib/datetime";
 import { type DateRange, describeRange, rangeQuery, usePeriodRange } from "@/lib/period";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -31,7 +32,7 @@ const EVENT_LIMIT = 20;
  */
 export function DashboardView() {
   // '최근 7일'은 날짜를 보내지 않고 서버 기본값(서울 기준 오늘 포함 7일)을 쓴다
-  const { period, changePeriod, periodKey, currentRange } = usePeriodRange("7", "7");
+  const { period, changePeriod, range, today } = usePeriodRange("7", "7");
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
@@ -44,7 +45,7 @@ export function DashboardView() {
         </div>
         <PeriodFilter value={period} onChange={changePeriod} presets={["7", "30", "CUSTOM"]} />
       </header>
-      <KpiRow periodKey={periodKey} currentRange={currentRange} />
+      <KpiRow range={range} today={today} />
       <div className="grid gap-6 lg:grid-cols-3">
         <DailySendsCard />
         <QueueCard />
@@ -57,21 +58,27 @@ export function DashboardView() {
   );
 }
 
-function KpiRow({ periodKey, currentRange }: { periodKey: string; currentRange: () => DateRange }) {
-  const { data, error } = useQuery({
-    queryKey: queryKeys.dashboard.summary(periodKey),
-    // 날짜는 조회 시점에 계산한다 — 켜 둔 채 자정이 지나도 다음 조회부터 새 날짜
-    queryFn: () => api<DashboardSummary>(`/api/v1/dashboard/summary${rangeQuery(currentRange())}`),
+function KpiRow({ range, today }: { range: DateRange; today: string }) {
+  const { data, error, isFetching, refetch } = useQuery({
+    // today: 기간을 생략(서버 기본값 최근 7일)해도 서울 자정이 지나면 키가 바뀌어 새로 조회한다
+    queryKey: queryKeys.dashboard.summary(range.from, range.to, today),
+    queryFn: () => api<DashboardSummary>(`/api/v1/dashboard/summary${rangeQuery(range)}`),
     placeholderData: keepPreviousData,
   });
-  // 기간 초과(최대 366일) 같은 입력 오류는 서버 메시지를 그대로 보여 준다
   if (error) {
+    // 기간 초과(최대 366일) 같은 입력 오류는 서버 메시지를 그대로, 그 밖의 오류는 다시 시도할 수 있게 한다
+    const invalidInput = error instanceof ApiError && error.status === 400;
     return (
-      <ErrorText>
-        {error instanceof ApiError && error.status === 400
-          ? error.message
-          : "KPI 를 불러오지 못했습니다."}
-      </ErrorText>
+      <div className="flex flex-wrap items-center gap-3">
+        <p role="alert" className="text-destructive text-sm">
+          {invalidInput ? error.message : "KPI 를 불러오지 못했습니다."}
+        </p>
+        {!invalidInput && (
+          <Button variant="outline" size="sm" disabled={isFetching} onClick={() => refetch()}>
+            다시 시도
+          </Button>
+        )}
+      </div>
     );
   }
   const kpi = data?.kpi;
@@ -165,7 +172,7 @@ function QueueCard() {
             <QueueNumber label="발송 중" value={data?.sending} />
             <div className="text-muted-foreground col-span-3 mt-2 text-xs">
               {data?.expectedEndAt
-                ? `초당 ${data.ratePerSecond}건 · 예상 종료 ${format(parseISO(data.expectedEndAt), "M/d HH:mm")}`
+                ? `초당 ${data.ratePerSecond}건 · 예상 종료 ${formatSeoul(data.expectedEndAt, "M/d HH:mm")}`
                 : data
                   ? "남은 발송이 없습니다."
                   : ""}
@@ -257,7 +264,7 @@ function RecentEventsCard() {
             {data?.map((e) => (
               <li key={e.eventId} className="flex items-center gap-3 py-2">
                 <span className="text-muted-foreground w-24 shrink-0 tabular-nums">
-                  {format(parseISO(e.occurredAt), "M/d HH:mm:ss")}
+                  {formatSeoul(e.occurredAt, "M/d HH:mm:ss")}
                 </span>
                 <span className="w-10 shrink-0 font-medium">
                   {e.eventType === "OPEN" ? "오픈" : "클릭"}
