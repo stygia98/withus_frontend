@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { CampaignForm } from "@/components/campaign/CampaignForm";
 import { SchedulePanel } from "@/components/campaign/SchedulePanel";
 import { Badge } from "@/components/ui/badge";
+import { WorkflowBuilder } from "@/components/workflow/WorkflowBuilder";
 import { api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import {
@@ -37,6 +38,7 @@ export default function EditCampaignPage() {
           {/* 상태가 바뀌면 폼의 잠금 상태가 달라지므로 key 로 다시 만든다 */}
           <CampaignForm key={`${data.campaignId}-${data.status}`} mode="edit" campaign={data} />
           {data.type === "ONE_TIME" && <SchedulePanel campaign={data} />}
+          {data.type === "WORKFLOW" && <WorkflowBuilder campaign={data} />}
         </>
       )}
     </main>
