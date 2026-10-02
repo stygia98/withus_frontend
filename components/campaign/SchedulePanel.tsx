@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
+import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import type { Campaign, CampaignEstimate } from "@/lib/types/campaign";
 
 type Mode = "NOW" | "SCHEDULE";
@@ -25,6 +26,7 @@ function fmt(iso: string) {
  */
 export function SchedulePanel({ campaign }: { campaign: Campaign }) {
   const queryClient = useQueryClient();
+  const canManage = useCanManageCampaign();
   const [mode, setMode] = useState<Mode>("NOW");
   const [local, setLocal] = useState(""); // datetime-local 값 (예: 2026-10-05T19:30)
   const [nowIso, setNowIso] = useState(() => formatISO(new Date()));
@@ -94,6 +96,8 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
   });
 
   const blocked = !estimate?.allowed || isFetching;
+
+  if (!canManage) return null; // STAFF 는 조회만 (PRD 3장)
 
   if (scheduled) {
     return (

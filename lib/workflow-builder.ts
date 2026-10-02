@@ -49,14 +49,64 @@ export function fromResponse(steps: WorkflowStepResponse[]): BuilderNode[] {
   }));
 }
 
-/** slot 이 가리키는 노드 앞에 새 노드를 끼워 넣는다. 한도(15개)를 넘으면 그대로 돌려준다 */
+const BRANCH_LIMIT = 2; // PRD 6.4 — 분기(CONDITION)는 2단계까지
+
+/** key 부터 아래 경로의 CONDITION 중첩 단계 수 (CONDITION 이 없으면 0) */
+function conditionLevels(
+  nodes: BuilderNode[],
+  key: string | undefined,
+  seen = new Set<string>(),
+): number {
+  if (!key || seen.has(key)) return 0;
+  seen.add(key);
+  const node = nodes.find((n) => n.key === key);
+  if (!node) return 0;
+  if (node.nodeType === "CONDITION") {
+    return (
+      1 + Math.max(conditionLevels(nodes, node.yes, seen), conditionLevels(nodes, node.no, seen))
+    );
+  }
+  return conditionLevels(nodes, node.next, seen);
+}
+
+/**
+ * slot 에 nodeType 을 끼워 넣을 수 있는가. 못 넣으면 이유를 돌려준다(화면의 안내·비활성화에 쓴다).
+ * - 노드 15개 한도: CONDITION 은 분기 END 까지 2~3개를 늘린다
+ * - 분기 2단계: CONDITION 을 끼우면 그 아래 경로가 yes 쪽으로 한 단계 내려가 기존 CONDITION 이 3단계가 될 수 있다
+ */
+export function canInsert(
+  nodes: BuilderNode[],
+  parentKey: string,
+  slot: Slot,
+  nodeType: NodeType,
+): { ok: true } | { ok: false; reason: string } {
+  const parent = nodes.find((n) => n.key === parentKey);
+  if (!parent) return { ok: false, reason: "추가할 위치를 찾을 수 없습니다." };
+  const growth = nodeType === "CONDITION" ? (parent[slot] ? 2 : 3) : 1;
+  if (nodes.length + growth > NODE_LIMIT) {
+    return {
+      ok: false,
+      reason: `노드는 최대 ${NODE_LIMIT}개입니다. (이 노드는 ${growth}개가 늘어납니다)`,
+    };
+  }
+  if (nodeType === "CONDITION") {
+    const parentDepth = flatten(nodes).find((r) => r.node.key === parentKey)?.depth ?? 0;
+    const depthHere = slot === "next" ? parentDepth : parentDepth + 1; // 새 분기가 놓일 깊이
+    if (depthHere + 1 + conditionLevels(nodes, parent[slot]) > BRANCH_LIMIT) {
+      return { ok: false, reason: `분기는 ${BRANCH_LIMIT}단계까지만 만들 수 있습니다.` };
+    }
+  }
+  return { ok: true };
+}
+
+/** slot 이 가리키는 노드 앞에 새 노드를 끼워 넣는다. 한도(노드 15개·분기 2단계)를 넘으면 그대로 돌려준다 */
 export function insertNode(
   nodes: BuilderNode[],
   parentKey: string,
   slot: Slot,
   nodeType: NodeType,
 ): BuilderNode[] {
-  if (nodes.length >= NODE_LIMIT) return nodes;
+  if (!canInsert(nodes, parentKey, slot, nodeType).ok) return nodes;
   const parent = nodes.find((n) => n.key === parentKey);
   if (!parent) return nodes;
   const oldTarget = parent[slot];
@@ -78,9 +128,6 @@ export function insertNode(
   } else {
     created.next = oldTarget;
   }
-  // CONDITION 은 노드를 최대 3개(분기 + END 2개) 늘리므로 한도를 넘으면 취소한다
-  if (nodes.length + added.length > NODE_LIMIT) return nodes;
-
   return [...nodes.map((n) => (n.key === parentKey ? { ...n, [slot]: created.key } : n)), ...added];
 }
 
@@ -168,4 +215,31 @@ export function flatten(nodes: BuilderNode[]): Row[] {
   const trigger = nodes.find((n) => n.nodeType === "TRIGGER");
   visit(trigger?.key, 0, null);
   return rows;
+}
+
+/**
+ * 저장 전에 화면에서 거르는 필수값 검사. 비어 있는 구매액 같은 값은 서버 구조 검증을 통과해도 실행 중 오류가 되어
+ * 모든 인스턴스가 FAILED 가 될 수 있다. 문제가 없으면 빈 배열
+ */
+export function validateNodes(nodes: BuilderNode[]): string[] {
+  const errors: string[] = [];
+  const isNum = (v: unknown) => typeof v === "number" && Number.isFinite(v);
+  for (const n of nodes) {
+    const c = n.config;
+    if (n.nodeType === "WAIT") {
+      if (!isNum(c.amount) || (c.amount as number) < 1) {
+        errors.push("대기 노드의 시간은 1 이상이어야 합니다.");
+      }
+      if (typeof c.unit !== "string") errors.push("대기 노드의 단위를 선택하세요.");
+    } else if (n.nodeType === "CONDITION") {
+      if (typeof c.condition !== "string") {
+        errors.push("분기 노드의 조건을 선택하세요.");
+      } else if (c.condition === "PURCHASE_GTE" && (!isNum(c.amount) || (c.amount as number) < 0)) {
+        errors.push("누적 구매액 분기는 기준 금액을 입력해야 합니다.");
+      }
+    } else if (n.nodeType === "SEND_EMAIL" || n.nodeType === "SEND_SMS") {
+      if (!c.templateId) errors.push("발송 노드마다 템플릿을 선택하세요.");
+    }
+  }
+  return [...new Set(errors)];
 }

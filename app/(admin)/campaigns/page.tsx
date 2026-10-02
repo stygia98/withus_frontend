@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
+import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import {
   CAMPAIGN_STATUS_LABEL,
   CAMPAIGN_STATUS_VARIANT,
@@ -50,6 +51,7 @@ const STATUS_FILTERS = [
 ];
 
 export default function CampaignsPage() {
+  const canManage = useCanManageCampaign();
   const [type, setType] = useState("ALL");
   const [status, setStatus] = useState("ALL");
   const [page, setPage] = useState(0);
@@ -70,9 +72,11 @@ export default function CampaignsPage() {
     <main className="mx-auto max-w-5xl space-y-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">캠페인</h1>
-        <Button render={<Link href="/campaigns/new" />} nativeButton={false}>
-          새 캠페인
-        </Button>
+        {canManage && (
+          <Button render={<Link href="/campaigns/new" />} nativeButton={false}>
+            새 캠페인
+          </Button>
+        )}
       </div>
 
       <div className="flex gap-2">

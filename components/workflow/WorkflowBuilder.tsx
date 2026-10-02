@@ -20,6 +20,7 @@ import {
 import { ApiError, api, type Page } from "@/lib/api-client";
 import type { Coupon } from "@/lib/coupon";
 import { queryKeys } from "@/lib/query-keys";
+import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import type { Campaign } from "@/lib/types/campaign";
 import type { Template } from "@/lib/types/template";
 import {
@@ -31,9 +32,11 @@ import {
 } from "@/lib/types/workflow";
 import {
   NODE_LIMIT,
+  validateNodes,
   flatten,
   fromResponse,
   initialNodes,
+  canInsert,
   insertNode,
   removeNode,
   updateConfig,
@@ -82,7 +85,8 @@ function AddControl({
 
 function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: BuilderNode[] }) {
   const queryClient = useQueryClient();
-  const editable = campaign.status === "DRAFT";
+  const canManage = useCanManageCampaign();
+  const editable = campaign.status === "DRAFT" && canManage;
   const [nodes, setNodes] = useState(initial);
   const [result, setResult] = useState<ValidationResult | null>(null);
   const [violations, setViolations] = useState<string[]>([]);
@@ -140,7 +144,23 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
     },
   });
 
+  /** 서버로 보내기 전에 필수값을 확인한다 */
+  function submit(run: () => void) {
+    const errors = validateNodes(nodes);
+    setViolations(errors);
+    if (errors.length > 0) {
+      toast.error("필수 설정이 비어 있습니다.");
+      return;
+    }
+    run();
+  }
+
   function add(parentKey: string, slot: Slot, nodeType: NodeType) {
+    const check = canInsert(nodes, parentKey, slot, nodeType);
+    if (!check.ok) {
+      toast.error(check.reason);
+      return;
+    }
     setNodes((prev) => insertNode(prev, parentKey, slot, nodeType));
     setResult(null);
   }
@@ -280,11 +300,15 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
             type="button"
             variant="outline"
             disabled={validate.isPending}
-            onClick={() => validate.mutate()}
+            onClick={() => submit(() => validate.mutate())}
           >
             구조 검사
           </Button>
-          <Button type="button" disabled={save.isPending} onClick={() => save.mutate()}>
+          <Button
+            type="button"
+            disabled={save.isPending}
+            onClick={() => submit(() => save.mutate())}
+          >
             {save.isPending ? "저장 중..." : "워크플로우 저장"}
           </Button>
         </div>

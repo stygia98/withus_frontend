@@ -11,6 +11,7 @@ import { InstancesPanel } from "@/components/workflow/InstancesPanel";
 import { WorkflowBuilder } from "@/components/workflow/WorkflowBuilder";
 import { api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
+import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import {
   CAMPAIGN_STATUS_LABEL,
   CAMPAIGN_STATUS_VARIANT,
@@ -18,6 +19,7 @@ import {
 } from "@/lib/types/campaign";
 
 export default function EditCampaignPage() {
+  const canManage = useCanManageCampaign();
   const params = useParams<{ id: string }>();
   const campaignId = Number(params.id);
 
@@ -42,9 +44,10 @@ export default function EditCampaignPage() {
           <CampaignForm key={`${data.campaignId}-${data.status}`} mode="edit" campaign={data} />
           {data.type === "ONE_TIME" && <SchedulePanel campaign={data} />}
           {data.type === "WORKFLOW" && <WorkflowBuilder campaign={data} />}
-          {data.type === "WORKFLOW" && data.status !== "DRAFT" && data.status !== "SCHEDULED" && (
-            <InstancesPanel campaignId={data.campaignId} />
-          )}
+          {data.type === "WORKFLOW" &&
+            data.status !== "DRAFT" &&
+            data.status !== "SCHEDULED" &&
+            canManage && <InstancesPanel campaignId={data.campaignId} />}
         </>
       )}
     </main>

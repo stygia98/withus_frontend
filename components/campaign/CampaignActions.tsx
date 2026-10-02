@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
+import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import type { Campaign } from "@/lib/types/campaign";
 
 /**
@@ -29,6 +30,7 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [confirmComplete, setConfirmComplete] = useState(false);
+  const canManage = useCanManageCampaign();
   const base = `/api/v1/campaigns/${campaign.campaignId}` as const;
 
   function refresh() {
@@ -43,7 +45,12 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
       api<Campaign>(`${base}/${action}`, { method: "POST" }),
     onSuccess: (_, action) => {
       toast.success(
-        { start: "캠페인을 시작했습니다.", pause: "일시정지했습니다.", resume: "재개했습니다.", complete: "종료했습니다." }[action],
+        {
+          start: "캠페인을 시작했습니다.",
+          pause: "일시정지했습니다.",
+          resume: "재개했습니다.",
+          complete: "종료했습니다.",
+        }[action],
       );
       setConfirmComplete(false);
       refresh();
@@ -61,8 +68,11 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
     onError,
   });
 
+  if (!canManage) return null; // STAFF 는 조회만 (PRD 3장)
+
   const { status } = campaign;
-  const canStartHere = (status === "DRAFT" && campaign.type === "WORKFLOW") || status === "SCHEDULED";
+  const canStartHere =
+    (status === "DRAFT" && campaign.type === "WORKFLOW") || status === "SCHEDULED";
   const pending = transition.isPending || duplicate.isPending;
 
   return (

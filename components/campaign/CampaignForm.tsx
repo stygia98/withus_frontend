@@ -22,6 +22,7 @@ import {
 import { ApiError, api, type Page } from "@/lib/api-client";
 import type { Coupon } from "@/lib/coupon";
 import { queryKeys } from "@/lib/query-keys";
+import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import {
   CAMPAIGN_TYPE_LABEL,
   TRIGGER_TYPE_LABEL,
@@ -97,6 +98,7 @@ export function CampaignForm(props: CampaignFormProps) {
   const type = watch("type");
 
   // 수정은 DRAFT 만 가능하다(백엔드 CAMPAIGN_INVALID_STATUS). 그 외 상태는 폼을 잠근다
+  const canManage = useCanManageCampaign();
   const locked = editing !== null && editing.status !== "DRAFT";
 
   const segmentItems = (segments?.content ?? []).map((s) => ({
@@ -338,7 +340,7 @@ export function CampaignForm(props: CampaignFormProps) {
         <Button type="button" variant="outline" onClick={() => router.push("/campaigns")}>
           목록
         </Button>
-        {!locked && (
+        {!locked && canManage && (
           <Button type="submit" disabled={mutation.isPending}>
             {mutation.isPending ? "저장 중..." : "저장"}
           </Button>
