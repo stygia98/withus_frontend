@@ -45,6 +45,9 @@ export type FunnelStage = {
 export type CampaignAnalytics = {
   campaignId: number;
   name: string;
+  /** 서버가 적용한 기간(요청값 그대로). 둘 다 null 이면 캠페인 전체 기간 */
+  from: string | null;
+  to: string | null;
   kpi: SendKpi;
   funnel: FunnelStage[];
 };
@@ -83,6 +86,9 @@ export type CampaignSteps = {
   campaignId: number;
   name: string;
   type: "ONE_TIME" | "WORKFLOW";
+  /** 서버가 적용한 기간(요청값 그대로). 둘 다 null 이면 캠페인 전체 기간 */
+  from: string | null;
+  to: string | null;
   steps: StepAnalytics[];
 };
 

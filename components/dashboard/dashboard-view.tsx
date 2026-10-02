@@ -3,7 +3,6 @@
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
-import { useState } from "react";
 
 import { PeriodFilter } from "@/components/analytics/period-filter";
 import { DailySendsChart } from "@/components/dashboard/daily-sends-chart";
@@ -20,28 +19,19 @@ import {
   formatCount,
   formatRate,
 } from "@/lib/dashboard";
-import { type DateRange, type Period, describeRange, rangeQuery, toRange } from "@/lib/period";
+import { type DateRange, describeRange, rangeQuery, usePeriodRange } from "@/lib/period";
 import { queryKeys } from "@/lib/query-keys";
 
 const EVENT_POLL_MS = 10_000;
 const EVENT_LIMIT = 20;
-
-const INITIAL_PERIOD: Period = { preset: "7", customFrom: "", customTo: "" };
 
 /**
  * 메인 대시보드 (PRD 4장 /dashboard, F-09). 기간 KPI(기본 최근 7일, 7/30일·직접 지정), 일별 발송, 발송 큐,
  * 활성 캠페인, 최근 이벤트. 기간 필터는 KPI 에만 걸린다(일별 발송은 자체 기간, 큐·이벤트는 실시간)
  */
 export function DashboardView() {
-  const [period, setPeriod] = useState<Period>(INITIAL_PERIOD);
-  const [range, setRange] = useState<DateRange>(() => toRange(INITIAL_PERIOD) ?? {});
-
-  function changePeriod(next: Period) {
-    setPeriod(next);
-    // 직접 지정 입력이 덜 끝났으면(null) 마지막으로 유효했던 기간을 그대로 쓴다
-    const nextRange = toRange(next);
-    if (nextRange) setRange(nextRange);
-  }
+  // '최근 7일'은 날짜를 보내지 않고 서버 기본값(서울 기준 오늘 포함 7일)을 쓴다
+  const { period, changePeriod, periodKey, currentRange } = usePeriodRange("7", "7");
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
@@ -54,7 +44,7 @@ export function DashboardView() {
         </div>
         <PeriodFilter value={period} onChange={changePeriod} presets={["7", "30", "CUSTOM"]} />
       </header>
-      <KpiRow range={range} />
+      <KpiRow periodKey={periodKey} currentRange={currentRange} />
       <div className="grid gap-6 lg:grid-cols-3">
         <DailySendsCard />
         <QueueCard />
@@ -67,10 +57,11 @@ export function DashboardView() {
   );
 }
 
-function KpiRow({ range }: { range: DateRange }) {
+function KpiRow({ periodKey, currentRange }: { periodKey: string; currentRange: () => DateRange }) {
   const { data, error } = useQuery({
-    queryKey: queryKeys.dashboard.summary(range.from, range.to),
-    queryFn: () => api<DashboardSummary>(`/api/v1/dashboard/summary${rangeQuery(range)}`),
+    queryKey: queryKeys.dashboard.summary(periodKey),
+    // 날짜는 조회 시점에 계산한다 — 켜 둔 채 자정이 지나도 다음 조회부터 새 날짜
+    queryFn: () => api<DashboardSummary>(`/api/v1/dashboard/summary${rangeQuery(currentRange())}`),
     placeholderData: keepPreviousData,
   });
   // 기간 초과(최대 366일) 같은 입력 오류는 서버 메시지를 그대로 보여 준다
@@ -85,7 +76,7 @@ function KpiRow({ range }: { range: DateRange }) {
   }
   const kpi = data?.kpi;
   // 서버가 실제로 적용한 기간(생략 시 기본값)을 보여 준다
-  const shown = describeRange(data ? { from: data.from, to: data.to } : range);
+  const shown = data ? describeRange(data.from, data.to) : "불러오는 중";
   return (
     <section aria-label={`핵심 지표 (${shown})`} className="space-y-2">
       <p className="text-muted-foreground text-sm" aria-live="polite">

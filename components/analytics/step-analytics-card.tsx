@@ -38,11 +38,23 @@ function stepTitle(step: StepAnalytics, index: number): string {
  * 단계 간 비율 비교는 표로, 단계마다의 흐름은 같은 형태의 작은 차트를 반복한다(계열을 색으로 섞지 않는다).
  * 일회성 캠페인이면 아무것도 그리지 않는다.
  */
-export function StepAnalyticsCard({ campaignId, range }: { campaignId: number; range: DateRange }) {
+export function StepAnalyticsCard({
+  campaignId,
+  periodKey,
+  currentRange,
+}: {
+  campaignId: number;
+  /** 쿼리 키용 기간 (lib/period.ts usePeriodRange) */
+  periodKey: string;
+  /** 조회 시점의 범위 */
+  currentRange: () => DateRange;
+}) {
   const { data, isError } = useQuery({
-    queryKey: queryKeys.analytics.steps(campaignId, range.from, range.to),
+    queryKey: queryKeys.analytics.steps(campaignId, periodKey),
     queryFn: () =>
-      api<CampaignSteps>(`/api/v1/analytics/campaigns/${campaignId}/steps${rangeQuery(range)}`),
+      api<CampaignSteps>(
+        `/api/v1/analytics/campaigns/${campaignId}/steps${rangeQuery(currentRange())}`,
+      ),
     placeholderData: keepPreviousData,
   });
 
