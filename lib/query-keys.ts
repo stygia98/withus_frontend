@@ -40,6 +40,9 @@ export const queryKeys = {
     activeCampaigns: ["dashboard", "active-campaigns"] as const,
   },
   analytics: {
+    // 성과 리포트 목록 (/analytics) — 팀원2 GET /campaigns 를 상태 필터·페이지로 조회
+    campaignList: (status: string | undefined, page: number) =>
+      ["analytics", "campaign-list", status, page] as const,
     campaign: (campaignId: number, from?: string, to?: string) =>
       ["analytics", "campaign", campaignId, from, to] as const,
     // AI-03 성과 요약 (최근 1건)
