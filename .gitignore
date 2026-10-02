@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# TinyMCE 자체 설치 산출물 (postinstall 이 node_modules/tinymce 에서 복사, 커밋 금지)
+/public/tinymce

@@ -12,7 +12,15 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
   {
-    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"],
+    // public/tinymce 는 node_modules/tinymce 복사본(자체 설치, scripts/copy-tinymce.mjs)이라 lint 대상이 아니다
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+      "public/tinymce/**",
+    ],
   },
 ];
 
