@@ -32,8 +32,9 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
   const draft = campaign.status === "DRAFT";
   const scheduled = campaign.status === "SCHEDULED";
 
-  // datetime-local 은 시간대 정보가 없으니 브라우저(서울) 로컬 시각으로 보고 +09:00 형식 ISO 로 바꾼다
-  const startAt = mode === "NOW" ? nowIso : local ? formatISO(new Date(local)) : null;
+  // datetime-local 은 시간대 정보가 없다. 브라우저 시간대로 해석하면(new Date(local)) 서울이 아닌 PC 에서 다른 시각으로
+  // 예약되어 estimate·20:50 판정이 틀리므로, 서울 시각으로 보고 +09:00 을 직접 붙인다(CLAUDE.md 6장 3번)
+  const startAt = mode === "NOW" ? nowIso : local ? `${local}:00+09:00` : null;
 
   const { data: estimate, isFetching } = useQuery({
     queryKey: queryKeys.campaigns.estimate(campaign.campaignId, startAt ?? ""),

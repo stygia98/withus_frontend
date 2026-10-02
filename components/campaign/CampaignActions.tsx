@@ -22,7 +22,8 @@ import type { Campaign } from "@/lib/types/campaign";
 
 /**
  * 캠페인 상태 버튼 (PRD 6.7 전이표). 현재 상태에서 가능한 것만 활성화한다:
- * ACTIVE → 일시정지·종료, PAUSED → 재개·종료, 복제는 어느 상태에서나 가능(새 DRAFT)
+ * DRAFT 워크플로우·SCHEDULED → 지금 시작, ACTIVE → 일시정지·종료, PAUSED → 재개·종료, 복제는 어느 상태에서나 가능(새 DRAFT).
+ * 일회성 DRAFT 의 시작·예약은 SchedulePanel 이 맡는다(시작 시각 검사가 필요해서)
  */
 export function CampaignActions({ campaign }: { campaign: Campaign }) {
   const router = useRouter();
@@ -38,11 +39,11 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
   }
 
   const transition = useMutation({
-    mutationFn: (action: "pause" | "resume" | "complete") =>
+    mutationFn: (action: "start" | "pause" | "resume" | "complete") =>
       api<Campaign>(`${base}/${action}`, { method: "POST" }),
     onSuccess: (_, action) => {
       toast.success(
-        { pause: "일시정지했습니다.", resume: "재개했습니다.", complete: "종료했습니다." }[action],
+        { start: "캠페인을 시작했습니다.", pause: "일시정지했습니다.", resume: "재개했습니다.", complete: "종료했습니다." }[action],
       );
       setConfirmComplete(false);
       refresh();
@@ -61,10 +62,16 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
   });
 
   const { status } = campaign;
+  const canStartHere = (status === "DRAFT" && campaign.type === "WORKFLOW") || status === "SCHEDULED";
   const pending = transition.isPending || duplicate.isPending;
 
   return (
     <div className="flex flex-wrap gap-2">
+      {canStartHere && (
+        <Button disabled={pending} onClick={() => transition.mutate("start")}>
+          지금 시작
+        </Button>
+      )}
       {status === "ACTIVE" && (
         <Button variant="outline" disabled={pending} onClick={() => transition.mutate("pause")}>
           일시정지
