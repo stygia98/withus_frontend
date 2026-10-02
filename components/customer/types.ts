@@ -1,7 +1,5 @@
 // 고객 API 타입 (백엔드 customer 패키지 DTO, Swagger 기준)
 
-import { format } from "date-fns";
-
 export type Yn = "Y" | "N";
 export type Channel = "EMAIL" | "SMS";
 
@@ -77,9 +75,8 @@ export const CONSENT_SOURCE_LABEL: Record<ConsentHistory["source"], string> = {
   COMPLAINT: "스팸 신고",
 };
 
-export function formatDateTime(iso: string) {
-  return format(new Date(iso), "yyyy-MM-dd HH:mm");
-}
+/** 서울 시간 고정 (브라우저 시간대와 무관). 고객 화면들이 이 경로로 가져다 쓴다 */
+export { formatDateTime } from "@/lib/datetime";
 
 /** GET /customers/{id}/activity — 고객 상세의 발송·이벤트·쿠폰 이력 */
 export type CustomerActivity = {
