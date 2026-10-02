@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PERIOD_LABEL, type Period, type PeriodPreset } from "@/lib/period";
-import { cn } from "@/lib/utils";
 
 /**
  * 기간 필터 (PRD F-09). 프리셋은 한 줄 버튼, "직접 지정"을 고르면 시작·종료 날짜 입력이 옆에 나온다.
@@ -26,25 +26,21 @@ export function PeriodFilter({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {/* 선택 상태는 aria-pressed 로 알린다 (radio 역할은 화살표 키 이동까지 구현해야 해서 쓰지 않음) */}
-      <div role="group" aria-label="조회 기간" className="bg-muted inline-flex rounded-lg p-0.5">
+      <div role="group" aria-label="조회 기간" className="inline-flex gap-1">
         {presets.map((p) => {
           const selected = value.preset === p;
           return (
-            <button
+            <Button
               key={p}
               type="button"
+              size="sm"
+              variant={selected ? "secondary" : "ghost"}
               aria-pressed={selected}
               onClick={() => onChange({ ...value, preset: p })}
-              className={cn(
-                "rounded-md px-3 py-1 text-sm transition-colors",
-                "focus-visible:ring-ring/50 outline-none focus-visible:ring-3",
-                selected
-                  ? "bg-background text-foreground font-medium shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
+              className={selected ? "font-medium" : "text-muted-foreground"}
             >
               {PERIOD_LABEL[p]}
-            </button>
+            </Button>
           );
         })}
       </div>

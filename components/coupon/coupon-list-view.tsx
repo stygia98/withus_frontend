@@ -90,12 +90,14 @@ export function CouponListView() {
                     return (
                       <TableRow key={c.couponId} data-state={open ? "selected" : undefined}>
                         <TableCell className="font-medium">
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
+                            size="sm"
                             onClick={() => toggle(c)}
                             aria-expanded={open}
                             aria-controls="coupon-issues-panel"
-                            className="focus-visible:ring-ring/50 -mx-1 inline-flex items-center gap-1 rounded px-1 text-left outline-none hover:underline focus-visible:ring-3"
+                            className="-ml-2.5 font-medium"
                           >
                             {open ? (
                               <ChevronDown className="size-4 shrink-0" aria-hidden />
@@ -103,7 +105,7 @@ export function CouponListView() {
                               <ChevronRight className="size-4 shrink-0" aria-hidden />
                             )}
                             {c.name}
-                          </button>
+                          </Button>
                         </TableCell>
                         <TableCell>{formatDiscount(c)}</TableCell>
                         <TableCell className="tabular-nums">
