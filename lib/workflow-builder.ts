@@ -114,6 +114,22 @@ export function removeNode(nodes: BuilderNode[], key: string): BuilderNode[] {
   return nodes.filter((n) => n.key !== key).map((n) => relink(n, key, target.next));
 }
 
+/** 노드 설정 일부를 바꾼다. 값이 undefined 인 키는 지운다(예: 쿠폰 연결 해제) */
+export function updateConfig(
+  nodes: BuilderNode[],
+  key: string,
+  patch: Record<string, unknown>,
+): BuilderNode[] {
+  return nodes.map((n) => {
+    if (n.key !== key) return n;
+    const config = { ...n.config, ...patch };
+    for (const k of Object.keys(config)) {
+      if (config[k] === undefined) delete config[k];
+    }
+    return { ...n, config };
+  });
+}
+
 function relink(node: BuilderNode, from: string, to: string | undefined): BuilderNode {
   const copy = { ...node };
   for (const slot of ["next", "yes", "no"] as const) {
