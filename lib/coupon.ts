@@ -27,6 +27,17 @@ export type CouponRequest = {
   validTo: string;
 };
 
+/** 쿠폰별 발급 목록 한 줄 (GET /coupons/{id}/issues). 토큰은 내려오지 않는다 */
+export type CouponIssue = {
+  issueId: number;
+  customerId: number;
+  customerName: string | null;
+  sendLogId: number | null;
+  issuedAt: string;
+  usedAt: string | null;
+  status: IssueStatus;
+};
+
 /** 고객 쿠폰 페이지 카드. customerName 은 마스킹된 값(김**)이거나 null */
 export type PublicCoupon = {
   customerName: string | null;

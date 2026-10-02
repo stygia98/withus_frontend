@@ -1,13 +1,15 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
+import { useState } from "react";
 
+import { PeriodFilter } from "@/components/analytics/period-filter";
 import { DailySendsChart } from "@/components/dashboard/daily-sends-chart";
 import { StatTile } from "@/components/dashboard/stat-tile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { api, type Page } from "@/lib/api-client";
+import { ApiError, api, type Page } from "@/lib/api-client";
 import {
   type CampaignSummaryItem,
   type DailySend,
@@ -18,22 +20,41 @@ import {
   formatCount,
   formatRate,
 } from "@/lib/dashboard";
+import { type DateRange, type Period, describeRange, rangeQuery, toRange } from "@/lib/period";
 import { queryKeys } from "@/lib/query-keys";
 
 const EVENT_POLL_MS = 10_000;
 const EVENT_LIMIT = 20;
 
-/** 메인 대시보드 (PRD 4장 /dashboard, F-09). 최근 7일 KPI, 일별 발송, 발송 큐, 활성 캠페인, 최근 이벤트 */
+const INITIAL_PERIOD: Period = { preset: "7", customFrom: "", customTo: "" };
+
+/**
+ * 메인 대시보드 (PRD 4장 /dashboard, F-09). 기간 KPI(기본 최근 7일, 7/30일·직접 지정), 일별 발송, 발송 큐,
+ * 활성 캠페인, 최근 이벤트. 기간 필터는 KPI 에만 걸린다(일별 발송은 자체 기간, 큐·이벤트는 실시간)
+ */
 export function DashboardView() {
+  const [period, setPeriod] = useState<Period>(INITIAL_PERIOD);
+  const [range, setRange] = useState<DateRange>(() => toRange(INITIAL_PERIOD) ?? {});
+
+  function changePeriod(next: Period) {
+    setPeriod(next);
+    // 직접 지정 입력이 덜 끝났으면(null) 마지막으로 유효했던 기간을 그대로 쓴다
+    const nextRange = toRange(next);
+    if (nextRange) setRange(nextRange);
+  }
+
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
-      <header>
-        <h1 className="text-2xl font-semibold">대시보드</h1>
-        <p className="text-muted-foreground text-sm">
-          최근 7일 기준. 봇 이벤트와 테스트·안내 발송은 모든 지표에서 뺍니다.
-        </p>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">대시보드</h1>
+          <p className="text-muted-foreground text-sm">
+            봇 이벤트와 테스트·안내 발송은 모든 지표에서 뺍니다.
+          </p>
+        </div>
+        <PeriodFilter value={period} onChange={changePeriod} presets={["7", "30", "CUSTOM"]} />
       </header>
-      <KpiRow />
+      <KpiRow range={range} />
       <div className="grid gap-6 lg:grid-cols-3">
         <DailySendsCard />
         <QueueCard />
@@ -46,39 +67,56 @@ export function DashboardView() {
   );
 }
 
-function KpiRow() {
-  const { data, isError } = useQuery({
-    queryKey: queryKeys.dashboard.summary(),
-    queryFn: () => api<DashboardSummary>("/api/v1/dashboard/summary"),
+function KpiRow({ range }: { range: DateRange }) {
+  const { data, error } = useQuery({
+    queryKey: queryKeys.dashboard.summary(range.from, range.to),
+    queryFn: () => api<DashboardSummary>(`/api/v1/dashboard/summary${rangeQuery(range)}`),
+    placeholderData: keepPreviousData,
   });
-  if (isError) return <ErrorText>KPI 를 불러오지 못했습니다.</ErrorText>;
+  // 기간 초과(최대 366일) 같은 입력 오류는 서버 메시지를 그대로 보여 준다
+  if (error) {
+    return (
+      <ErrorText>
+        {error instanceof ApiError && error.status === 400
+          ? error.message
+          : "KPI 를 불러오지 못했습니다."}
+      </ErrorText>
+    );
+  }
   const kpi = data?.kpi;
+  // 서버가 실제로 적용한 기간(생략 시 기본값)을 보여 준다
+  const shown = describeRange(data ? { from: data.from, to: data.to } : range);
   return (
-    <section aria-label="최근 7일 핵심 지표" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <StatTile
-        label="총 발송(성공)"
-        value={kpi ? formatCount(kpi.sent) : "–"}
-        hint={
-          kpi
-            ? `시도 ${formatCount(kpi.attempted)} · 성공률 ${formatRate(kpi.successRate)}`
-            : undefined
-        }
-      />
-      <StatTile
-        label="오픈율"
-        value={kpi ? formatRate(kpi.openRate) : "–"}
-        hint={kpi ? `고유 오픈 ${formatCount(kpi.uniqueOpens)}명` : undefined}
-      />
-      <StatTile
-        label="클릭률"
-        value={kpi ? formatRate(kpi.clickRate) : "–"}
-        hint={kpi ? `고유 클릭 ${formatCount(kpi.uniqueClicks)}명` : undefined}
-      />
-      <StatTile
-        label="전환율(쿠폰 사용)"
-        value={kpi ? formatRate(kpi.conversionRate) : "–"}
-        hint={kpi ? `쿠폰 사용 ${formatCount(kpi.couponUsed)}명` : undefined}
-      />
+    <section aria-label={`핵심 지표 (${shown})`} className="space-y-2">
+      <p className="text-muted-foreground text-sm" aria-live="polite">
+        발송일 기준 {shown}
+      </p>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatTile
+          label="총 발송(성공)"
+          value={kpi ? formatCount(kpi.sent) : "–"}
+          hint={
+            kpi
+              ? `시도 ${formatCount(kpi.attempted)} · 성공률 ${formatRate(kpi.successRate)}`
+              : undefined
+          }
+        />
+        <StatTile
+          label="오픈율"
+          value={kpi ? formatRate(kpi.openRate) : "–"}
+          hint={kpi ? `고유 오픈 ${formatCount(kpi.uniqueOpens)}명` : undefined}
+        />
+        <StatTile
+          label="클릭률"
+          value={kpi ? formatRate(kpi.clickRate) : "–"}
+          hint={kpi ? `고유 클릭 ${formatCount(kpi.uniqueClicks)}명` : undefined}
+        />
+        <StatTile
+          label="전환율(쿠폰 사용)"
+          value={kpi ? formatRate(kpi.conversionRate) : "–"}
+          hint={kpi ? `쿠폰 사용 ${formatCount(kpi.couponUsed)}명` : undefined}
+        />
+      </div>
     </section>
   );
 }

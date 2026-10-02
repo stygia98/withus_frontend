@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Mail, MessageSquare, Ticket } from "lucide-react";
 
 import { FunnelChart } from "@/components/analytics/funnel-chart";
@@ -21,6 +21,7 @@ import {
   formatRate,
   funnelOf,
 } from "@/lib/dashboard";
+import { type DateRange, rangeQuery } from "@/lib/period";
 import { queryKeys } from "@/lib/query-keys";
 
 /** 문자는 열람 픽셀·링크 치환이 없어 오픈·클릭을 잴 수 없다 (PRD 8.1: 추적은 메일 HTML 대상) */
@@ -37,10 +38,12 @@ function stepTitle(step: StepAnalytics, index: number): string {
  * 단계 간 비율 비교는 표로, 단계마다의 흐름은 같은 형태의 작은 차트를 반복한다(계열을 색으로 섞지 않는다).
  * 일회성 캠페인이면 아무것도 그리지 않는다.
  */
-export function StepAnalyticsCard({ campaignId }: { campaignId: number }) {
+export function StepAnalyticsCard({ campaignId, range }: { campaignId: number; range: DateRange }) {
   const { data, isError } = useQuery({
-    queryKey: queryKeys.analytics.steps(campaignId),
-    queryFn: () => api<CampaignSteps>(`/api/v1/analytics/campaigns/${campaignId}/steps`),
+    queryKey: queryKeys.analytics.steps(campaignId, range.from, range.to),
+    queryFn: () =>
+      api<CampaignSteps>(`/api/v1/analytics/campaigns/${campaignId}/steps${rangeQuery(range)}`),
+    placeholderData: keepPreviousData,
   });
 
   if (isError) {
