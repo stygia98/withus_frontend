@@ -77,6 +77,7 @@ export function TemplateForm(props: TemplateFormProps) {
     handleSubmit,
     watch,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(formSchema), defaultValues: defaults });
 
@@ -86,24 +87,37 @@ export function TemplateForm(props: TemplateFormProps) {
   const bodyField = register("body");
 
   const mutation = useMutation({
-    mutationFn: (values: FormValues) =>
-      props.mode === "create"
-        ? api<Template>("/api/v1/templates", { method: "POST", body: JSON.stringify(values) })
+    mutationFn: (values: FormValues) => {
+      // SMS 에는 제목이 없다 — 채널을 바꾸기 전에 입력한 값이 숨은 채로 저장되지 않게 항상 null 로 보낸다
+      const subject = values.channel === "EMAIL" ? values.subject : null;
+      return props.mode === "create"
+        ? api<Template>("/api/v1/templates", {
+            method: "POST",
+            body: JSON.stringify({ ...values, subject }),
+          })
         : api<Template>(`/api/v1/templates/${props.templateId}`, {
             method: "PUT",
             body: JSON.stringify({
               name: values.name,
-              subject: values.subject,
+              subject,
               body: values.body,
               adYn: values.adYn,
             }),
-          }),
+          });
+    },
     onSuccess: (saved) => {
       toast.success(props.mode === "create" ? "템플릿을 만들었습니다." : "템플릿을 수정했습니다.");
       queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
       router.push(`/templates/${saved.templateId}`);
     },
     onError: (err) => {
+      // 시스템이 자동으로 넣는 (광고)·수신거부 문구를 직접 쓴 경우 — 어느 입력칸인지 서버가 알려 준다
+      if (err instanceof ApiError && err.code === "TEMPLATE_AD_COPY_NOT_ALLOWED") {
+        const d = err.details as { field?: string; found?: string } | undefined;
+        const field = d?.field === "subject" ? "subject" : "body";
+        setError(field, { message: `${err.message}${d?.found ? ` (${d.found})` : ""}` });
+        return;
+      }
       toast.error(err instanceof ApiError ? err.message : "저장에 실패했습니다.");
     },
   });
@@ -115,7 +129,9 @@ export function TemplateForm(props: TemplateFormProps) {
       return;
     }
     const el = textareaRef.current;
-    if (el && document.activeElement === el) {
+    // 버튼을 누르는 순간 포커스가 버튼으로 옮겨가 activeElement 는 textarea 가 아니지만, selectionStart 는 blur 뒤에도
+    // 마지막 커서 위치를 유지한다 — 포커스를 조건으로 걸면 항상 본문 끝에 붙는다
+    if (el) {
       const start = el.selectionStart ?? body.length;
       const end = el.selectionEnd ?? body.length;
       const next = body.slice(0, start) + token + body.slice(end);
@@ -130,6 +146,15 @@ export function TemplateForm(props: TemplateFormProps) {
   }
 
   async function handleImageUpload(blobInfo: UploadBlobInfo): Promise<string> {
+    // 서버 규칙(API_SPEC 5장: 5MB, jpg/png/gif)을 먼저 확인하고, 실패하면 TinyMCE 가 본문에 남긴 blob: 이미지를 지우게
+    // { remove: true } 로 거절한다 — 그대로 두면 깨진 이미지가 본문에 저장된다
+    const blob = blobInfo.blob();
+    if (!["image/jpeg", "image/png", "image/gif"].includes(blob.type)) {
+      return Promise.reject({ message: "jpg, png, gif 이미지만 올릴 수 있습니다.", remove: true });
+    }
+    if (blob.size > 5 * 1024 * 1024) {
+      return Promise.reject({ message: "이미지는 5MB 이하만 올릴 수 있습니다.", remove: true });
+    }
     const formData = new FormData();
     formData.append("file", blobInfo.blob(), blobInfo.filename());
     const result = await api<{ url: string }>("/api/v1/files/images", {
@@ -171,6 +196,8 @@ export function TemplateForm(props: TemplateFormProps) {
                         field.onChange(next);
                         // EMAIL 은 HTML, SMS 는 평문이라 채널을 바꾸면 본문이 섞이지 않게 비운다
                         setValue("body", "", { shouldDirty: true });
+                        // 채널을 바꾸면 이전 채널 전용 입력(메일 제목)도 함께 비운다
+                        setValue("subject", "", { shouldDirty: true });
                       }}
                     >
                       <SelectTrigger id="channel" className="w-full">
@@ -272,7 +299,8 @@ export function TemplateForm(props: TemplateFormProps) {
                     smsOverLimit ? "text-sm text-destructive" : "text-sm text-muted-foreground"
                   }
                 >
-                  {smsBytes} / {SMS_BYTE_LIMIT} 바이트{adYn === "Y" && " ((광고)·발신자·수신거부 문구 포함)"}
+                  {smsBytes} / {SMS_BYTE_LIMIT} 바이트
+                  {adYn === "Y" && " ((광고)·발신자·수신거부 문구 포함)"}
                   {smsOverLimit && " — 초과 시 LMS로 발송됩니다"}
                 </p>
               </>
