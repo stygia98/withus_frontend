@@ -30,6 +30,15 @@ export const queryKeys = {
   },
   campaigns: {
     all: ["campaigns"] as const,
+    list: (filter: {
+      type?: "ONE_TIME" | "WORKFLOW";
+      status?: "DRAFT" | "SCHEDULED" | "ACTIVE" | "PAUSED" | "COMPLETED";
+      page: number;
+      size: number;
+    }) => ["campaigns", "list", filter] as const,
+    detail: (campaignId: number) => ["campaigns", "detail", campaignId] as const,
+    estimate: (campaignId: number, startAt: string) =>
+      ["campaigns", "detail", campaignId, "estimate", startAt] as const,
   },
   // 팀원3: tracking, coupon, ai
   dashboard: {
