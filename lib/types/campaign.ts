@@ -19,6 +19,23 @@ export type Campaign = {
   updatedAt: string;
 };
 
+// 백엔드 campaign.dto.CampaignEstimateResponse — reason·nextAvailableAt 은 allowed=false 일 때만 온다
+export type CampaignEstimate = {
+  targetCount: number;
+  pendingBacklog: number;
+  ratePerSecond: number;
+  expectedEndAt: string;
+  adYn: "Y" | "N";
+  allowed: boolean;
+  reason?: string;
+  nextAvailableAt?: string;
+};
+
+export const TRIGGER_TYPE_LABEL: Record<TriggerType, string> = {
+  SEGMENT_SCHEDULED: "예약 시각에 세그먼트 전체 시작",
+  CUSTOMER_REGISTERED: "신규 고객 등록 시 시작",
+};
+
 export const CAMPAIGN_TYPE_LABEL: Record<CampaignType, string> = {
   ONE_TIME: "일회성",
   WORKFLOW: "워크플로우",

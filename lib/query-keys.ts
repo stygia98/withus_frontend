@@ -58,6 +58,8 @@ export const queryKeys = {
   coupons: {
     all: ["coupons"] as const,
     list: (page: number) => ["coupons", "list", page] as const,
+    // 캠페인 폼의 쿠폰 선택용 전체 목록 — 쿠폰 목록 화면(페이지 크기 20)과 캐시가 겹치지 않게 분리
+    options: ["coupons", "options"] as const,
     // 고객 공개 페이지 /c/[token] — 관리자 쿠폰 캐시와 섞이지 않게 별도 키
     publicCard: (token: string) => ["public-coupon", token] as const,
   },

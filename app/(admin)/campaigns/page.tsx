@@ -144,7 +144,7 @@ export default function CampaignsPage() {
           {data?.content.map((campaign) => (
             <TableRow key={campaign.campaignId}>
               <TableCell>
-                <Link href={`/campaigns/${campaign.campaignId}`} className="hover:underline">
+                <Link href={`/campaigns/${campaign.campaignId}/edit`} className="hover:underline">
                   {campaign.name}
                 </Link>
               </TableCell>
