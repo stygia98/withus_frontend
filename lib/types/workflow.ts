@@ -38,3 +38,26 @@ export const NODE_TYPE_LABEL: Record<NodeType, string> = {
 
 /** 사용자가 직접 추가할 수 있는 노드 (TRIGGER 는 하나만 있고 END 는 경로 끝에 자동으로 붙는다) */
 export const ADDABLE_NODE_TYPES: NodeType[] = ["WAIT", "CONDITION", "SEND_EMAIL", "SEND_SMS"];
+
+export type InstanceStatus = "WAITING" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED";
+
+/** GET /campaigns/{id}/instances 의 한 줄 (고객 개인정보 없음) */
+export type WorkflowInstance = {
+  instanceId: number;
+  customerId: number;
+  currentStepId: number;
+  status: InstanceStatus;
+  nextRunAt: string | null;
+  retryCount: number;
+  lastError: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const INSTANCE_STATUS_LABEL: Record<InstanceStatus, string> = {
+  WAITING: "대기",
+  RUNNING: "실행 중",
+  COMPLETED: "완료",
+  FAILED: "실패",
+  CANCELLED: "취소",
+};
