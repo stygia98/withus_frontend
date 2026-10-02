@@ -1,7 +1,6 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
 import { X } from "lucide-react";
 import { useState } from "react";
 
@@ -19,11 +18,10 @@ import {
 import { ApiError, api, type Page } from "@/lib/api-client";
 import { type Coupon, type CouponIssue, ISSUE_STATUS_LABEL, formatDiscount } from "@/lib/coupon";
 import { formatCount } from "@/lib/dashboard";
+import { formatDateTime } from "@/lib/datetime";
 import { queryKeys } from "@/lib/query-keys";
 
 const PAGE_SIZE = 20;
-
-const dateTime = (iso: string) => format(parseISO(iso), "yyyy.MM.dd HH:mm");
 
 /**
  * 쿠폰 하나의 발급 현황 (API_SPEC 7장 GET /coupons/{id}/issues, 권한 O M).
@@ -31,7 +29,7 @@ const dateTime = (iso: string) => format(parseISO(iso), "yyyy.MM.dd HH:mm");
  */
 export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose: () => void }) {
   const [page, setPage] = useState(0);
-  const { data, error, isPending } = useQuery({
+  const { data, error, isPending, refetch, isFetching, errorUpdateCount } = useQuery({
     queryKey: queryKeys.coupons.issues(coupon.couponId, page),
     queryFn: () =>
       api<Page<CouponIssue>>(
@@ -40,6 +38,7 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
     placeholderData: keepPreviousData,
     retry: (count, err) => !(err instanceof ApiError && err.status === 403) && count < 2,
   });
+  const forbidden = error instanceof ApiError && error.status === 403;
 
   return (
     <Card id="coupon-issues-panel" aria-label={`${coupon.name} 발급 현황`}>
@@ -57,11 +56,20 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
       </CardHeader>
       <CardContent>
         {error ? (
-          <p className="text-destructive text-sm">
-            {error instanceof ApiError && error.status === 403
-              ? "발급 현황은 OWNER·MANAGER만 볼 수 있습니다."
-              : "발급 현황을 불러오지 못했습니다."}
-          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* key 를 바꿔 다시 그려야 재시도가 또 실패했을 때 스크린리더가 문구를 다시 읽는다 */}
+            <p key={errorUpdateCount} role="alert" className="text-destructive text-sm">
+              {forbidden
+                ? "발급 현황은 OWNER·MANAGER만 볼 수 있습니다."
+                : "발급 현황을 불러오지 못했습니다."}
+            </p>
+            {/* 권한 문제는 다시 시도해도 같아서 버튼을 두지 않는다 */}
+            {!forbidden && (
+              <Button variant="outline" size="sm" disabled={isFetching} onClick={() => refetch()}>
+                다시 시도
+              </Button>
+            )}
+          </div>
         ) : (
           <Table>
             <TableHeader>
@@ -88,9 +96,9 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
                         #{issue.customerId}
                       </span>
                     </TableCell>
-                    <TableCell className="tabular-nums">{dateTime(issue.issuedAt)}</TableCell>
+                    <TableCell className="tabular-nums">{formatDateTime(issue.issuedAt)}</TableCell>
                     <TableCell className="tabular-nums">
-                      {issue.usedAt ? dateTime(issue.usedAt) : "–"}
+                      {issue.usedAt ? formatDateTime(issue.usedAt) : "–"}
                     </TableCell>
                     <TableCell>
                       <Badge variant={issue.status === "USED" ? "secondary" : "outline"}>
@@ -103,17 +111,18 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
             </TableBody>
           </Table>
         )}
-        {data && data.totalPages > 1 && (
+        {/* 페이지 조회가 실패해 data 가 없어도 이전 페이지로 돌아갈 수 있게 한다 */}
+        {((data && data.totalPages > 1) || (error && !forbidden && page > 0)) && (
           <nav aria-label="발급 현황 페이지" className="mt-4 flex items-center justify-end gap-2">
             <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
               이전
             </Button>
             <span className="text-muted-foreground text-sm tabular-nums">
-              {page + 1} / {data.totalPages}
+              {page + 1} / {data?.totalPages ?? "–"}
             </span>
             <Button
               variant="outline"
-              disabled={page + 1 >= data.totalPages}
+              disabled={!data || page + 1 >= data.totalPages}
               onClick={() => setPage((p) => p + 1)}
             >
               다음

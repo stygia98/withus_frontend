@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
 import { RefreshCw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
@@ -10,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ApiError, api } from "@/lib/api-client";
 import type { SendKpi } from "@/lib/dashboard";
 import { queryKeys } from "@/lib/query-keys";
+import { formatSeoul } from "@/lib/datetime";
 
 /** AI-03 응답 (API_SPEC 11장). input 은 요약을 만든 시점의 지표 */
 type CampaignReport = {
@@ -112,7 +112,7 @@ export function CampaignReportCard({
           <>
             <p className="leading-7 break-keep">{report.content}</p>
             <p className="text-muted-foreground text-xs">
-              {format(parseISO(report.createdAt), "yyyy.MM.dd HH:mm")} 기준 지표
+              {formatSeoul(report.createdAt, "yyyy.MM.dd HH:mm")} 기준 지표
               {report.model !== NO_LLM_MODEL && ` · ${report.model}`}
             </p>
             {stale && (

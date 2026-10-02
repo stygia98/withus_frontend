@@ -1,13 +1,12 @@
 "use client";
 
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
 import Link from "next/link";
-import { useState } from "react";
 
 import { PeriodFilter } from "@/components/analytics/period-filter";
 import { DailySendsChart } from "@/components/dashboard/daily-sends-chart";
 import { StatTile } from "@/components/dashboard/stat-tile";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApiError, api, type Page } from "@/lib/api-client";
 import {
@@ -20,28 +19,20 @@ import {
   formatCount,
   formatRate,
 } from "@/lib/dashboard";
-import { type DateRange, type Period, describeRange, rangeQuery, toRange } from "@/lib/period";
+import { formatSeoul } from "@/lib/datetime";
+import { type DateRange, describeRange, rangeQuery, usePeriodRange } from "@/lib/period";
 import { queryKeys } from "@/lib/query-keys";
 
 const EVENT_POLL_MS = 10_000;
 const EVENT_LIMIT = 20;
-
-const INITIAL_PERIOD: Period = { preset: "7", customFrom: "", customTo: "" };
 
 /**
  * 메인 대시보드 (PRD 4장 /dashboard, F-09). 기간 KPI(기본 최근 7일, 7/30일·직접 지정), 일별 발송, 발송 큐,
  * 활성 캠페인, 최근 이벤트. 기간 필터는 KPI 에만 걸린다(일별 발송은 자체 기간, 큐·이벤트는 실시간)
  */
 export function DashboardView() {
-  const [period, setPeriod] = useState<Period>(INITIAL_PERIOD);
-  const [range, setRange] = useState<DateRange>(() => toRange(INITIAL_PERIOD) ?? {});
-
-  function changePeriod(next: Period) {
-    setPeriod(next);
-    // 직접 지정 입력이 덜 끝났으면(null) 마지막으로 유효했던 기간을 그대로 쓴다
-    const nextRange = toRange(next);
-    if (nextRange) setRange(nextRange);
-  }
+  // '최근 7일'은 날짜를 보내지 않고 서버 기본값(서울 기준 오늘 포함 7일)을 쓴다
+  const { period, changePeriod, range, today } = usePeriodRange("7", "7");
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
@@ -54,7 +45,7 @@ export function DashboardView() {
         </div>
         <PeriodFilter value={period} onChange={changePeriod} presets={["7", "30", "CUSTOM"]} />
       </header>
-      <KpiRow range={range} />
+      <KpiRow range={range} today={today} />
       <div className="grid gap-6 lg:grid-cols-3">
         <DailySendsCard />
         <QueueCard />
@@ -67,25 +58,32 @@ export function DashboardView() {
   );
 }
 
-function KpiRow({ range }: { range: DateRange }) {
-  const { data, error } = useQuery({
-    queryKey: queryKeys.dashboard.summary(range.from, range.to),
+function KpiRow({ range, today }: { range: DateRange; today: string }) {
+  const { data, error, isFetching, refetch } = useQuery({
+    // today: 기간을 생략(서버 기본값 최근 7일)해도 서울 자정이 지나면 키가 바뀌어 새로 조회한다
+    queryKey: queryKeys.dashboard.summary(range.from, range.to, today),
     queryFn: () => api<DashboardSummary>(`/api/v1/dashboard/summary${rangeQuery(range)}`),
     placeholderData: keepPreviousData,
   });
-  // 기간 초과(최대 366일) 같은 입력 오류는 서버 메시지를 그대로 보여 준다
   if (error) {
+    // 기간 초과(최대 366일) 같은 입력 오류는 서버 메시지를 그대로, 그 밖의 오류는 다시 시도할 수 있게 한다
+    const invalidInput = error instanceof ApiError && error.status === 400;
     return (
-      <ErrorText>
-        {error instanceof ApiError && error.status === 400
-          ? error.message
-          : "KPI 를 불러오지 못했습니다."}
-      </ErrorText>
+      <div className="flex flex-wrap items-center gap-3">
+        <p role="alert" className="text-destructive text-sm">
+          {invalidInput ? error.message : "KPI 를 불러오지 못했습니다."}
+        </p>
+        {!invalidInput && (
+          <Button variant="outline" size="sm" disabled={isFetching} onClick={() => refetch()}>
+            다시 시도
+          </Button>
+        )}
+      </div>
     );
   }
   const kpi = data?.kpi;
   // 서버가 실제로 적용한 기간(생략 시 기본값)을 보여 준다
-  const shown = describeRange(data ? { from: data.from, to: data.to } : range);
+  const shown = data ? describeRange(data.from, data.to) : "불러오는 중";
   return (
     <section aria-label={`핵심 지표 (${shown})`} className="space-y-2">
       <p className="text-muted-foreground text-sm" aria-live="polite">
@@ -174,7 +172,7 @@ function QueueCard() {
             <QueueNumber label="발송 중" value={data?.sending} />
             <div className="text-muted-foreground col-span-3 mt-2 text-xs">
               {data?.expectedEndAt
-                ? `초당 ${data.ratePerSecond}건 · 예상 종료 ${format(parseISO(data.expectedEndAt), "M/d HH:mm")}`
+                ? `초당 ${data.ratePerSecond}건 · 예상 종료 ${formatSeoul(data.expectedEndAt, "M/d HH:mm")}`
                 : data
                   ? "남은 발송이 없습니다."
                   : ""}
@@ -266,7 +264,7 @@ function RecentEventsCard() {
             {data?.map((e) => (
               <li key={e.eventId} className="flex items-center gap-3 py-2">
                 <span className="text-muted-foreground w-24 shrink-0 tabular-nums">
-                  {format(parseISO(e.occurredAt), "M/d HH:mm:ss")}
+                  {formatSeoul(e.occurredAt, "M/d HH:mm:ss")}
                 </span>
                 <span className="w-10 shrink-0 font-medium">
                   {e.eventType === "OPEN" ? "오픈" : "클릭"}

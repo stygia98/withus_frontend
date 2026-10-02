@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -21,6 +20,7 @@ import {
 import { api, type Page } from "@/lib/api-client";
 import { type Coupon, formatDiscount, formatPeriod, periodStatus } from "@/lib/coupon";
 import { formatCount, formatRate } from "@/lib/dashboard";
+import { useSeoulToday } from "@/lib/period";
 import { queryKeys } from "@/lib/query-keys";
 
 const PAGE_SIZE = 20;
@@ -40,7 +40,8 @@ export function CouponListView() {
     queryFn: () => api<Page<Coupon>>(`/api/v1/coupons?page=${page}&size=${PAGE_SIZE}`),
   });
   // 관리자 화면은 한국 시간 브라우저 기준. 정확한 판정은 서버(발급·사용 처리)가 한다
-  const today = format(new Date(), "yyyy-MM-dd");
+  // 유효기간 판정은 서버와 같은 서울 날짜 기준 (브라우저 시간대가 달라도 같은 상태)
+  const today = useSeoulToday();
 
   function toggle(coupon: Coupon) {
     setSelected((cur) => (cur?.couponId === coupon.couponId ? null : coupon));
@@ -90,12 +91,14 @@ export function CouponListView() {
                     return (
                       <TableRow key={c.couponId} data-state={open ? "selected" : undefined}>
                         <TableCell className="font-medium">
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
+                            size="sm"
                             onClick={() => toggle(c)}
                             aria-expanded={open}
                             aria-controls="coupon-issues-panel"
-                            className="focus-visible:ring-ring/50 -mx-1 inline-flex items-center gap-1 rounded px-1 text-left outline-none hover:underline focus-visible:ring-3"
+                            className="h-auto min-h-7 py-1 text-left font-medium whitespace-normal"
                           >
                             {open ? (
                               <ChevronDown className="size-4 shrink-0" aria-hidden />
@@ -103,7 +106,7 @@ export function CouponListView() {
                               <ChevronRight className="size-4 shrink-0" aria-hidden />
                             )}
                             {c.name}
-                          </button>
+                          </Button>
                         </TableCell>
                         <TableCell>{formatDiscount(c)}</TableCell>
                         <TableCell className="tabular-nums">

@@ -31,7 +31,9 @@ export const queryKeys = {
   // 팀원3: tracking, coupon, ai
   dashboard: {
     all: ["dashboard"] as const,
-    summary: (from?: string, to?: string) => ["dashboard", "summary", from, to] as const,
+    // asOf: 서울 기준 오늘. 기간을 생략(서버 기본값)해도 자정이 지나면 키가 바뀌어 새로 조회한다
+    summary: (from: string | undefined, to: string | undefined, asOf: string) =>
+      ["dashboard", "summary", from, to, asOf] as const,
     dailySends: (days: number) => ["dashboard", "daily-sends", days] as const,
     queue: ["dashboard", "queue"] as const,
     events: ["dashboard", "events"] as const,
