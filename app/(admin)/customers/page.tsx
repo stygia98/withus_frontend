@@ -99,7 +99,7 @@ export default function CustomersPage() {
   }
 
   return (
-    <main className="space-y-4 p-6">
+    <div className="space-y-4 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">고객</h1>
         <div className="flex gap-2">
@@ -225,7 +225,7 @@ export default function CustomersPage() {
         onOpenChange={setCreating}
         onSaved={(c) => router.push(`/customers/${c.customerId}`)}
       />
-    </main>
+    </div>
   );
 }
 

@@ -26,7 +26,7 @@ export default function NewSegmentPage() {
   });
 
   return (
-    <main className="space-y-4 p-6">
+    <div className="space-y-4 p-6">
       <div>
         <Link href="/segments" className="text-sm text-muted-foreground hover:underline">
           ← 세그먼트 목록
@@ -39,6 +39,6 @@ export default function NewSegmentPage() {
         saveError={create.error}
         onSave={(form) => create.mutate(form)}
       />
-    </main>
+    </div>
   );
 }

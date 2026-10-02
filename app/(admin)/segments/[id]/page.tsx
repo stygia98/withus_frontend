@@ -56,21 +56,21 @@ export default function SegmentDetailPage() {
     },
   });
 
-  if (segment.isPending) return <main className="p-6 text-muted-foreground">불러오는 중...</main>;
+  if (segment.isPending) return <div className="p-6 text-muted-foreground">불러오는 중...</div>;
   if (segment.isError) {
     return (
-      <main className="space-y-2 p-6">
+      <div className="space-y-2 p-6">
         <p>세그먼트를 찾을 수 없습니다.</p>
         <Link href="/segments" className="text-sm underline">
           목록으로
         </Link>
-      </main>
+      </div>
     );
   }
   const s = segment.data;
 
   return (
-    <main className="space-y-4 p-6">
+    <div className="space-y-4 p-6">
       <div>
         <Link href="/segments" className="text-sm text-muted-foreground hover:underline">
           ← 세그먼트 목록
@@ -107,6 +107,6 @@ export default function SegmentDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </main>
+    </div>
   );
 }
