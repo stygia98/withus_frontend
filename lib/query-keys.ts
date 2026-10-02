@@ -10,6 +10,8 @@ export const queryKeys = {
     consentHistory: (id: number) => ["customers", "detail", id, "consent-history"] as const,
     activity: (id: number) => ["customers", "detail", id, "activity"] as const,
     purchases: (id: number) => ["customers", "detail", id, "purchases"] as const,
+    // 공개 수신거부 페이지 /unsubscribe/[token] — 관리자 고객 캐시와 섞이지 않게 별도 키
+    unsubscribe: (token: string) => ["public-unsubscribe", token] as const,
   },
   segments: {
     all: ["segments"] as const,
@@ -53,5 +55,8 @@ export const queryKeys = {
   // PL: auth
   auth: {
     me: ["auth", "me"] as const,
+  },
+  members: {
+    all: ["members"] as const,
   },
 };

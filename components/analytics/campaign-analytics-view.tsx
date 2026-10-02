@@ -22,18 +22,18 @@ export function CampaignAnalyticsView({ campaignId }: { campaignId: number }) {
   if (error) {
     const notFound = error instanceof ApiError && error.status === 404;
     return (
-      <main className="mx-auto max-w-6xl p-6">
+      <div className="mx-auto max-w-6xl p-6">
         <p className="text-destructive text-sm">
           {notFound ? "캠페인을 찾을 수 없습니다." : "캠페인 성과를 불러오지 못했습니다."}
         </p>
-      </main>
+      </div>
     );
   }
-  if (isPending) return <main className="mx-auto max-w-6xl p-6" />;
+  if (isPending) return <div className="mx-auto max-w-6xl p-6" />;
 
   const { kpi } = data;
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
       <header>
         <p className="text-muted-foreground text-sm">캠페인 성과</p>
         <h1 className="text-2xl font-semibold">{data.name}</h1>
@@ -76,6 +76,6 @@ export function CampaignAnalyticsView({ campaignId }: { campaignId: number }) {
         Apple Mail 개인정보 보호, Gmail 이미지 프록시 등으로 오픈율은 실제와 다를 수 있습니다.
         클릭률과 전환율을 함께 보세요. 봇 이벤트와 테스트·안내 발송은 모든 지표에서 뺍니다.
       </p>
-    </main>
+    </div>
   );
 }
