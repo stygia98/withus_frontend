@@ -1,6 +1,7 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 import { CampaignReportCard } from "@/components/analytics/campaign-report-card";
 import { FunnelChart } from "@/components/analytics/funnel-chart";
@@ -52,11 +53,22 @@ export function CampaignAnalyticsView({ campaignId }: { campaignId: number }) {
           <p className="text-muted-foreground text-sm">캠페인 성과</p>
           <h1 className="text-2xl font-semibold">{data?.name ?? name ?? "캠페인"}</h1>
         </div>
-        <PeriodFilter
-          value={period}
-          onChange={changePeriod}
-          presets={["ALL", "7", "30", "CUSTOM"]}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          {/* 목업 06: 다른 캠페인 성과로 가는 진입점 (성과 리포트 목록) */}
+          <Button
+            variant="outline"
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/analytics" />}
+          >
+            다른 캠페인
+          </Button>
+          <PeriodFilter
+            value={period}
+            onChange={changePeriod}
+            presets={["ALL", "7", "30", "CUSTOM"]}
+          />
+        </div>
       </header>
       {error ? (
         <div className="flex flex-wrap items-center gap-3">
