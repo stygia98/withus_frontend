@@ -45,6 +45,8 @@ export function TinyMceEditor({
         plugins: ["link", "lists", "image", "table"],
         toolbar:
           "undo redo | blocks | bold italic | bullist numlist | link image table | removeformat",
+        // 이미지·링크 주소를 상대 경로로 바꾸지 않는다 — 운영에서 메일의 이미지·자사 링크가 깨진다
+        convert_urls: false,
         branding: false,
         promotion: false,
         images_upload_handler: onImageUpload,

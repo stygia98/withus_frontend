@@ -7,7 +7,7 @@ export const TEMPLATE_PLACEHOLDERS = [
   { token: "{{couponUrl}}", label: "쿠폰 링크" },
 ] as const;
 
-/** SMS 바이트 수. 한글 등 비 ASCII 문자는 2바이트로 센다(치환 전 기준, 실제 발송 기준은 서버 미리보기가 계산) */
+/** SMS 바이트 수. 한글 등 비 ASCII 문자는 2바이트로 센다(치환 전 근사값) */
 export function smsByteLength(text: string): number {
   let bytes = 0;
   for (const ch of text) {
@@ -17,3 +17,12 @@ export function smsByteLength(text: string): number {
 }
 
 export const SMS_BYTE_LIMIT = 90;
+
+// 광고성 SMS 는 발송 시 "(광고)발신자 " 와 "\n무료수신거부 번호" 가 자동으로 붙는다(PRD 8.4, 백엔드 AdCopyInserter).
+// 실제 값은 서버 설정(withus.sender.*)이며 여기서는 시연 기본값으로 센다
+const AD_SMS_FIXED_TEXT = "(광고)위드어스 " + "\n무료수신거부 080-000-0000";
+
+/** 광고성이면 자동 삽입 문구의 바이트를 더한 SMS 바이트 수 */
+export function smsTotalBytes(body: string, adYn: "Y" | "N"): number {
+  return smsByteLength(body) + (adYn === "Y" ? smsByteLength(AD_SMS_FIXED_TEXT) : 0);
+}

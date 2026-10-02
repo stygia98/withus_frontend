@@ -27,7 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
-import { SMS_BYTE_LIMIT, TEMPLATE_PLACEHOLDERS, smsByteLength } from "@/lib/template-placeholders";
+import { SMS_BYTE_LIMIT, TEMPLATE_PLACEHOLDERS, smsTotalBytes } from "@/lib/template-placeholders";
 import type { Template } from "@/lib/types/template";
 
 // TinyMCE 는 SSR 되면 hydration mismatch 가 나므로 클라이언트에서만 불러온다 (W1-FE 1/4)
@@ -82,6 +82,7 @@ export function TemplateForm(props: TemplateFormProps) {
 
   const channel = watch("channel");
   const body = watch("body");
+  const adYn = watch("adYn");
   const bodyField = register("body");
 
   const mutation = useMutation({
@@ -138,7 +139,7 @@ export function TemplateForm(props: TemplateFormProps) {
     return result.url;
   }
 
-  const smsBytes = channel === "SMS" ? smsByteLength(body) : 0;
+  const smsBytes = channel === "SMS" ? smsTotalBytes(body, adYn) : 0;
   const smsOverLimit = smsBytes > SMS_BYTE_LIMIT;
   // 수정 차단 기준(백엔드 TemplateService.existsInUseByStatus)과 같다: 예약·활성·일시정지 캠페인이 쓰는 중
   const locked = props.mode === "edit" && props.template.inUse === true;
@@ -204,6 +205,11 @@ export function TemplateForm(props: TemplateFormProps) {
               />
             </div>
           </div>
+          {adYn === "Y" && (
+            <p className="text-sm text-muted-foreground">
+              (광고) 표기·발신자·수신거부 문구는 발송 시 자동으로 들어갑니다. 직접 입력하지 마세요.
+            </p>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="name">이름</Label>
@@ -266,7 +272,7 @@ export function TemplateForm(props: TemplateFormProps) {
                     smsOverLimit ? "text-sm text-destructive" : "text-sm text-muted-foreground"
                   }
                 >
-                  {smsBytes} / {SMS_BYTE_LIMIT} 바이트
+                  {smsBytes} / {SMS_BYTE_LIMIT} 바이트{adYn === "Y" && " ((광고)·발신자·수신거부 문구 포함)"}
                   {smsOverLimit && " — 초과 시 LMS로 발송됩니다"}
                 </p>
               </>
