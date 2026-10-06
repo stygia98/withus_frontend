@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { QueryError } from "@/components/common/QueryError";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,7 +42,7 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
   const [page, setPage] = useState(0);
   const apiStatus = status === "ALL" ? undefined : status;
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: queryKeys.campaigns.instances(campaignId, { status: apiStatus, page, size: SIZE }),
     queryFn: () => {
       const params = new URLSearchParams({ page: String(page), size: String(SIZE) });
@@ -91,6 +92,16 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-muted-foreground">
                   불러오는 중...
+                </TableCell>
+              </TableRow>
+            )}
+            {isError && (
+              <TableRow>
+                <TableCell colSpan={5}>
+                  <QueryError
+                    message="진행 현황을 불러오지 못했습니다."
+                    onRetry={() => refetch()}
+                  />
                 </TableCell>
               </TableRow>
             )}

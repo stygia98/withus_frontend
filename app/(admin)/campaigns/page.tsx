@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 
+import { QueryError } from "@/components/common/QueryError";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -58,7 +59,7 @@ export default function CampaignsPage() {
 
   const apiType = type === "ALL" ? undefined : (type as CampaignType);
   const apiStatus = status === "ALL" ? undefined : (status as CampaignStatus);
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: queryKeys.campaigns.list({ type: apiType, status: apiStatus, page, size: SIZE }),
     queryFn: () => {
       const params = new URLSearchParams({ page: String(page), size: String(SIZE) });
@@ -135,6 +136,16 @@ export default function CampaignsPage() {
             <TableRow>
               <TableCell colSpan={5} className="text-center text-muted-foreground">
                 불러오는 중...
+              </TableCell>
+            </TableRow>
+          )}
+          {isError && (
+            <TableRow>
+              <TableCell colSpan={5}>
+                <QueryError
+                  message="캠페인 목록을 불러오지 못했습니다."
+                  onRetry={() => refetch()}
+                />
               </TableCell>
             </TableRow>
           )}

@@ -38,17 +38,50 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
   // 예약되어 estimate·20:50 판정이 틀리므로, 서울 시각으로 보고 +09:00 을 직접 붙인다(CLAUDE.md 6장 3번)
   const startAt = mode === "NOW" ? nowIso : local ? `${local}:00+09:00` : null;
 
-  const { data: estimate, isFetching } = useQuery({
+  const fetchEstimate = (at: string) =>
+    api<CampaignEstimate>(
+      `/api/v1/campaigns/${campaign.campaignId}/estimate?startAt=${encodeURIComponent(at)}`,
+    );
+
+  const isPast = mode === "SCHEDULE" && startAt !== null && new Date(startAt) <= new Date();
+
+  const {
+    data: estimate,
+    isFetching,
+    isError: estimateError,
+    error: estimateErr,
+  } = useQuery({
     queryKey: queryKeys.campaigns.estimate(campaign.campaignId, startAt ?? ""),
-    queryFn: () =>
-      api<CampaignEstimate>(
-        `/api/v1/campaigns/${campaign.campaignId}/estimate?startAt=${encodeURIComponent(startAt!)}`,
-      ),
-    enabled: draft && startAt !== null,
+    queryFn: () => fetchEstimate(startAt!),
+    enabled: draft && startAt !== null && !isPast,
   });
+
+  // 버튼을 누르는 시점에 시작 시각과 estimate 를 다시 받아 확인한다 (화면의 estimate 는 오래됐을 수 있다)
+  async function confirmThen(run: () => void) {
+    const at = mode === "NOW" ? formatISO(new Date()) : startAt;
+    if (!at || (mode === "SCHEDULE" && new Date(at) <= new Date())) {
+      toast.error("예약 시각은 현재 이후여야 합니다.");
+      return;
+    }
+    try {
+      const fresh = await fetchEstimate(at);
+      if (!fresh.allowed) {
+        toast.error(
+          "광고성 메시지는 20:50 이후까지 이어질 수 없어 이 시각에는 시작할 수 없습니다.",
+        );
+        refresh();
+        return;
+      }
+    } catch (err) {
+      onError(err);
+      return;
+    }
+    run();
+  }
 
   function refresh() {
     queryClient.invalidateQueries({ queryKey: queryKeys.campaigns.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.activeCampaigns });
   }
 
   function onError(err: unknown) {
@@ -95,7 +128,12 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
     onError,
   });
 
-  const blocked = !estimate?.allowed || isFetching;
+  const blocked = !estimate?.allowed || isFetching || isPast;
+  // 서울 기준 현재 시각 (datetime-local min 용, "YYYY-MM-DDTHH:mm")
+  const minLocal = new Date()
+    .toLocaleString("sv-SE", { timeZone: "Asia/Seoul" })
+    .slice(0, 16)
+    .replace(" ", "T");
 
   if (!canManage) return null; // STAFF 는 조회만 (PRD 3장)
 
@@ -154,9 +192,18 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
               id="scheduledAt"
               type="datetime-local"
               value={local}
+              min={minLocal}
               onChange={(e) => setLocal(e.target.value)}
             />
+            {isPast && <p className="text-sm text-destructive">현재 이후 시각을 선택하세요.</p>}
           </div>
+        )}
+        {estimateError && (
+          <p className="text-sm text-destructive">
+            예상 시각을 계산하지 못했습니다.{" "}
+            {estimateErr instanceof ApiError ? estimateErr.message : ""} 캠페인 설정(템플릿 등)을
+            확인하세요.
+          </p>
         )}
 
         {startAt === null && (
@@ -180,11 +227,17 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
 
         <div className="flex justify-end">
           {mode === "NOW" ? (
-            <Button disabled={blocked || start.isPending} onClick={() => start.mutate()}>
+            <Button
+              disabled={blocked || start.isPending}
+              onClick={() => confirmThen(() => start.mutate())}
+            >
               지금 시작
             </Button>
           ) : (
-            <Button disabled={blocked || schedule.isPending} onClick={() => schedule.mutate()}>
+            <Button
+              disabled={blocked || schedule.isPending}
+              onClick={() => confirmThen(() => schedule.mutate())}
+            >
               예약하기
             </Button>
           )}

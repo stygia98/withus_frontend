@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
+import { QueryError } from "@/components/common/QueryError";
 import { CampaignForm } from "@/components/campaign/CampaignForm";
 import { SchedulePanel } from "@/components/campaign/SchedulePanel";
 import { Badge } from "@/components/ui/badge";
@@ -23,15 +24,18 @@ export default function EditCampaignPage() {
   const params = useParams<{ id: string }>();
   const campaignId = Number(params.id);
 
-  const { data, isLoading } = useQuery({
+  const validId = Number.isFinite(campaignId);
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: queryKeys.campaigns.detail(campaignId),
     queryFn: () => api<Campaign>(`/api/v1/campaigns/${campaignId}`),
-    enabled: Number.isFinite(campaignId),
+    enabled: validId,
   });
 
   return (
     <main className="mx-auto max-w-3xl space-y-4 p-6">
-      {isLoading && <p className="text-muted-foreground">불러오는 중...</p>}
+      {!validId && <p className="text-destructive">잘못된 캠페인 주소입니다.</p>}
+      {validId && isLoading && <p className="text-muted-foreground">불러오는 중...</p>}
+      {isError && <QueryError message="캠페인을 불러오지 못했습니다." onRetry={() => refetch()} />}
       {data && (
         <>
           <div className="flex items-center justify-between gap-2">

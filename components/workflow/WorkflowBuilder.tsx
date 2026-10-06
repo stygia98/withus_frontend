@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { NodeConfigEditor, type Option } from "./NodeConfigEditor";
 
+import { QueryError } from "@/components/common/QueryError";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -319,12 +320,14 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
 
 /** 워크플로우 캠페인의 단계 편집 (폼 기반, PRD 6.4). 서버 구조를 불러와 편집 상태로 옮긴다 */
 export function WorkflowBuilder({ campaign }: { campaign: Campaign }) {
-  const { data, isLoading } = useQuery({
+  const { data, isError, refetch } = useQuery({
     queryKey: queryKeys.campaigns.workflow(campaign.campaignId),
     queryFn: () => api<WorkflowResponse>(`/api/v1/campaigns/${campaign.campaignId}/workflow`),
   });
 
-  if (isLoading || !data) return <p className="text-muted-foreground">단계를 불러오는 중...</p>;
+  if (isError)
+    return <QueryError message="단계를 불러오지 못했습니다." onRetry={() => refetch()} />;
+  if (!data) return <p className="text-muted-foreground">단계를 불러오는 중...</p>;
 
   const initial =
     data.steps.length > 0 ? fromResponse(data.steps) : initialNodes(campaign.triggerType);
