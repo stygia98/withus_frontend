@@ -45,12 +45,39 @@ export type FunnelStage = {
 export type CampaignAnalytics = {
   campaignId: number;
   name: string;
+  /** 서버가 적용한 기간(요청값 그대로). 둘 다 null 이면 캠페인 전체 기간 */
+  from: string | null;
+  to: string | null;
   kpi: SendKpi;
   funnel: FunnelStage[];
 };
 
-/** 팀원2 캠페인 목록(GET /campaigns)에서 대시보드가 쓰는 필드만 */
-export type CampaignSummaryItem = { campaignId: number; name: string };
+export type CampaignType = "ONE_TIME" | "WORKFLOW";
+export type CampaignStatus = "DRAFT" | "SCHEDULED" | "ACTIVE" | "PAUSED" | "COMPLETED";
+
+/** 팀원2 캠페인 목록(GET /campaigns, API_SPEC 6장)에서 대시보드·성과 리포트 목록이 쓰는 필드만 */
+export type CampaignSummaryItem = {
+  campaignId: number;
+  name: string;
+  type: CampaignType;
+  status: CampaignStatus;
+  scheduledAt: string | null;
+  startedAt: string | null;
+  endedAt: string | null;
+};
+
+export const CAMPAIGN_TYPE_LABEL: Record<CampaignType, string> = {
+  ONE_TIME: "일회성",
+  WORKFLOW: "워크플로우",
+};
+
+export const CAMPAIGN_STATUS_LABEL: Record<CampaignStatus, string> = {
+  DRAFT: "초안",
+  SCHEDULED: "예약",
+  ACTIVE: "진행 중",
+  PAUSED: "일시정지",
+  COMPLETED: "완료",
+};
 
 export const FUNNEL_LABEL: Record<FunnelStage["stage"], string> = {
   ATTEMPTED: "발송 시도",
@@ -83,6 +110,9 @@ export type CampaignSteps = {
   campaignId: number;
   name: string;
   type: "ONE_TIME" | "WORKFLOW";
+  /** 서버가 적용한 기간(요청값 그대로). 둘 다 null 이면 캠페인 전체 기간 */
+  from: string | null;
+  to: string | null;
   steps: StepAnalytics[];
 };
 

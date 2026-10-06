@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
 import { RefreshCw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
@@ -10,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ApiError, api } from "@/lib/api-client";
 import type { SendKpi } from "@/lib/dashboard";
 import { queryKeys } from "@/lib/query-keys";
+import { formatSeoul } from "@/lib/datetime";
 
 /** AI-03 응답 (API_SPEC 11장). input 은 요약을 만든 시점의 지표 */
 type CampaignReport = {
@@ -33,7 +33,14 @@ function errorMessage(err: unknown): string {
 }
 
 /** AI-03 성과 요약 카드 (PRD 5.3: ai_report 저장, 재생성 버튼). 현재 지표와 요약 시점 지표가 다르면 재생성을 권한다 */
-export function CampaignReportCard({ campaignId, kpi }: { campaignId: number; kpi: SendKpi }) {
+export function CampaignReportCard({
+  campaignId,
+  kpi,
+}: {
+  campaignId: number;
+  /** 캠페인 전체 기간 지표. 기간 필터가 걸려 있으면 null — 요약과 비교하지 않는다 */
+  kpi: SendKpi | null;
+}) {
   const queryClient = useQueryClient();
   const {
     data: report,
@@ -57,6 +64,7 @@ export function CampaignReportCard({ campaignId, kpi }: { campaignId: number; kp
   // 요약 이후 발송·오픈·클릭·전환이 늘었으면 숫자가 어긋난다
   const stale =
     report != null &&
+    kpi != null &&
     (report.input.kpi.sent !== kpi.sent ||
       report.input.kpi.uniqueOpens !== kpi.uniqueOpens ||
       report.input.kpi.uniqueClicks !== kpi.uniqueClicks ||
@@ -71,7 +79,8 @@ export function CampaignReportCard({ campaignId, kpi }: { campaignId: number; kp
             AI 성과 요약
           </CardTitle>
           <CardDescription>
-            집계 지표만 AI에 보내 5문장 이내로 요약합니다. 고객 개인정보는 보내지 않습니다.
+            캠페인 전체 기간의 집계 지표만 AI에 보내 5문장 이내로 요약합니다. 고객 개인정보는 보내지
+            않습니다.
           </CardDescription>
         </div>
         {report != null && (
@@ -103,7 +112,7 @@ export function CampaignReportCard({ campaignId, kpi }: { campaignId: number; kp
           <>
             <p className="leading-7 break-keep">{report.content}</p>
             <p className="text-muted-foreground text-xs">
-              {format(parseISO(report.createdAt), "yyyy.MM.dd HH:mm")} 기준 지표
+              {formatSeoul(report.createdAt, "yyyy.MM.dd HH:mm")} 기준 지표
               {report.model !== NO_LLM_MODEL && ` · ${report.model}`}
             </p>
             {stale && (

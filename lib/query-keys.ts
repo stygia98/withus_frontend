@@ -46,23 +46,31 @@ export const queryKeys = {
   // 팀원3: tracking, coupon, ai
   dashboard: {
     all: ["dashboard"] as const,
-    summary: (from?: string, to?: string) => ["dashboard", "summary", from, to] as const,
+    // asOf: 서울 기준 오늘. 기간을 생략(서버 기본값)해도 자정이 지나면 키가 바뀌어 새로 조회한다
+    summary: (from: string | undefined, to: string | undefined, asOf: string) =>
+      ["dashboard", "summary", from, to, asOf] as const,
     dailySends: (days: number) => ["dashboard", "daily-sends", days] as const,
     queue: ["dashboard", "queue"] as const,
     events: ["dashboard", "events"] as const,
     activeCampaigns: ["dashboard", "active-campaigns"] as const,
   },
   analytics: {
-    campaign: (campaignId: number) => ["analytics", "campaign", campaignId] as const,
+    // 성과 리포트 목록 (/analytics) — 팀원2 GET /campaigns 를 상태 필터·페이지로 조회
+    campaignList: (status: string | undefined, page: number) =>
+      ["analytics", "campaign-list", status, page] as const,
+    campaign: (campaignId: number, from?: string, to?: string) =>
+      ["analytics", "campaign", campaignId, from, to] as const,
     // AI-03 성과 요약 (최근 1건)
     report: (campaignId: number) => ["analytics", "report", campaignId] as const,
-    steps: (campaignId: number) => ["analytics", "steps", campaignId] as const,
+    steps: (campaignId: number, from?: string, to?: string) =>
+      ["analytics", "steps", campaignId, from, to] as const,
   },
   coupons: {
     all: ["coupons"] as const,
     list: (page: number) => ["coupons", "list", page] as const,
     // 캠페인 폼의 쿠폰 선택용 전체 목록 — 쿠폰 목록 화면(페이지 크기 20)과 캐시가 겹치지 않게 분리
     options: ["coupons", "options"] as const,
+    issues: (couponId: number, page: number) => ["coupons", "issues", couponId, page] as const,
     // 고객 공개 페이지 /c/[token] — 관리자 쿠폰 캐시와 섞이지 않게 별도 키
     publicCard: (token: string) => ["public-coupon", token] as const,
   },

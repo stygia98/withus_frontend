@@ -148,21 +148,23 @@ export function CouponForm() {
                 {TYPE_OPTIONS.map((o) => {
                   const selected = discountType === o.value;
                   return (
-                    <button
+                    <Button
                       key={o.value}
                       type="button"
+                      variant="outline"
                       role="radio"
                       aria-checked={selected}
                       onClick={() => setValue("discountType", o.value, { shouldValidate: false })}
                       className={cn(
-                        "rounded-lg border p-3 text-left transition-colors",
-                        "focus-visible:ring-ring/50 outline-none focus-visible:ring-3",
-                        selected ? "border-primary bg-primary/5" : "hover:bg-muted",
+                        "h-auto flex-col items-start gap-0.5 p-3 text-left whitespace-normal",
+                        selected && "border-primary bg-primary/5 hover:bg-primary/10",
                       )}
                     >
                       <span className="block text-sm font-medium">{o.label}</span>
-                      <span className="text-muted-foreground block text-xs">{o.hint}</span>
-                    </button>
+                      <span className="text-muted-foreground block text-xs font-normal">
+                        {o.hint}
+                      </span>
+                    </Button>
                   );
                 })}
               </div>
