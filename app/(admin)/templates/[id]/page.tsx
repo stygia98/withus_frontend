@@ -19,12 +19,14 @@ export default function EditTemplatePage() {
   const router = useRouter();
   const templateId = Number(params.id);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  // 삭제를 시작하면 상세 조회를 끈다 — 캐시에서 뺀 뒤 마운트된 화면이 다시 요청해 404 가 나는 것을 막는다
+  const [deleting, setDeleting] = useState(false);
   const { duplicate, remove } = useTemplateActions();
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: queryKeys.templates.detail(templateId),
     queryFn: () => api<Template>(`/api/v1/templates/${templateId}`),
-    enabled: Number.isFinite(templateId),
+    enabled: Number.isFinite(templateId) && !deleting,
   });
 
   return (
@@ -63,11 +65,13 @@ export default function EditTemplatePage() {
       <DeleteTemplateDialog
         templateName={deleteOpen ? (data?.name ?? null) : null}
         pending={remove.isPending}
-        onConfirm={() =>
+        onConfirm={() => {
+          setDeleting(true);
           remove.mutate(templateId, {
             onSuccess: () => router.push("/templates"),
-          })
-        }
+            onError: () => setDeleting(false), // 사용 중(409) 등 실패하면 화면을 그대로 둔다
+          });
+        }}
         onOpenChange={setDeleteOpen}
       />
     </main>
