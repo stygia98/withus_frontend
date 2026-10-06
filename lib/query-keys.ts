@@ -27,6 +27,9 @@ export const queryKeys = {
     list: (filter: { channel?: "EMAIL" | "SMS"; page: number; size: number }) =>
       ["templates", "list", filter] as const,
     detail: (templateId: number) => ["templates", "detail", templateId] as const,
+    // 미리보기는 저장된 본문 기준이라 수정 시각이 바뀌면 다시 받는다
+    preview: (templateId: number, updatedAt: string) =>
+      ["templates", "preview", templateId, updatedAt] as const,
   },
   campaigns: {
     all: ["campaigns"] as const,

@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { DeleteTemplateDialog } from "@/components/template/DeleteTemplateDialog";
 import { TemplateForm } from "@/components/template/TemplateForm";
+import { TemplatePreviewPanel } from "@/components/template/TemplatePreviewPanel";
 import { useTemplateActions } from "@/components/template/useTemplateActions";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api-client";
@@ -50,6 +51,7 @@ export default function EditTemplatePage() {
             </Button>
           </div>
           <TemplateForm mode="edit" templateId={templateId} template={data} />
+          <TemplatePreviewPanel template={data} />
         </>
       )}
 
