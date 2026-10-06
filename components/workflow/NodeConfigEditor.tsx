@@ -90,7 +90,7 @@ export function NodeConfigEditor({
           onChange={(unit) => onChange({ unit })}
         />
         <span className="text-xs text-muted-foreground">
-          직전 발송이 실제로 나간 시각부터 셉니다.
+          직전 발송이 실제로 나간 시각부터 세며, 엔진이 1분마다 확인하므로 최대 1분 더 걸릴 수 있습니다.
         </span>
       </div>
     );

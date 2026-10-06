@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { NodeConfigEditor, type Option } from "./NodeConfigEditor";
@@ -91,6 +91,8 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
   const [nodes, setNodes] = useState(initial);
   const [result, setResult] = useState<ValidationResult | null>(null);
   const [violations, setViolations] = useState<string[]>([]);
+  // 노드를 고치면 이전 검사 결과·위반 목록은 더 이상 맞지 않는다
+  useEffect(() => setViolations([]), [nodes]);
   const rows = flatten(nodes);
   const full = nodes.length >= NODE_LIMIT;
 
