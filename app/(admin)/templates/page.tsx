@@ -25,6 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
+import { formatDateTime } from "@/lib/datetime";
 import { queryKeys } from "@/lib/query-keys";
 import type { Channel, Template } from "@/lib/types/template";
 
@@ -121,7 +122,7 @@ export default function TemplatesPage() {
                   {template.adYn === "Y" ? "광고" : "비광고"}
                 </Badge>
               </TableCell>
-              <TableCell>{new Date(template.updatedAt).toLocaleString("ko-KR")}</TableCell>
+              <TableCell>{formatDateTime(template.updatedAt)}</TableCell>
               <TableCell className="flex justify-end gap-1">
                 <Button
                   variant="ghost"
