@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
+import { formatDateTime } from "@/lib/datetime";
 import { queryKeys } from "@/lib/query-keys";
 import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import {
@@ -170,11 +171,9 @@ export default function CampaignsPage() {
                 </Badge>
               </TableCell>
               <TableCell>
-                {campaign.scheduledAt
-                  ? new Date(campaign.scheduledAt).toLocaleString("ko-KR")
-                  : "-"}
+                {campaign.scheduledAt ? formatDateTime(campaign.scheduledAt) : "-"}
               </TableCell>
-              <TableCell>{new Date(campaign.updatedAt).toLocaleString("ko-KR")}</TableCell>
+              <TableCell>{formatDateTime(campaign.updatedAt)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

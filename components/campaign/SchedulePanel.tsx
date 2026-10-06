@@ -10,15 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ApiError, api } from "@/lib/api-client";
+import { formatDateTime } from "@/lib/datetime";
 import { queryKeys } from "@/lib/query-keys";
 import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import type { Campaign, CampaignEstimate } from "@/lib/types/campaign";
 
 type Mode = "NOW" | "SCHEDULE";
-
-function fmt(iso: string) {
-  return new Date(iso).toLocaleString("ko-KR");
-}
 
 /**
  * 일회성 캠페인의 즉시 시작·예약·예약 취소 (API_SPEC 6장). 시작 시각을 정하면 estimate 로 예상 종료 시각을 보여주고,
@@ -87,7 +84,7 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
   function onError(err: unknown) {
     if (err instanceof ApiError && err.code === "CAMPAIGN_SEND_WINDOW_EXCEEDED") {
       const next = (err.details as { nextAvailableAt?: string } | undefined)?.nextAvailableAt;
-      toast.error(`${err.message}${next ? ` 가능한 시각: ${fmt(next)}` : ""}`);
+      toast.error(`${err.message}${next ? ` 가능한 시각: ${formatDateTime(next)}` : ""}`);
       return;
     }
     toast.error(err instanceof ApiError ? err.message : "요청에 실패했습니다.");
@@ -145,7 +142,7 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm">
-            {campaign.scheduledAt ? fmt(campaign.scheduledAt) : "-"} 에 시작됩니다.
+            {campaign.scheduledAt ? formatDateTime(campaign.scheduledAt) : "-"} 에 시작됩니다.
           </p>
           <div className="flex gap-2">
             <Button variant="outline" disabled={cancel.isPending} onClick={() => cancel.mutate()}>
@@ -215,11 +212,12 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
               대상 {estimate.targetCount.toLocaleString()}명 · 대기 중{" "}
               {estimate.pendingBacklog.toLocaleString()}건 · 초당 {estimate.ratePerSecond}건
             </p>
-            <p>예상 종료: {fmt(estimate.expectedEndAt)}</p>
+            <p>예상 종료: {formatDateTime(estimate.expectedEndAt)}</p>
             {!estimate.allowed && (
               <p className="mt-2 font-medium text-destructive">
                 광고성 메시지는 20:50 이후까지 이어질 수 없어 이 시각에는 시작할 수 없습니다.
-                {estimate.nextAvailableAt && ` 가능한 시각: ${fmt(estimate.nextAvailableAt)}`}
+                {estimate.nextAvailableAt &&
+                  ` 가능한 시각: ${formatDateTime(estimate.nextAvailableAt)}`}
               </p>
             )}
           </div>
