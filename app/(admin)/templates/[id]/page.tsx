@@ -5,11 +5,12 @@ import { Copy, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { QueryError } from "@/components/common/QueryError";
 import { DeleteTemplateDialog } from "@/components/template/DeleteTemplateDialog";
 import { TemplateForm } from "@/components/template/TemplateForm";
 import { useTemplateActions } from "@/components/template/useTemplateActions";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/api-client";
+import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import type { Template } from "@/lib/types/template";
 
@@ -20,7 +21,7 @@ export default function EditTemplatePage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const { duplicate, remove } = useTemplateActions();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: queryKeys.templates.detail(templateId),
     queryFn: () => api<Template>(`/api/v1/templates/${templateId}`),
     enabled: Number.isFinite(templateId),
@@ -29,6 +30,12 @@ export default function EditTemplatePage() {
   return (
     <main className="mx-auto max-w-3xl space-y-4 p-6">
       {isLoading && <p className="text-muted-foreground">불러오는 중...</p>}
+      {isError && (
+        <QueryError
+          message={error instanceof ApiError ? error.message : "템플릿을 불러오지 못했습니다."}
+          onRetry={() => refetch()}
+        />
+      )}
       {data && (
         <>
           <div className="flex justify-end gap-2">
