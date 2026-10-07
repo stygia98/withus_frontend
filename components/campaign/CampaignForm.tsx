@@ -113,6 +113,9 @@ export function CampaignForm(props: CampaignFormProps) {
         body: JSON.stringify({ segmentId: Number(segmentId) }),
       }).then((preview) => preview.defaultValueCount),
     enabled: type === "ONE_TIME" && !!selectedTemplate && !!segmentId,
+    // 백엔드가 대상 전체를 조회해 세는 호출이라 탭 전환마다 반복하지 않는다(PR #23 리뷰)
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   // 수정은 DRAFT 만 가능하다(백엔드 CAMPAIGN_INVALID_STATUS). 그 외 상태는 폼을 잠근다
