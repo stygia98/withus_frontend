@@ -26,8 +26,10 @@ export function useTemplateActions() {
   const remove = useMutation({
     mutationFn: (templateId: number) =>
       api<null>(`/api/v1/templates/${templateId}`, { method: "DELETE" }),
-    onSuccess: () => {
+    onSuccess: (_, templateId) => {
       toast.success("템플릿을 삭제했습니다.");
+      // 방금 지운 상세는 다시 요청하지 않고(404) 캐시에서 뺀다
+      queryClient.removeQueries({ queryKey: queryKeys.templates.detail(templateId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
     },
     onError: (err) => {

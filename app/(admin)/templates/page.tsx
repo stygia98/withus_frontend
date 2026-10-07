@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Copy, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { DeleteTemplateDialog } from "@/components/template/DeleteTemplateDialog";
 import { useTemplateActions } from "@/components/template/useTemplateActions";
@@ -52,6 +52,11 @@ export default function TemplatesPage() {
       return api<Page<Template>>(`/api/v1/templates?${params}`);
     },
   });
+
+  // 마지막 페이지의 마지막 한 건을 지우면 현재 페이지가 범위를 벗어난다 — 마지막 페이지로 당긴다
+  useEffect(() => {
+    if (data && page > 0 && page >= data.totalPages) setPage(Math.max(data.totalPages - 1, 0));
+  }, [data, page]);
 
   function onChannelChange(next: ChannelFilter) {
     setChannel(next);

@@ -5,12 +5,13 @@ import { Copy, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { QueryError } from "@/components/common/QueryError";
 import { DeleteTemplateDialog } from "@/components/template/DeleteTemplateDialog";
 import { TemplateForm } from "@/components/template/TemplateForm";
 import { TemplatePreviewPanel } from "@/components/template/TemplatePreviewPanel";
 import { useTemplateActions } from "@/components/template/useTemplateActions";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/api-client";
+import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import type { Template } from "@/lib/types/template";
 
@@ -19,17 +20,25 @@ export default function EditTemplatePage() {
   const router = useRouter();
   const templateId = Number(params.id);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  // 삭제를 시작하면 상세 조회를 끈다 — 캐시에서 뺀 뒤 마운트된 화면이 다시 요청해 404 가 나는 것을 막는다
+  const [deleting, setDeleting] = useState(false);
   const { duplicate, remove } = useTemplateActions();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: queryKeys.templates.detail(templateId),
     queryFn: () => api<Template>(`/api/v1/templates/${templateId}`),
-    enabled: Number.isFinite(templateId),
+    enabled: Number.isFinite(templateId) && !deleting,
   });
 
   return (
     <main className="mx-auto max-w-3xl space-y-4 p-6">
       {isLoading && <p className="text-muted-foreground">불러오는 중...</p>}
+      {isError && (
+        <QueryError
+          message={error instanceof ApiError ? error.message : "템플릿을 불러오지 못했습니다."}
+          onRetry={() => refetch()}
+        />
+      )}
       {data && (
         <>
           <div className="flex justify-end gap-2">
@@ -58,11 +67,13 @@ export default function EditTemplatePage() {
       <DeleteTemplateDialog
         templateName={deleteOpen ? (data?.name ?? null) : null}
         pending={remove.isPending}
-        onConfirm={() =>
+        onConfirm={() => {
+          setDeleting(true);
           remove.mutate(templateId, {
             onSuccess: () => router.push("/templates"),
-          })
-        }
+            onError: () => setDeleting(false), // 사용 중(409) 등 실패하면 화면을 그대로 둔다
+          });
+        }}
         onOpenChange={setDeleteOpen}
       />
     </main>
