@@ -30,6 +30,9 @@ export const queryKeys = {
     // 미리보기는 저장된 본문 기준이라 수정 시각이 바뀌면 다시 받는다
     preview: (templateId: number, updatedAt: string) =>
       ["templates", "preview", templateId, updatedAt] as const,
+    // 캠페인 폼의 "대상 n명 중 m명은 기본값" — 세그먼트가 바뀌면 다시 받는다
+    defaultValueCount: (templateId: number, segmentId: number, updatedAt: string) =>
+      ["templates", "default-value-count", templateId, segmentId, updatedAt] as const,
   },
   campaigns: {
     all: ["campaigns"] as const,

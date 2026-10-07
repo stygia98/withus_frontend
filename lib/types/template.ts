@@ -23,4 +23,6 @@ export type TemplatePreview = {
   smsBytes: number | null;
   /** 90바이트 초과면 LMS */
   smsType: "SMS" | "LMS" | null;
+  /** 요청에 segmentId 를 보냈을 때만 채워진다. usingDefault 는 치환 값이 없어 기본값으로 나가는 대상 수 (PRD F-04) */
+  defaultValueCount: { total: number; usingDefault: number } | null;
 };
