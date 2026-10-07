@@ -30,7 +30,7 @@ import {
   type CampaignType,
   type TriggerType,
 } from "@/lib/types/campaign";
-import type { Template } from "@/lib/types/template";
+import type { Template, TemplatePreview } from "@/lib/types/template";
 
 const NONE = "NONE"; // 쿠폰 "연결 안 함" 선택값
 
@@ -96,6 +96,24 @@ export function CampaignForm(props: CampaignFormProps) {
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(formSchema), defaultValues: defaults });
   const type = watch("type");
+  const segmentId = watch("segmentId");
+  const templateId = watch("templateId");
+
+  // PRD F-04: 발송 전에 "대상 n명 중 m명은 기본값으로 발송"을 보여준다. 샘플 값 미리보기는 쓰지 않고 이 수치만 받는다
+  const selectedTemplate = templates?.content.find((t) => String(t.templateId) === templateId);
+  const { data: defaultValueCount } = useQuery({
+    queryKey: queryKeys.templates.defaultValueCount(
+      selectedTemplate?.templateId ?? 0,
+      Number(segmentId) || 0,
+      selectedTemplate?.updatedAt ?? "",
+    ),
+    queryFn: () =>
+      api<TemplatePreview>(`/api/v1/templates/${selectedTemplate!.templateId}/preview`, {
+        method: "POST",
+        body: JSON.stringify({ segmentId: Number(segmentId) }),
+      }).then((preview) => preview.defaultValueCount),
+    enabled: type === "ONE_TIME" && !!selectedTemplate && !!segmentId,
+  });
 
   // 수정은 DRAFT 만 가능하다(백엔드 CAMPAIGN_INVALID_STATUS). 그 외 상태는 폼을 잠근다
   const canManage = useCanManageCampaign();
@@ -264,6 +282,12 @@ export function CampaignForm(props: CampaignFormProps) {
                 />
                 {errors.templateId && (
                   <p className="text-sm text-destructive">{errors.templateId.message}</p>
+                )}
+                {defaultValueCount && (
+                  <p className="text-xs text-muted-foreground">
+                    대상 {defaultValueCount.total.toLocaleString()}명 중{" "}
+                    {defaultValueCount.usingDefault.toLocaleString()}명은 기본값으로 발송됩니다.
+                  </p>
                 )}
               </div>
 
