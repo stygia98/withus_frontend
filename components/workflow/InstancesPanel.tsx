@@ -123,7 +123,7 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
                 </TableCell>
                 {/* next_run_at 이 비어 있는 WAITING 은 직전 발송 결과를 기다리는 중이다 */}
                 <TableCell>
-                  {i.nextRunAt
+                  {i.nextRunAt && (i.status === "WAITING" || i.status === "RUNNING")
                     ? formatDateTime(i.nextRunAt)
                     : i.status === "WAITING"
                       ? "발송 결과 대기"
