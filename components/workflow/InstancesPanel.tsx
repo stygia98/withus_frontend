@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
+import { formatDateTime } from "@/lib/datetime";
 import { queryKeys } from "@/lib/query-keys";
 import type { InstanceStatus, WorkflowInstance } from "@/lib/types/workflow";
 import { INSTANCE_STATUS_LABEL } from "@/lib/types/workflow";
@@ -123,7 +124,7 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
                 {/* next_run_at 이 비어 있는 WAITING 은 직전 발송 결과를 기다리는 중이다 */}
                 <TableCell>
                   {i.nextRunAt
-                    ? new Date(i.nextRunAt).toLocaleString("ko-KR")
+                    ? formatDateTime(i.nextRunAt)
                     : i.status === "WAITING"
                       ? "발송 결과 대기"
                       : "-"}
