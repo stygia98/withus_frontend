@@ -13,3 +13,14 @@ export type Template = {
   /** 상세 조회에서만 채워진다 (목록은 undefined) */
   inUse?: boolean;
 };
+
+/** POST /templates/{id}/preview 응답 (API_SPEC 5장). 메일은 subject·html, SMS 는 text·smsBytes·smsType 만 채워진다 */
+export type TemplatePreview = {
+  subject: string | null;
+  html: string | null;
+  text: string | null;
+  /** (광고)·발신자·수신거부 문구를 포함한 값. ASCII 1바이트, 그 외 2바이트 */
+  smsBytes: number | null;
+  /** 90바이트 초과면 LMS */
+  smsType: "SMS" | "LMS" | null;
+};

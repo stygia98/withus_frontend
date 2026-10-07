@@ -11,6 +11,7 @@ import type { Editor as TinyMceEditorInstance } from "tinymce";
 import { z } from "zod";
 
 import type { UploadBlobInfo } from "./TinyMceEditor";
+import { useTemplatePreview } from "./useTemplatePreview";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -164,8 +165,22 @@ export function TemplateForm(props: TemplateFormProps) {
     return result.url;
   }
 
-  const smsBytes = channel === "SMS" ? smsTotalBytes(body, adYn) : 0;
-  const smsOverLimit = smsBytes > SMS_BYTE_LIMIT;
+  // SMS 바이트: 저장된 내용 그대로면 서버가 치환·광고 문구까지 넣어 센 값(smsBytes·smsType)을 쓰고, 수정 중이면 서버가 아직
+  // 모르는 초안이라 기존 추정치(치환 전, 광고 문구는 시연 기본값)로 센다
+  const serverPreview = useTemplatePreview(props.mode === "edit" ? props.template : undefined);
+  const savedSms =
+    props.mode === "edit" &&
+    channel === "SMS" &&
+    body === props.template.body &&
+    adYn === props.template.adYn;
+  const serverSms =
+    savedSms && serverPreview.data?.smsBytes != null ? serverPreview.data : undefined;
+  const smsBytes = serverSms
+    ? serverSms.smsBytes!
+    : channel === "SMS"
+      ? smsTotalBytes(body, adYn)
+      : 0;
+  const smsOverLimit = serverSms ? serverSms.smsType === "LMS" : smsBytes > SMS_BYTE_LIMIT;
   // 수정 차단 기준(백엔드 TemplateService.existsInUseByStatus)과 같다: 예약·활성·일시정지 캠페인이 쓰는 중
   const locked = props.mode === "edit" && props.template.inUse === true;
 
@@ -299,8 +314,11 @@ export function TemplateForm(props: TemplateFormProps) {
                     smsOverLimit ? "text-sm text-destructive" : "text-sm text-muted-foreground"
                   }
                 >
+                  {serverSms ? "" : "예상 "}
                   {smsBytes} / {SMS_BYTE_LIMIT} 바이트
                   {adYn === "Y" && " ((광고)·발신자·수신거부 문구 포함)"}
+                  {serverSms && " · 서버 계산(샘플 값으로 치환 후)"}
+                  {!serverSms && " · 저장하면 서버가 정확히 계산합니다"}
                   {smsOverLimit && " — 초과 시 LMS로 발송됩니다"}
                 </p>
               </>
