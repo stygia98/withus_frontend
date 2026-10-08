@@ -1,0 +1,128 @@
+// 대시보드·성과 리포트 API 타입과 표시 도우미 (API_SPEC 10장, 팀원3)
+// 모든 지표는 봇 이벤트와 TEST·NOTICE 발송을 뺀 값이다.
+
+export type SendKpi = {
+  attempted: number;
+  sent: number;
+  successRate: number;
+  uniqueOpens: number;
+  openRate: number;
+  uniqueClicks: number;
+  clickRate: number;
+  couponUsed: number;
+  conversionRate: number;
+};
+
+export type DashboardSummary = { from: string; to: string; kpi: SendKpi };
+
+export type DailySend = { date: string; sent: number };
+
+export type QueueStatus = {
+  pending: number;
+  sending: number;
+  retrying: number;
+  ratePerSecond: number;
+  expectedEndAt: string | null;
+  adSendWindowOpen: boolean;
+};
+
+export type RecentEvent = {
+  eventId: number;
+  eventType: "OPEN" | "CLICK";
+  occurredAt: string;
+  campaignId: number | null;
+  campaignName: string | null;
+  customerName: string | null;
+};
+
+export type RecentEvents = { events: RecentEvent[]; lastEventId: number | null };
+
+export type FunnelStage = {
+  stage: "ATTEMPTED" | "SENT" | "OPENED" | "CLICKED" | "CONVERTED";
+  count: number;
+};
+
+export type CampaignAnalytics = {
+  campaignId: number;
+  name: string;
+  /** 서버가 적용한 기간(요청값 그대로). 둘 다 null 이면 캠페인 전체 기간 */
+  from: string | null;
+  to: string | null;
+  kpi: SendKpi;
+  funnel: FunnelStage[];
+};
+
+export type CampaignType = "ONE_TIME" | "WORKFLOW";
+export type CampaignStatus = "DRAFT" | "SCHEDULED" | "ACTIVE" | "PAUSED" | "COMPLETED";
+
+/** 팀원2 캠페인 목록(GET /campaigns, API_SPEC 6장)에서 대시보드·성과 리포트 목록이 쓰는 필드만 */
+export type CampaignSummaryItem = {
+  campaignId: number;
+  name: string;
+  type: CampaignType;
+  status: CampaignStatus;
+  scheduledAt: string | null;
+  startedAt: string | null;
+  endedAt: string | null;
+};
+
+export const CAMPAIGN_TYPE_LABEL: Record<CampaignType, string> = {
+  ONE_TIME: "일회성",
+  WORKFLOW: "워크플로우",
+};
+
+export const CAMPAIGN_STATUS_LABEL: Record<CampaignStatus, string> = {
+  DRAFT: "초안",
+  SCHEDULED: "예약",
+  ACTIVE: "진행 중",
+  PAUSED: "일시정지",
+  COMPLETED: "완료",
+};
+
+export const FUNNEL_LABEL: Record<FunnelStage["stage"], string> = {
+  ATTEMPTED: "발송 시도",
+  SENT: "발송 성공",
+  OPENED: "오픈",
+  CLICKED: "클릭",
+  CONVERTED: "쿠폰 사용",
+};
+
+/** 0~1 비율 → "31.2%" */
+export function formatRate(rate: number): string {
+  return `${(rate * 100).toFixed(1)}%`;
+}
+
+export function formatCount(n: number): string {
+  return n.toLocaleString("ko-KR");
+}
+
+/** 워크플로우 단계별 성과 (GET /analytics/campaigns/{id}/steps) */
+export type StepAnalytics = {
+  stepId: number;
+  nodeType: "SEND_EMAIL" | "SEND_SMS";
+  templateId: number | null;
+  templateName: string | null;
+  couponId: number | null;
+  kpi: SendKpi;
+};
+
+export type CampaignSteps = {
+  campaignId: number;
+  name: string;
+  type: "ONE_TIME" | "WORKFLOW";
+  /** 서버가 적용한 기간(요청값 그대로). 둘 다 null 이면 캠페인 전체 기간 */
+  from: string | null;
+  to: string | null;
+  steps: StepAnalytics[];
+};
+
+/** 캠페인 응답의 funnel 과 같은 순서로 KPI 에서 전환 흐름을 만든다 (단계별 차트용) */
+export function funnelOf(kpi: SendKpi): FunnelStage[] {
+  return [
+    { stage: "ATTEMPTED", count: kpi.attempted },
+    { stage: "SENT", count: kpi.sent },
+    { stage: "OPENED", count: kpi.uniqueOpens },
+    { stage: "CLICKED", count: kpi.uniqueClicks },
+    { stage: "CONVERTED", count: kpi.couponUsed },
+  ];
+}
