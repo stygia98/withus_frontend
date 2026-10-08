@@ -83,8 +83,8 @@ function refreshOnce(): Promise<boolean> {
   return refreshing;
 }
 
-export async function api<T>(path: `/api/${string}`, init: RequestInit = {}): Promise<T> {
-  let res = await request(path, init);
+async function requestWithRefresh(path: string, init: RequestInit): Promise<Response> {
+  const res = await request(path, init);
 
   // 로그인·재발급·로그아웃의 401 은 그대로 돌려준다 (재발급 반복 방지). /auth/me 는 재발급 대상
   if (res.status === 401 && !NO_REFRESH_PATHS.has(path)) {
@@ -93,9 +93,21 @@ export async function api<T>(path: `/api/${string}`, init: RequestInit = {}): Pr
       (err.code === "AUTH_TOKEN_EXPIRED" || err.code === "AUTH_UNAUTHORIZED") &&
       (await refreshOnce())
     ) {
-      res = await request(path, init);
+      return request(path, init);
     }
   }
+  return res;
+}
+
+// 파일 다운로드. <a href download> 는 401 재발급을 거치지 않고 실패도 알리지 못하므로 이 함수로 받는다
+export async function apiBlob(path: `/api/${string}`): Promise<Blob> {
+  const res = await requestWithRefresh(path, {});
+  if (!res.ok) throw await toError(res);
+  return res.blob();
+}
+
+export async function api<T>(path: `/api/${string}`, init: RequestInit = {}): Promise<T> {
+  const res = await requestWithRefresh(path, init);
 
   if (res.status === 204) return undefined as T;
   if (!res.ok) throw await toError(res);

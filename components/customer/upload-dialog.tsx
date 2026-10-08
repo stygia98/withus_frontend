@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ApiError, api } from "@/lib/api-client";
+import { ApiError, api, apiBlob } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 
 // 고객 업로드 결과 (API_SPEC 3장 POST /customers/uploads)
@@ -69,6 +69,20 @@ export function UploadDialog({
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.customers.all }),
     onError: (err) => toast.error(err instanceof ApiError ? err.message : "업로드하지 못했습니다."),
   });
+  // 래퍼로 받아야 Access 만료 시 재발급되고, 실패하면 토스트로 알린다
+  const template = useMutation({
+    mutationFn: () => apiBlob("/api/v1/customers/upload-template"),
+    onSuccess: (blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "고객_업로드_양식.xlsx";
+      a.click();
+      URL.revokeObjectURL(url);
+    },
+    onError: (err) =>
+      toast.error(err instanceof ApiError ? err.message : "양식을 받지 못했습니다."),
+  });
   const result = upload.data;
   const tooLarge = file != null && file.size > MAX_BYTES;
 
@@ -94,13 +108,14 @@ export function UploadDialog({
 
         {!result ? (
           <div className="space-y-3">
-            <a
-              href="/api/v1/customers/upload-template"
-              download
-              className={buttonVariants({ variant: "outline", size: "sm" })}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => template.mutate()}
+              disabled={template.isPending}
             >
               양식 내려받기
-            </a>
+            </Button>
             <Input
               type="file"
               accept=".xlsx,.csv"
