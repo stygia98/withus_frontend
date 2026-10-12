@@ -43,7 +43,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     items: [
       {
         href: "/customers",
-        label: "고객&세그먼트",
+        label: "고객 관리",
         en: "Customers",
         roles: ["OWNER", "MANAGER"],
         also: ["/segments"],
@@ -51,7 +51,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
       },
       {
         href: "/campaigns",
-        label: "캠페인&템플릿",
+        label: "캠페인 관리",
         en: "Campaigns",
         also: ["/templates", "/coupons"],
         d: ICON.campaigns,

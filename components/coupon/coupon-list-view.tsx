@@ -54,7 +54,7 @@ export function CouponListView() {
     <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">쿠폰</h1>
+          <h1 className="text-2xl font-semibold">쿠폰 관리</h1>
           <p className="text-muted-foreground text-sm">
             유효기간은 모든 발급 건에 같게 적용됩니다. 사용률 = 사용 / 발급. 쿠폰명을 누르면 발급
             현황을 볼 수 있습니다.

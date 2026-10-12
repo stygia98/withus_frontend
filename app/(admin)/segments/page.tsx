@@ -37,7 +37,7 @@ export default function SegmentsPage() {
   return (
     <div className="space-y-4 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">세그먼트</h1>
+        <h1 className="text-xl font-semibold">고객 타겟팅</h1>
         <Link href="/segments/new" className={buttonVariants()}>
           세그먼트 만들기
         </Link>
