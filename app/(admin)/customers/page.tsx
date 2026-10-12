@@ -104,7 +104,7 @@ export default function CustomersPage() {
   return (
     <div className="space-y-4 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">고객</h1>
+        <h1 className="text-xl font-semibold">고객 목록</h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setUploading(true)}>
             업로드

@@ -76,7 +76,7 @@ export default function CampaignsPage() {
   return (
     <main className="mx-auto max-w-5xl space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">캠페인</h1>
+        <h1 className="text-xl font-semibold">캠페인 목록</h1>
         {canManage && (
           <Button render={<Link href="/campaigns/new" />} nativeButton={false}>
             새 캠페인
