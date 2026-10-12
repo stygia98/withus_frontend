@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
+import { CustomerTabs } from "@/components/layout/section-tabs";
 import { queryKeys } from "@/lib/query-keys";
 
 // 세그먼트 목록 (PRD 4장 /segments): 조건 요약, 현재 대상 고객 수
@@ -29,6 +30,8 @@ export default function SegmentsPage() {
   const { data, isPending, isError } = useQuery({
     queryKey: queryKeys.segments.list(params),
     queryFn: () => api<Page<Segment>>(`/api/v1/segments?page=${page}&size=${PAGE_SIZE}`),
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   return (
@@ -39,6 +42,8 @@ export default function SegmentsPage() {
           세그먼트 만들기
         </Link>
       </div>
+
+      <CustomerTabs />
 
       <Table>
         <TableHeader>

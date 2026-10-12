@@ -1,10 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 
 import { QueryError } from "@/components/common/QueryError";
+import { TemplateCouponTabs } from "@/components/layout/section-tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,6 +69,8 @@ export default function CampaignsPage() {
       if (apiStatus) params.set("status", apiStatus);
       return api<Page<Campaign>>(`/api/v1/campaigns?${params}`);
     },
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   return (
@@ -80,6 +83,8 @@ export default function CampaignsPage() {
           </Button>
         )}
       </div>
+
+      <TemplateCouponTabs />
 
       <div className="flex gap-2">
         <Select

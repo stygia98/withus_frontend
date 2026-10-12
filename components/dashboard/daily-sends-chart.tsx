@@ -13,7 +13,7 @@ import { type DailySend, formatCount } from "@/lib/dashboard";
 
 // 한 계열 → 색 하나, 범례 없음(제목이 계열을 말한다). 색은 밝은·어두운 카드 배경에서 검증한 값
 const config = {
-  sent: { label: "발송 성공", theme: { light: "#2a78d6", dark: "#3987e5" } },
+  sent: { label: "발송 성공", theme: { light: "#14213d", dark: "#8aa0cc" } },
 } satisfies ChartConfig;
 
 export function DailySendsChart({ data }: { data: DailySend[] }) {

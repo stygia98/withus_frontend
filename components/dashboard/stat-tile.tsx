@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export function StatTile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-col gap-1">
         <CardDescription>{label}</CardDescription>
         <CardTitle className="text-3xl font-semibold tabular-nums">{value}</CardTitle>
       </CardHeader>
