@@ -72,7 +72,7 @@ export default function LoginPage() {
             </label>
             <div className="alert a-info">
               <span>
-                계정은 조직의 <b>OWNER</b>가 관리해요. 비밀번호를 잊었다면 OWNER에게 재설정을 요청해
+                계정은 조직의 <b>OWNER</b>가 관리해요. 계정 관련 문의사항은 관리자에게 문의해
                 주세요.
               </span>
             </div>
