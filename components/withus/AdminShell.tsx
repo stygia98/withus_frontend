@@ -74,7 +74,15 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
 
 type Me = { name: string; role: Role };
 
-function Rail({ me, onLogout }: { me: Me; onLogout: () => void }) {
+function Rail({
+  me,
+  onLogout,
+  onChangePassword,
+}: {
+  me: Me;
+  onLogout: () => void;
+  onChangePassword?: () => void;
+}) {
   const path = usePathname();
   const go = useCurtainNavigate();
   const [pin, setPin] = useState(false);
@@ -163,6 +171,21 @@ function Rail({ me, onLogout }: { me: Me; onLogout: () => void }) {
             <span>{me.role}</span>
           </span>
         </div>
+        {onChangePassword && (
+          <button className="pinbtn" onClick={onChangePassword}>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+            >
+              <path d="M8 11a4 4 0 100 8 4 4 0 000-8zM11 12l9-9M16 7l3 3M14 9l2 2" />
+            </svg>
+            <span className="lbl">비밀번호 변경</span>
+          </button>
+        )}
         <button className="pinbtn" onClick={onLogout}>
           <svg
             width="20"
@@ -184,10 +207,12 @@ function Rail({ me, onLogout }: { me: Me; onLogout: () => void }) {
 export function AdminShell({
   me,
   onLogout,
+  onChangePassword,
   children,
 }: {
   me: Me;
   onLogout: () => void;
+  onChangePassword?: () => void;
   children: ReactNode;
 }) {
   return (
@@ -195,7 +220,7 @@ export function AdminShell({
       <CurtainProvider>
         <ToastProvider kind="admin">
           <div className="shell">
-            <Rail me={me} onLogout={onLogout} />
+            <Rail me={me} onLogout={onLogout} onChangePassword={onChangePassword} />
             <main className="content">{children}</main>
           </div>
         </ToastProvider>
