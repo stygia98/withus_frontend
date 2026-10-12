@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { QueryError } from "@/components/common/QueryError";
+import { TemplateCouponTabs } from "@/components/layout/section-tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,6 +83,8 @@ export default function CampaignsPage() {
           </Button>
         )}
       </div>
+
+      <TemplateCouponTabs />
 
       <div className="flex gap-2">
         <Select

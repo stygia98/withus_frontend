@@ -36,6 +36,11 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     items: [
       { href: "/dashboard", label: "대시보드", en: "Dashboard", d: ICON.dashboard },
       { href: "/analytics", label: "성과 리포트", en: "Reports", d: ICON.reports },
+    ],
+  },
+  {
+    title: "발송",
+    items: [
       {
         href: "/customers",
         label: "고객&세그먼트",
@@ -44,18 +49,12 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
         also: ["/segments"],
         d: ICON.customers,
       },
-    ],
-  },
-  {
-    title: "발송",
-    items: [
-      { href: "/campaigns", label: "캠페인&워크플로우", en: "Campaigns", d: ICON.campaigns },
       {
-        href: "/templates",
-        label: "템플릿&쿠폰",
-        en: "Templates",
-        also: ["/coupons"],
-        d: ICON.templates,
+        href: "/campaigns",
+        label: "캠페인&템플릿",
+        en: "Campaigns",
+        also: ["/templates", "/coupons"],
+        d: ICON.campaigns,
       },
     ],
   },
