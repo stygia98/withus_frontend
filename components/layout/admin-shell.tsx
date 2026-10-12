@@ -2,8 +2,9 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { ChangePasswordDialog } from "@/components/layout/change-password-dialog";
 import { AdminShell as WuAdminShell } from "@/components/withus";
 import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -28,6 +29,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   });
   const unauthorized = me.error instanceof ApiError && me.error.status === 401;
 
+  const [changingPassword, setChangingPassword] = useState(false);
   const loggingOut = useRef(false); // 로그아웃 중 /auth/me 401 이 메인 이동을 로그인 이동으로 덮어쓰지 않게
 
   useEffect(() => {
@@ -53,8 +55,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <WuAdminShell me={me.data} onLogout={logout}>
+    <WuAdminShell me={me.data} onLogout={logout} onChangePassword={() => setChangingPassword(true)}>
       {children}
+      <ChangePasswordDialog open={changingPassword} onOpenChange={setChangingPassword} />
     </WuAdminShell>
   );
 }
