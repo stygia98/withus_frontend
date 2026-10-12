@@ -164,13 +164,6 @@ function Rail({
           </svg>
           <span className="lbl">메뉴 고정</span>
         </button>
-        <div className="me">
-          <span className="av">{me.name[0]}</span>
-          <span className="lbl">
-            <b>{me.name}</b>
-            <span>{me.role}</span>
-          </span>
-        </div>
         {onChangePassword && (
           <button className="pinbtn" onClick={onChangePassword}>
             <svg
@@ -199,6 +192,13 @@ function Rail({
           </svg>
           <span className="lbl">로그아웃</span>
         </button>
+        <div className="me">
+          <span className="av">{me.name[0]}</span>
+          <span className="lbl">
+            <b>{me.name}</b>
+            <span>{me.role}</span>
+          </span>
+        </div>
       </div>
     </aside>
   );

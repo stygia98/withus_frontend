@@ -5,6 +5,8 @@ import type { NextConfig } from "next";
 const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
 
 const nextConfig: NextConfig = {
+  // 개발 모드 Next.js 아이콘(N)이 왼쪽 아래 메뉴(로그아웃 버튼)를 가려 오른쪽 아래로 옮긴다
+  devIndicators: { position: "bottom-right" },
   async rewrites() {
     return [
       { source: "/api/:path*", destination: `${backendUrl}/api/:path*` },
