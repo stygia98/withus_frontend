@@ -206,7 +206,6 @@ function ActiveCampaignsCard() {
     <Card>
       <CardHeader>
         <CardTitle>활성 캠페인</CardTitle>
-        <CardDescription>누르면 캠페인 성과로 이동합니다.</CardDescription>
       </CardHeader>
       <CardContent>
         {isError ? (
@@ -251,7 +250,6 @@ function RecentEventsCard() {
     <Card>
       <CardHeader>
         <CardTitle>최근 이벤트</CardTitle>
-        <CardDescription>10초마다 새로 고침</CardDescription>
       </CardHeader>
       <CardContent>
         {isError ? (
@@ -259,8 +257,8 @@ function RecentEventsCard() {
         ) : data && data.length === 0 ? (
           <p className="text-muted-foreground text-sm">아직 오픈·클릭 이벤트가 없습니다.</p>
         ) : (
-          // 20줄을 다 펼치면 옆 카드보다 길어지므로 높이를 제한하고 안에서 스크롤한다
-          <ul className="max-h-80 divide-y overflow-y-auto text-sm">
+          // 20줄을 다 펼치면 옆 카드보다 길어지므로 높이를 제한하고 안에서 스크롤한다 (스크롤바는 숨김)
+          <ul className="max-h-80 divide-y overflow-y-auto text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {data?.map((e) => (
               <li key={e.eventId} className="flex items-center gap-3 py-2">
                 <span className="text-muted-foreground w-24 shrink-0 tabular-nums">
