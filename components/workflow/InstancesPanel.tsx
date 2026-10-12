@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { QueryError } from "@/components/common/QueryError";
@@ -50,6 +50,8 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
       if (apiStatus) params.set("status", apiStatus);
       return api<Page<WorkflowInstance>>(`/api/v1/campaigns/${campaignId}/instances?${params}`);
     },
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   return (

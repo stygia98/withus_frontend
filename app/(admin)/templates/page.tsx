@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Copy, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
 import { formatDateTime } from "@/lib/datetime";
+import { TemplateCouponTabs } from "@/components/layout/section-tabs";
 import { queryKeys } from "@/lib/query-keys";
 import type { Channel, Template } from "@/lib/types/template";
 
@@ -51,6 +52,8 @@ export default function TemplatesPage() {
       if (apiChannel) params.set("channel", apiChannel);
       return api<Page<Template>>(`/api/v1/templates?${params}`);
     },
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   // 마지막 페이지의 마지막 한 건을 지우면 현재 페이지가 범위를 벗어난다 — 마지막 페이지로 당긴다
@@ -71,6 +74,8 @@ export default function TemplatesPage() {
           새 템플릿
         </Button>
       </div>
+
+      <TemplateCouponTabs />
 
       <Select
         items={CHANNEL_FILTERS}

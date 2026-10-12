@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -21,6 +21,7 @@ import { api, type Page } from "@/lib/api-client";
 import { type Coupon, formatDiscount, formatPeriod, periodStatus } from "@/lib/coupon";
 import { formatCount, formatRate } from "@/lib/dashboard";
 import { useSeoulToday } from "@/lib/period";
+import { TemplateCouponTabs } from "@/components/layout/section-tabs";
 import { queryKeys } from "@/lib/query-keys";
 
 const PAGE_SIZE = 20;
@@ -38,6 +39,8 @@ export function CouponListView() {
   const { data, isPending, isError } = useQuery({
     queryKey: queryKeys.coupons.list(page),
     queryFn: () => api<Page<Coupon>>(`/api/v1/coupons?page=${page}&size=${PAGE_SIZE}`),
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
   // 관리자 화면은 한국 시간 브라우저 기준. 정확한 판정은 서버(발급·사용 처리)가 한다
   // 유효기간 판정은 서버와 같은 서울 날짜 기준 (브라우저 시간대가 달라도 같은 상태)
@@ -61,6 +64,7 @@ export function CouponListView() {
           <Plus aria-hidden />새 쿠폰
         </Button>
       </header>
+      <TemplateCouponTabs />
 
       <Card>
         <CardContent>

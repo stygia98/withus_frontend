@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -27,6 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
+import { CustomerTabs } from "@/components/layout/section-tabs";
 import { queryKeys } from "@/lib/query-keys";
 
 // 고객 목록 (PRD 4장 /customers)
@@ -90,6 +91,8 @@ export default function CustomersPage() {
       api<Page<CustomerListItem>>(
         `/api/v1/customers?${new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)]))}`,
       ),
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   function apply(next: Filters) {
@@ -109,6 +112,8 @@ export default function CustomersPage() {
           <Button onClick={() => setCreating(true)}>고객 등록</Button>
         </div>
       </div>
+
+      <CustomerTabs />
 
       <form
         className="flex flex-wrap items-center gap-2"

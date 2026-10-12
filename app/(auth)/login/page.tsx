@@ -1,24 +1,22 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ApiError, api } from "@/lib/api-client";
 
-// 최소 로그인 화면. 디자인은 목업 반영 시 교체한다
+// 디자인 키트 로그인 (preview/withus-admin.html 의 login). '로그인 유지'·시안용 계정 안내는 넣지 않았다
 export default function LoginPage() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     setPending(true);
+    setError(null);
     try {
       await api("/api/v1/auth/login", {
         method: "POST",
@@ -28,40 +26,67 @@ export default function LoginPage() {
       const next = new URLSearchParams(window.location.search).get("next");
       router.replace(next?.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "로그인에 실패했습니다.");
+      setError(err instanceof ApiError ? err.message : "로그인에 실패했습니다.");
     } finally {
       setPending(false);
     }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>위드어스 로그인</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">이메일</Label>
-              <Input id="email" name="email" type="email" autoComplete="username" required />
+    <div className="wu-admin" style={{ minHeight: "100vh" }}>
+      <div className="login">
+        <div className="login-card">
+          <Link href="/" className="logo" aria-label="withus 홈">
+            with<span className="us">us</span>
+          </Link>
+          <p className="sub">관리자 로그인</p>
+          {error ? (
+            <div className="alert a-err" role="alert">
+              <span>{error}</span>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">비밀번호</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-              />
+          ) : null}
+          <form onSubmit={onSubmit}>
+            <label className="in">
+              이메일
+              <span className="box">
+                <input
+                  name="email"
+                  type="email"
+                  autoComplete="username"
+                  placeholder="name@company.com"
+                  required
+                />
+              </span>
+            </label>
+            <label className="in">
+              비밀번호
+              <span className="box">
+                <input
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  placeholder="비밀번호"
+                  required
+                />
+              </span>
+            </label>
+            <div className="alert a-info">
+              <span>
+                계정은 조직의 <b>OWNER</b>가 관리해요. 비밀번호를 잊었다면 OWNER에게 재설정을 요청해
+                주세요.
+              </span>
             </div>
-            <Button type="submit" className="w-full" disabled={pending}>
+            <button
+              className="b p"
+              type="submit"
+              disabled={pending}
+              style={{ height: 48, fontSize: 15 }}
+            >
               {pending ? "로그인 중..." : "로그인"}
-            </Button>
+            </button>
           </form>
-        </CardContent>
-      </Card>
-    </main>
+        </div>
+      </div>
+    </div>
   );
 }
