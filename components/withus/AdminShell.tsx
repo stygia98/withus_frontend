@@ -43,7 +43,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     items: [
       {
         href: "/customers",
-        label: "고객&세그먼트",
+        label: "고객 관리",
         en: "Customers",
         roles: ["OWNER", "MANAGER"],
         also: ["/segments"],

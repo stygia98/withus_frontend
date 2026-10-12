@@ -6,7 +6,7 @@ import { Tabs } from "@/components/withus";
 
 type SectionTab = { href: string; label: string };
 
-/** 사이드바에서 '&' 로 합친 메뉴(고객&세그먼트, 캠페인&템플릿&쿠폰) 안에서 화면을 오가는 탭 (디자인 키트) */
+/** 사이드바에서 '&' 로 합친 메뉴(고객 관리, 캠페인&템플릿&쿠폰) 안에서 화면을 오가는 탭 (디자인 키트) */
 function SectionTabs({ tabs }: { tabs: SectionTab[] }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -25,7 +25,7 @@ export function CustomerTabs() {
     <SectionTabs
       tabs={[
         { href: "/customers", label: "고객 목록" },
-        { href: "/segments", label: "세그먼트" },
+        { href: "/segments", label: "고객 타겟팅" },
       ]}
     />
   );
