@@ -49,6 +49,7 @@ const ROLE_ITEMS: { value: Role; label: string }[] = [
 export default function UsersPage() {
   const queryClient = useQueryClient();
   const [creating, setCreating] = useState(false);
+  const [resetTarget, setResetTarget] = useState<Member | null>(null);
   // 로그인 정보는 레이아웃(AdminShell)이 이미 불러와 캐시에 있다
   const me = useQuery({
     queryKey: queryKeys.auth.me,
@@ -148,7 +149,16 @@ export default function UsersPage() {
                         {m.active ? "활성" : "비활성"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="space-x-2 text-right">
+                      {/* 본인은 사이드바의 '비밀번호 변경'으로 바꾼다 (MEMBER_SELF_PASSWORD) */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={self}
+                        onClick={() => setResetTarget(m)}
+                      >
+                        비밀번호 재설정
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -169,7 +179,76 @@ export default function UsersPage() {
       </div>
 
       <CreateMemberDialog open={creating} onOpenChange={setCreating} />
+      <ResetPasswordDialog target={resetTarget} onClose={() => setResetTarget(null)} />
     </div>
+  );
+}
+
+const resetSchema = z.object({
+  newPassword: z.string().min(8, "8자 이상 입력하세요.").max(72, "72자까지 입력할 수 있습니다."),
+});
+type ResetValues = z.infer<typeof resetSchema>;
+
+/** 비밀번호 재설정 (API_SPEC 2장 POST /members/{id}/password). 기존 비밀번호는 알 수 없고 새 값으로 덮어쓴다 */
+function ResetPasswordDialog({ target, onClose }: { target: Member | null; onClose: () => void }) {
+  const form = useForm<ResetValues>({
+    resolver: zodResolver(resetSchema),
+    defaultValues: { newPassword: "" },
+  });
+
+  const reset = useMutation({
+    mutationFn: (v: ResetValues) =>
+      api<null>(`/api/v1/members/${target?.memberId}/password`, {
+        method: "POST",
+        body: JSON.stringify(v),
+      }),
+    onSuccess: () => {
+      toast.success("비밀번호를 재설정했습니다. 새 비밀번호를 그 사용자에게 직접 전달해 주세요.");
+      close();
+    },
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "재설정하지 못했습니다."),
+  });
+
+  // 닫을 때마다 입력값을 비운다 (비밀번호가 폼 상태에 남지 않게)
+  function close() {
+    form.reset({ newPassword: "" });
+    onClose();
+  }
+
+  return (
+    <Dialog open={target !== null} onOpenChange={(open) => !open && close()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>비밀번호 재설정</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={form.handleSubmit((v) => reset.mutate(v))} className="flex flex-col gap-4">
+          <p className="text-sm text-muted-foreground">
+            {target?.name} ({target?.email})의 비밀번호를 새로 정합니다. 기존 비밀번호는 확인할 수
+            없고, 재설정하면 그 사용자의 현재 로그인이 해제됩니다.
+          </p>
+          <Field
+            label="새 비밀번호 (8자 이상)"
+            htmlFor="resetPassword"
+            error={form.formState.errors.newPassword?.message}
+          >
+            <Input
+              id="resetPassword"
+              type="password"
+              autoComplete="new-password"
+              {...form.register("newPassword")}
+            />
+          </Field>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={close}>
+              취소
+            </Button>
+            <Button type="submit" disabled={reset.isPending}>
+              재설정
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
