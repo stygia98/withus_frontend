@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { AdminShell as WuAdminShell } from "@/components/withus";
 import { ApiError, api } from "@/lib/api-client";
@@ -28,14 +28,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   });
   const unauthorized = me.error instanceof ApiError && me.error.status === 401;
 
+  const loggingOut = useRef(false); // 로그아웃 중 /auth/me 401 이 메인 이동을 로그인 이동으로 덮어쓰지 않게
+
   useEffect(() => {
-    if (unauthorized) router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    if (unauthorized && !loggingOut.current) {
+      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    }
   }, [unauthorized, pathname, router]);
 
   async function logout() {
+    loggingOut.current = true;
     await api("/api/v1/auth/logout", { method: "POST" }).catch(() => {});
     queryClient.clear(); // 다른 사용자가 이어서 로그인해도 이전 데이터가 보이지 않게
-    router.replace("/login");
+    router.replace("/"); // 로그아웃 후에는 로그인 화면이 아니라 메인(랜딩)으로 이동
   }
 
   // 로그인 확인 전에는 화면(과 각 페이지의 API 호출)을 띄우지 않는다
