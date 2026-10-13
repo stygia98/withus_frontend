@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { PERIOD_LABEL, type Period, type PeriodPreset, customRangeError } from "@/lib/period";
 
 /**
- * 기간 필터 (PRD F-09). 프리셋은 한 줄 버튼, "직접 지정"을 고르면 시작·종료 날짜 입력이 한 줄 아래에 나온다.
+ * 기간 필터 (PRD F-09). 프리셋은 한 줄 버튼, "직접 지정"을 고르면 시작·종료 날짜 입력이 한 줄 위에 나온다.
  * 날짜가 비었거나 시작이 종료보다 늦으면 안내만 하고, 조회는 호출하는 쪽이 이전 결과를 유지한다.
  */
 export function PeriodFilter({
@@ -35,8 +35,8 @@ export function PeriodFilter({
         ))}
       </div>
       {value.preset === "CUSTOM" && (
-        // 버튼 줄은 제자리에 두고 날짜 입력은 그 아래에 띄워 레이아웃이 밀리지 않게 한다
-        <div className="absolute top-full right-0 z-10 mt-2 flex items-center gap-2 whitespace-nowrap">
+        // 버튼 줄은 제자리에 두고 날짜 입력은 그 위에 띄워 레이아웃이 밀리지 않게 한다
+        <div className="absolute bottom-full right-0 z-10 mb-2 flex items-center gap-2 whitespace-nowrap">
           <Input
             type="date"
             aria-label="시작일"

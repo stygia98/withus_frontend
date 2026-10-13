@@ -71,7 +71,7 @@ export function DashboardView() {
         <DailySendsCard range={range} today={today} />
         <QueueCard />
       </div>
-      <div className="wb-row">
+      <div className="wb-row wb-row--even">
         <ActiveCampaignsCard />
         <RecentEventsCard />
       </div>

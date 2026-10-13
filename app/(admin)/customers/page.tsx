@@ -122,37 +122,43 @@ export default function CustomersPage() {
       <CustomerTabs />
 
       <form
-        className="flex flex-wrap items-center gap-2"
+        className="w-fit max-w-full space-y-2"
         onSubmit={(e) => {
           e.preventDefault();
           apply(draft);
         }}
       >
-        <Input
-          className="w-64"
-          placeholder="이름·이메일·휴대폰 검색"
-          value={draft.keyword}
-          onChange={(e) => setDraft({ ...draft, keyword: e.target.value })}
-        />
-        <FilterSelect
-          items={REGION_ITEMS}
-          value={draft.region}
-          onChange={(v) => apply({ ...draft, region: v })}
-        />
-        {FILTER_SELECTS.map((f) => (
-          <FilterSelect
-            key={f.key}
-            items={f.items}
-            value={draft[f.key]}
-            onChange={(v) => apply({ ...draft, [f.key]: v })}
+        {/* 1줄: 검색어 + 검색, 2줄: 필터 + 초기화. 폼 폭은 필터 줄이 정하고 검색어 입력란이 그 폭을 채운다 */}
+        <div className="flex items-center gap-2">
+          <Input
+            className="flex-1"
+            placeholder="이름·이메일·휴대폰 검색"
+            value={draft.keyword}
+            onChange={(e) => setDraft({ ...draft, keyword: e.target.value })}
           />
-        ))}
-        <Button type="submit" variant="outline">
-          검색
-        </Button>
-        <Button type="button" variant="ghost" onClick={() => apply(EMPTY)}>
-          초기화
-        </Button>
+          {/* 검색·초기화 버튼 폭을 같게 해 입력란 끝이 휴면 필터 끝과 맞는다 */}
+          <Button type="submit" variant="outline" className="w-18">
+            검색
+          </Button>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <FilterSelect
+            items={REGION_ITEMS}
+            value={draft.region}
+            onChange={(v) => apply({ ...draft, region: v })}
+          />
+          {FILTER_SELECTS.map((f) => (
+            <FilterSelect
+              key={f.key}
+              items={f.items}
+              value={draft[f.key]}
+              onChange={(v) => apply({ ...draft, [f.key]: v })}
+            />
+          ))}
+          <Button type="button" variant="ghost" className="w-18" onClick={() => apply(EMPTY)}>
+            초기화
+          </Button>
+        </div>
       </form>
 
       <Table>

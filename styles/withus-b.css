@@ -377,6 +377,8 @@
 /* 기간 선택 · 섹션 탭 — 알약 */
 .wb-seg {
   display: inline-flex;
+  /* 세로 flex 부모(flex-col)에서도 버튼 폭만큼만 — 없으면 줄 끝까지 늘어난다 */
+  width: fit-content;
   gap: 2px;
   padding: 3px;
   border-radius: 999px;

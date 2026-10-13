@@ -214,8 +214,11 @@
 .wb-ph__actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
   flex-wrap: wrap;
+  /* 제목 아래 줄로 내려가도 오른쪽에 붙게 */
+  margin-left: auto;
 }
 .wb-ph__range {
   font-size: 12.5px;
@@ -279,6 +282,10 @@
   gap: 12px;
   margin-top: 12px;
   align-items: stretch;
+}
+/* 두 카드를 같은 폭으로 (대시보드 활성 캠페인 · 최근 이벤트). 좁은 화면의 1열 규칙이 아래에 있어 그대로 이긴다 */
+.wb-row--even {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 /* 화면 제목만 따로 쓰는 곳 (제목 옆에 버튼 줄이 있는 shadcn 화면) — .wb-ph h1 과 같은 글꼴 */
