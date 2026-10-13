@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- withus 로고 표식: 파랑 그라데이션 둥근 사각형 (components/withus-b/ui.tsx 의 Logo 와 같은 모양) -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#297dfb"/>
+      <stop offset="1" stop-color="#1a0cff"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="40" height="40" rx="13" fill="url(#g)" transform="rotate(12 32 32)"/>
+</svg>
