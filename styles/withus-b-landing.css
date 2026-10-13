@@ -1104,6 +1104,228 @@
     inset 0 0 0 1px var(--line),
     var(--wb-shadow-sm);
 }
+/* =========================================================
+   첫 화면 앱 예시 — 심플 모던
+   상자 안 상자 · 색 알약 · 색 네모를 덜고, 얇은 선 · 여백 · 글자 굵기로만 위계를 만든다
+   ========================================================= */
+.wb-landing .stage {
+  padding-bottom: 40px;
+}
+.wb-landing .stage .in {
+  align-items: start;
+}
+.wb-landing .appk,
+.wb-landing .chat {
+  min-height: 0;
+  border-radius: var(--wb-r-xl);
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 28, 46, 0.06),
+    0 24px 60px -28px rgba(0, 28, 46, 0.28);
+}
+.wb-landing .chat {
+  margin-top: 56px;
+  padding: 20px 20px 16px;
+}
+.wb-landing .appk main {
+  padding: 20px 22px 18px;
+}
+.wb-landing .appk h6 {
+  font: 600 12.5px/1 var(--sans);
+  margin: 18px 0 8px;
+}
+.wb-landing .appk h6:first-child {
+  margin-top: 2px;
+}
+.wb-landing .appk h6 span {
+  padding: 0;
+  box-shadow: none;
+  font: 500 11.5px/1 var(--sans);
+  color: var(--mute);
+}
+/* 도구: 회색 바탕 위 알약 탭 하나 (관리자 화면의 .wb-seg 와 같은 모양) */
+.wb-landing .tools {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--grey);
+}
+.wb-landing .tools button {
+  height: 28px;
+  padding: 0 14px;
+  border-radius: 999px;
+  box-shadow: none;
+  font: 500 12px/1 var(--sans);
+  color: var(--mute);
+}
+.wb-landing .tools button.on {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: var(--wb-shadow-sm);
+}
+/* 목록: 바깥 상자 없이 얇은 구분선만, 제목 아래 설명 한 줄 */
+.wb-landing .q {
+  margin-top: 0;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.wb-landing .q > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.wb-landing .q > div:last-child {
+  border-bottom: 0;
+}
+/* 예전 규칙 `.q div` 가 줄 안쪽 상자에도 걸려 제목·설명이 한 줄로 붙고 밑줄이 생겼다 — 안쪽은 되돌린다 */
+.wb-landing .q > div > div {
+  display: block;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.wb-landing .q b {
+  font: 600 12.5px/1.3 var(--sans);
+}
+.wb-landing .q small {
+  display: block;
+  margin-top: 3px;
+  font: 400 11px/1.3 var(--sans);
+  color: var(--mute);
+}
+.wb-landing .q > div > span:first-child {
+  font-size: 12.5px;
+}
+/* 날짜·상태는 회색 글자, 급한 것만 빨간 글자 */
+.wb-landing .q .due {
+  padding: 0;
+  background: none;
+  font: 500 11.5px/1 var(--sans);
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+}
+.wb-landing .q .due.r {
+  color: var(--wb-err, #d1242f);
+  font-weight: 600;
+}
+.wb-landing .count {
+  color: var(--mute);
+}
+/* 워크플로우 카드 머리 */
+.wb-landing .chat .hd {
+  display: block;
+  padding-bottom: 6px;
+  border-bottom: 0;
+  font: 600 14px/1.3 var(--sans);
+}
+.wb-landing .chat .hd small {
+  display: block;
+  margin-bottom: 4px;
+  font: 500 11px/1 var(--sans);
+  color: var(--mute);
+}
+/* 워크플로우: 점과 세로선으로 잇는 타임라인 (히어로·기능 카드 공용) */
+.wb-landing .flow {
+  --flow-line: #c6d2dc;
+  gap: 0;
+  margin-top: 10px;
+}
+.wb-landing .flow li {
+  gap: 10px;
+  padding: 8px 0 8px 22px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-size: 12.5px;
+}
+/* 선은 정수 픽셀에 둔다 — 4.5px 에 1px 선을 두면 두 픽셀에 반씩 번져 거의 안 보인다. 점(폭 10px)의 가운데 = 5px */
+.wb-landing .flow li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--flow-line);
+}
+.wb-landing .flow li:first-child::before {
+  top: 50%;
+}
+.wb-landing .flow li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 0 0 2px #1a4bff;
+}
+.wb-landing .flow i {
+  min-width: 30px;
+  padding: 0;
+  background: none;
+  color: var(--mute);
+  font: 500 11px/1.2 var(--sans);
+  text-align: left;
+}
+/* 갈래(예/아니오): 줄기에서 꺾여 들어간다. 줄기는 '예' 칸을 지나 '아니오'까지 이어진다 */
+.wb-landing .flow .yes,
+.wb-landing .flow .no {
+  margin-left: 0;
+  padding-left: 42px;
+}
+.wb-landing .flow .yes {
+  background: linear-gradient(var(--flow-line), var(--flow-line)) 4px 0 / 2px 100% no-repeat;
+}
+.wb-landing .flow .yes::before,
+.wb-landing .flow .no::before {
+  left: 4px;
+  top: 0;
+  bottom: calc(50% - 1px);
+  width: 22px;
+  background: none;
+  border-left: 2px solid var(--flow-line);
+  border-bottom: 2px solid var(--flow-line);
+  border-bottom-left-radius: 8px;
+}
+.wb-landing .flow .yes::after,
+.wb-landing .flow .no::after {
+  left: 26px;
+}
+.wb-landing .flow .yes::after {
+  box-shadow: inset 0 0 0 2px #13803f;
+}
+.wb-landing .flow .no::after {
+  box-shadow: inset 0 0 0 2px #c27a00;
+}
+.wb-landing .flow .yes i,
+.wb-landing .flow .no i {
+  background: none;
+}
+.wb-landing .flow .yes i {
+  color: #13803f;
+}
+.wb-landing .flow .no i {
+  color: #a15c00;
+}
+
+@media (max-width: 640px) {
+  .wb-landing .tools {
+    display: flex;
+  }
+  .wb-landing .tools button {
+    flex: 1;
+    padding: 0 6px;
+  }
+}
 @media (max-width: 980px) {
   .wb-landing .nav nav {
     display: none;

@@ -237,21 +237,15 @@ export default function Landing() {
                 </h6>
                 <div className="tools" id="tools">
                   <button className="on" data-k="0">
-                    <i style={{ background: "#8fd3ff" }}></i>세그먼트
+                    세그먼트
                   </button>
-                  <button data-k="1">
-                    <i style={{ background: "#a9dcff" }}></i>템플릿
-                  </button>
-                  <button data-k="2">
-                    <i style={{ background: "#18c8ff" }}></i>캠페인
-                  </button>
-                  <button data-k="3">
-                    <i style={{ background: "#cfeaff" }}></i>쿠폰
-                  </button>
+                  <button data-k="1">템플릿</button>
+                  <button data-k="2">캠페인</button>
+                  <button data-k="3">쿠폰</button>
                 </div>
                 <h6 style={{ marginTop: "18px" }}>
                   발송 대기열{" "}
-                  <span style={{ background: "#001c2e", color: "#fff", boxShadow: "none" }} id="qn">
+                  <span className="count" id="qn">
                     3
                   </span>
                 </h6>
@@ -271,7 +265,8 @@ export default function Landing() {
             </div>
             <div className="chat">
               <div className="hd">
-                <b></b>워크플로우 · 신규 고객 환영
+                <small>워크플로우</small>
+                신규 고객 환영
               </div>
               <Flow />
             </div>
