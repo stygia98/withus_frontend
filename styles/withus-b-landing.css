@@ -223,7 +223,8 @@
   min-height: 420px;
 }
 .wb-landing .appk aside {
-  background: var(--deep);
+  background: #f7f9fb;
+  border-right: 1px solid var(--line);
   display: grid;
   align-content: start;
   gap: 14px;
@@ -234,10 +235,11 @@
   width: 22px;
   height: 22px;
   border-radius: 5px;
-  background: var(--lav);
+  background: var(--wb-grad);
+  box-shadow: var(--wb-glow);
   display: grid;
   place-items: center;
-  color: var(--deep);
+  color: #fff;
   font-size: 12px;
 }
 .wb-landing .appk aside svg {
@@ -602,6 +604,69 @@
   display: grid;
   place-items: center;
   font: 600 20px/1 var(--sans);
+}
+.wb-landing .row .ring {
+  background: conic-gradient(#1a4bff 0 6.7%, #e3f0fb 6.7% 100%);
+}
+.wb-landing .row .ring span {
+  font-size: 17px;
+}
+
+/* 워크플로우 미리보기 — 단계는 흰 줄, 갈래(예/아니오)는 들여 쓰고 세로선으로 잇는다 */
+.wb-landing .flow {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  text-align: left;
+}
+.wb-landing .flow li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--wb-r-sm);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 12px;
+  color: var(--ink);
+}
+.wb-landing .flow i {
+  flex: none;
+  min-width: 34px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #ebf2ff;
+  color: #1a4bff;
+  font: 600 10.5px/1.2 var(--sans);
+  font-style: normal;
+  text-align: center;
+}
+.wb-landing .flow .yes,
+.wb-landing .flow .no {
+  margin-left: 20px;
+}
+.wb-landing .flow .yes::before,
+.wb-landing .flow .no::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: -6px;
+  bottom: 50%;
+  width: 9px;
+  border-left: 1.5px solid var(--line);
+  border-bottom: 1.5px solid var(--line);
+  border-bottom-left-radius: 6px;
+}
+.wb-landing .flow .yes i {
+  background: #ebf9f0;
+  color: #13803f;
+}
+.wb-landing .flow .no i {
+  background: #fff6e5;
+  color: #a15c00;
 }
 .wb-landing .uh {
   display: flex;
@@ -984,6 +1049,7 @@
 .wb-landing .chat {
   border-radius: var(--wb-r-lg) var(--wb-r-lg) 0 0;
   outline: 4px solid rgba(255, 255, 255, 0.4);
+  text-align: left;
 }
 .wb-landing .card {
   border-radius: var(--wb-r-md) var(--wb-r-md) 0 0;

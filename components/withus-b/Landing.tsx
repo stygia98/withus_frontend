@@ -9,23 +9,49 @@ import { useEffect, useRef } from "react";
 const QUEUE: [string, string, "r" | "y" | "g", string][][] = [
   [
     ["10월 재방문 쿠폰 · 서울 세그먼트", "1,284명 · 메일", "r", "20:50 마감 임박"],
-    ["휴면 고객 웰컴백", "212명 · 메일", "y", "오늘 19:00"],
-    ["수신동의 2년 확인 안내", "318명 · 메일", "g", "11.01 09:00"],
+    ["휴면 고객 다시 부르기", "212명 · 메일", "y", "오늘 19:00"],
+    ["수신동의 2년 확인 안내", "318명 · 자동 안내", "g", "11.01 09:00"],
   ],
   [
-    ["재방문 쿠폰 템플릿", "변수 {이름} {쿠폰}", "g", "검수 완료"],
-    ["팬미팅 D-7 SMS", "90자 · (광고) 표기", "y", "검수 대기"],
+    ["재방문 쿠폰 메일", "{{name}} · {{couponUrl}}", "g", "광고 메일"],
+    ["팬미팅 D-7 문자", "88바이트 · (광고) 자동 표기", "y", "SMS"],
   ],
   [
-    ["팬미팅 사전 알림", "2,410명 · 예약", "y", "10.12 19:00"],
-    ["응원봉 v3 사전 판매", "4,812명 · SMS", "g", "10.30 13:00"],
-    ["9월 생일 쿠폰", "402명 · 완료", "g", "전환 7.8%"],
+    ["팬미팅 사전 알림", "2,410명 · 일회성", "y", "예약 10.12 19:00"],
+    ["신규 고객 환영 여정", "워크플로우 · 3단계", "g", "활성"],
+    ["9월 정기 소식", "402명 · 일회성", "g", "완료"],
   ],
   [
     ["재방문 20% 쿠폰", "사용 92 / 1,284", "g", "11.06까지"],
     ["팬미팅 굿즈 10%", "사용 0 / 2,410", "r", "오늘 만료"],
   ],
 ];
+
+// 워크플로우 미리보기: 트리거 → 발송 → 대기 → 조건 분기(예/아니오) — PRD 6.1 노드 · 6.3 분기 조건
+function Flow() {
+  return (
+    <ol className="flow">
+      <li>
+        <i>시작</i>지정 일시 · 세그먼트 1,284명
+      </li>
+      <li>
+        <i>메일</i>재방문 쿠폰 안내
+      </li>
+      <li>
+        <i>대기</i>3일
+      </li>
+      <li>
+        <i>조건</i>메일을 클릭했나요?
+      </li>
+      <li className="yes">
+        <i>예</i>쿠폰 메일 발송
+      </li>
+      <li className="no">
+        <i>아니오</i>문자로 다시 알림
+      </li>
+    </ol>
+  );
+}
 
 // 팬 화면(/c, /unsubscribe)은 고객별 토큰 링크로만 열리므로 홈에서 바로 가는 링크는 두지 않는다
 export default function Landing() {
@@ -147,13 +173,12 @@ export default function Landing() {
         <section className="hero">
           <div className="w">
             <h1 className="rv">
-              팬 마케팅을 위한 <span className="box l">CRM</span>
-              <br />
-              운영 <span className="box m">시스템</span>
+              반응에 따라 이어지는
+              <br />팬 마케팅 <span className="em">자동화</span>
             </h1>
             <p className="rv d1">
-              withus는 고객 DB, 세그먼트, 메일 · SMS 발송, 쿠폰, 성과 분석을 하나로 연결해요. 흩어진
-              툴 대신 한 화면에서 캠페인을 운영하세요.
+              세그먼트로 대상을 고르면, 메일을 열었는지, 눌렀는지에 따라 다음 메시지가 자동으로
+              나가요. 고객 DB부터 발송, 쿠폰 전환까지 한 화면에서 운영하세요.
             </p>
             <div className="cta rv d2">
               <a href="/login" className="btn k">
@@ -246,15 +271,9 @@ export default function Landing() {
             </div>
             <div className="chat">
               <div className="hd">
-                <b></b>withus AI
+                <b></b>워크플로우 · 신규 고객 환영
               </div>
-              <div className="art"></div>
-              <h5>안녕하세요, 하늘님!</h5>
-              <div className="sg">
-                <span>휴면 고객 웰컴백 메일 쓰기</span>
-                <span>이번 주 오픈율 요약하기</span>
-                <span>쿠폰 전환이 높은 세그먼트 찾기</span>
-              </div>
+              <Flow />
             </div>
           </div>
         </section>
@@ -272,8 +291,8 @@ export default function Landing() {
               쿠폰은 또 다른 곳에. 연결은 마케터가 손으로 하고, 결과는 끝나고 나서야 보여요.
             </p>
             <p className="lede rv d2">
-              withus는 그 우회로를 없애요. 고객 데이터가 기준이 되고, 반응이 신호가 되고, AI가 그
-              둘을 이어 줘요.
+              withus는 그 우회로를 없애요. 고객 데이터가 기준이 되고, 반응이 신호가 되고,
+              워크플로우가 그 둘을 이어 줘요.
             </p>
           </div>
           <svg className="scrib rv" viewBox="0 0 1000 230" aria-hidden="true">
@@ -302,159 +321,7 @@ export default function Landing() {
             </h2>
             <div className="rows">
               <div className="row rv">
-                <div className="pic" style={{ background: "var(--mint)" }}>
-                  <svg
-                    className="blob"
-                    viewBox="0 0 200 200"
-                    style={{ left: "8%", top: "-10%", width: "78%" }}
-                  >
-                    <path
-                      d="M40 10 170 0 200 110 140 200 20 180 0 70z"
-                      fill="#1a4bff"
-                      opacity=".9"
-                    />
-                  </svg>
-                  <div className="card">
-                    <div className="t">
-                      <b></b>withus AI
-                    </div>
-                    캠페인 초안을 만들었어요. 바로 수정할 수 있어요.
-                    <div className="chip">📄 10월 재방문 쿠폰 캠페인 ›</div>
-                    <p style={{ marginTop: "12px" }}>이어서 할 수 있는 일:</p>
-                    <ol className="ol">
-                      <li>
-                        <span className="tagp">서울 · 최근 반응 30일+</span> 세그먼트에 예약 발송
-                      </li>
-                      <li>메일 미열람 고객에게 SMS 리마인드 추가</li>
-                      <li>쿠폰 전환 리포트 만들기</li>
-                    </ol>
-                  </div>
-                </div>
-                <div className="txt">
-                  <svg className="ico" viewBox="0 0 48 48">
-                    <rect x="4" y="20" width="40" height="7" fill="#1a4bff" />
-                    <rect x="8" y="28" width="34" height="7" fill="#2fd1ff" />
-                    <rect x="2" y="36" width="44" height="8" fill="#18c8ff" />
-                    <rect
-                      x="16"
-                      y="6"
-                      width="6"
-                      height="16"
-                      transform="rotate(-20 19 14)"
-                      fill="#cfeaff"
-                    />
-                  </svg>
-                  <div>
-                    <h3>
-                      흩어진 툴이 아닌
-                      <br />
-                      하나로 이어진 흐름
-                    </h3>
-                    <p>
-                      수집 · 세그먼트 · 발송 · 분석을 한 루프로 연결해 툴과 담당자 사이의 전달
-                      과정을 없애요.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="row r rv">
-                <div
-                  className="pic"
-                  style={{
-                    background: "var(--pink)",
-                    backgroundImage:
-                      "linear-gradient(rgba(255,255,255,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.25) 1px,transparent 1px)",
-                    backgroundSize: "16px 16px",
-                  }}
-                >
-                  <svg
-                    className="blob"
-                    viewBox="0 0 200 200"
-                    style={{ left: "-8%", top: "-30%", width: "50%" }}
-                  >
-                    <path
-                      d="M100 0 120 60 190 40 140 100 200 150 120 140 100 200 80 140 0 150 60 100 10 40 80 60z"
-                      fill="#cfeaff"
-                    />
-                  </svg>
-                  <div className="card" style={{ width: "min(380px,100%)" }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div>
-                        <b style={{ fontSize: "13px" }}>쿠폰 전환 현황</b>
-                        <br />
-                        <small style={{ color: "var(--mute)" }}>최근 7일 · 전체 캠페인</small>
-                      </div>
-                      <div className="ring">
-                        <span>799</span>
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "12px",
-                        marginTop: "10px",
-                        fontSize: "11px",
-                        color: "var(--mute)",
-                      }}
-                    >
-                      <span>● 사용</span>
-                      <span>● 곧 만료</span>
-                      <span>● 미사용</span>
-                    </div>
-                    <div
-                      className="chip"
-                      style={{ width: "100%", justifyContent: "space-between" }}
-                    >
-                      오픈율 41.2% <span style={{ color: "#13803f" }}>+3.4%p</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="txt">
-                  <svg className="ico" viewBox="0 0 48 48">
-                    <rect x="2" y="2" width="44" height="44" fill="#1a4bff" />
-                    <rect x="6" y="6" width="17" height="17" fill="#cfeaff" />
-                    <rect x="25" y="6" width="17" height="17" fill="#2fd1ff" />
-                    <rect x="6" y="25" width="17" height="17" fill="#2fd1ff" />
-                    <rect x="25" y="25" width="17" height="17" fill="#cfeaff" />
-                    <circle cx="14.5" cy="14.5" r="4" fill="#001c2e" />
-                    <circle cx="33.5" cy="33.5" r="4" fill="#001c2e" />
-                  </svg>
-                  <div>
-                    <h3>
-                      캠페인 성과를
-                      <br />
-                      실시간으로
-                    </h3>
-                    <p>
-                      오픈 · 클릭 · 쿠폰 전환이 바로 쌓여요. 캠페인이 끝난 뒤가 아니라, 진행 중에
-                      판단하세요.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="row rv">
-                <div
-                  className="pic"
-                  style={{
-                    background: "var(--lav)",
-                    backgroundImage:
-                      "linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px)",
-                    backgroundSize: "16px 16px",
-                  }}
-                >
-                  <svg
-                    className="blob"
-                    viewBox="0 0 200 200"
-                    style={{ right: "-10%", bottom: "-20%", width: "60%" }}
-                  >
-                    <circle cx="100" cy="100" r="100" fill="#2fd1ff" />
-                  </svg>
+                <div className="pic">
                   <div className="card">
                     <div className="t" style={{ fontSize: "13px" }}>
                       고객 DB 업로드
@@ -474,22 +341,17 @@ export default function Landing() {
                         alignItems: "baseline",
                       }}
                     >
-                      <span style={{ color: "var(--mute)" }}>타깃 고객</span>
+                      <span style={{ color: "var(--mute)" }}>대상 고객</span>
                       <span className="big" data-count="1284">
                         0
                       </span>
                     </div>
                     <div className="chip">
-                      지역 = 서울 <b>AND</b> 최근 반응 30일+ <b>AND</b> 수신 동의
+                      지역 = 서울 <b>AND</b> 가입 90일 이내 <b>AND</b> 메일 수신 동의
                     </div>
                   </div>
                 </div>
                 <div className="txt">
-                  <svg className="ico" viewBox="0 0 48 48">
-                    <circle cx="24" cy="24" r="22" fill="#001c2e" />
-                    <circle cx="24" cy="24" r="15" fill="#a9dcff" />
-                    <circle cx="24" cy="24" r="8" fill="#18c8ff" />
-                  </svg>
                   <div>
                     <h3>
                       세그먼트 기반
@@ -497,8 +359,72 @@ export default function Landing() {
                       정밀 타깃팅
                     </h3>
                     <p>
-                      지역 · 연령 · 누적 구매액 · 최근 반응을 AND / OR로 결합하면 대상 인원이 바로
-                      계산돼요.
+                      지역 · 연령 · 가입일 · 누적 구매액 · 휴면 여부를 AND / OR로 묶으면 대상 인원이
+                      바로 계산돼요. 엑셀 · CSV로 최대 1만 명을 한 번에 올릴 수 있어요.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="row r rv">
+                <div className="pic">
+                  <div className="card" style={{ width: "min(380px,100%)" }}>
+                    <div className="t">
+                      <b></b>워크플로우
+                    </div>
+                    <Flow />
+                  </div>
+                </div>
+                <div className="txt">
+                  <div>
+                    <h3>
+                      반응에 따라 갈라지는
+                      <br />
+                      워크플로우
+                    </h3>
+                    <p>
+                      트리거 → 대기 → 조건 분기 → 발송. 메일을 클릭한 고객과 그렇지 않은 고객에게
+                      다른 메시지를 자동으로 보내요. 분기는 최대 2단계까지 둘 수 있어요.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="row rv">
+                <div className="pic">
+                  <div className="card" style={{ width: "min(380px,100%)" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div>
+                        <b style={{ fontSize: "13px" }}>쿠폰 전환율</b>
+                        <br />
+                        <small style={{ color: "var(--mute)" }}>최근 7일 · 봇 클릭 제외</small>
+                      </div>
+                      <div className="ring">
+                        <span>6.7%</span>
+                      </div>
+                    </div>
+                    <div
+                      className="chip"
+                      style={{ width: "100%", justifyContent: "space-between", marginTop: "14px" }}
+                    >
+                      오픈율 40.0% <span>클릭률 20.0%</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="txt">
+                  <div>
+                    <h3>
+                      캠페인 성과를
+                      <br />
+                      단계별로
+                    </h3>
+                    <p>
+                      발송 · 오픈 · 클릭 · 쿠폰 전환이 워크플로우 단계마다 쌓여요. 봇 클릭과 테스트
+                      발송은 모든 지표에서 빼요.
                     </p>
                   </div>
                 </div>
@@ -515,7 +441,7 @@ export default function Landing() {
                 <br />
                 하나의 시스템으로
               </h2>
-              <p>withus는 매장이 실제로 일하는 방식에 맞춰요. 별도 툴이나 추가 작업 없이요.</p>
+              <p>withus는 마케팅 팀이 실제로 일하는 방식에 맞춰요. 별도 툴이나 추가 작업 없이요.</p>
             </div>
             <div className="uses">
               <article className="use rv">
@@ -529,18 +455,18 @@ export default function Landing() {
                   </svg>
                   <div className="card">
                     <span className="tagp" style={{ float: "right" }}>
-                      추천
+                      AI
                     </span>
-                    <b style={{ fontSize: "13px" }}>AI로 캠페인 만들기</b>
+                    <b style={{ fontSize: "13px" }}>메일 문구 초안</b>
                     <p style={{ color: "var(--mute)", marginTop: "6px" }}>
-                      목표만 쓰면 세그먼트 · 문구 · 발송 시간을 제안해요.
+                      목적 · 타깃 · 톤을 적으면 제목과 본문 3안
                     </p>
                   </div>
                 </div>
-                <h3>캠페인 기획과 제작</h3>
+                <h3>문구 작성과 발송 시간</h3>
                 <p>
-                  목표를 입력하면 세그먼트와 문구, 발송 시간까지 바로 실행할 수 있는 초안을
-                  만들어요.
+                  AI가 메일 제목 · 본문 3안을 쓰고, 지난 90일 반응으로 발송 시간을 추천해요. 추천
+                  시각은 늘 08:00–20:00 안이에요.
                 </p>
               </article>
               <article className="use rv d1">
@@ -558,12 +484,14 @@ export default function Landing() {
                   <div className="card">
                     <b style={{ fontSize: "13px" }}>어떤 고객에게 보낼까요?</b>
                     <div className="chip" style={{ width: "100%" }}>
-                      예: 서울, 최근 30일 반응 없음
+                      예: 서울, 휴면 고객
                     </div>
                   </div>
                 </div>
                 <h3>세그먼트와 타깃팅</h3>
-                <p>고객 반응이 쌓일 때마다 세그먼트가 갱신되어 다음 발송 대상이 바로 정해져요.</p>
+                <p>
+                  세그먼트는 보낼 때마다 조건으로 다시 계산돼, 늘 지금 조건에 맞는 고객에게 가요.
+                </p>
               </article>
               <article className="use rv d2">
                 <div className="pic">
@@ -587,12 +515,15 @@ export default function Landing() {
                       <div className="ring" style={{ width: "46px", height: "46px" }}>
                         <span style={{ width: "32px", height: "32px", fontSize: "11px" }}>42</span>
                       </div>
-                      <span style={{ color: "var(--mute)" }}>웰컴백 오픈율 42%</span>
+                      <span style={{ color: "var(--mute)" }}>다시 부르기 메일 오픈율 42%</span>
                     </div>
                   </div>
                 </div>
-                <h3>휴면 고객 재활성화</h3>
-                <p>반응이 끊긴 고객을 찾아 자동으로 다시 연결해요.</p>
+                <h3>휴면 고객 다시 부르기</h3>
+                <p>
+                  180일 동안 클릭 · 구매가 없는 고객을 매일 휴면으로 표시해요. 휴면 세그먼트로 다시
+                  메시지를 보내요.
+                </p>
               </article>
               <article className="use rv">
                 <div className="pic">
@@ -606,12 +537,14 @@ export default function Landing() {
                   <div className="card">
                     <b style={{ fontSize: "13px" }}>팬미팅 사전 알림</b>
                     <p style={{ color: "var(--mute)", marginTop: "4px" }}>
-                      D-7 · D-1 · 당일 순서대로 안내
+                      D-7 메일 → 3일 대기 → 안 열면 문자
                     </p>
                   </div>
                 </div>
                 <h3>공연 · 팬미팅 알림</h3>
-                <p>예약 발송으로 일정 전에 필요한 안내를 순서대로 보내요.</p>
+                <p>
+                  예약 발송이나 워크플로우의 대기 단계로, 일정 전에 필요한 안내를 순서대로 보내요.
+                </p>
               </article>
               <article className="use rv d1">
                 <div className="pic">
@@ -630,7 +563,9 @@ export default function Landing() {
                   </div>
                 </div>
                 <h3>굿즈 · 사전 판매</h3>
-                <p>VIP 세그먼트에 먼저 열고 반응을 실시간으로 확인해요.</p>
+                <p>
+                  누적 구매액으로 VIP 세그먼트를 만들어 먼저 알리고, 오픈 · 클릭을 바로 확인해요.
+                </p>
               </article>
               <article className="use rv d2">
                 <div className="pic">
@@ -642,14 +577,17 @@ export default function Landing() {
                     <path d="M0 10h200v20H0z" fill="#1a4bff" />
                   </svg>
                   <div className="card">
-                    <b style={{ fontSize: "13px" }}>생일 쿠폰 · 매월 자동</b>
+                    <b style={{ fontSize: "13px" }}>신규 고객 환영 · 자동 시작</b>
                     <p style={{ color: "var(--mute)", marginTop: "4px" }}>
-                      9월 312건 사용 · 전환 7.8%
+                      등록 즉시 환영 메일 → 7일 뒤 쿠폰
                     </p>
                   </div>
                 </div>
-                <h3>정기 · 자동 발송</h3>
-                <p>생일 · 수신 동의 재확인처럼 반복되는 발송은 한 번 설정하면 끝나요.</p>
+                <h3>신규 고객 환영</h3>
+                <p>
+                  고객을 개별 등록하면 조건에 맞는 고객에게 워크플로우가 자동으로 시작돼요. 수신동의
+                  2년 확인 안내는 시스템이 알아서 보내요.
+                </p>
               </article>
             </div>
           </div>
@@ -662,12 +600,12 @@ export default function Landing() {
               <div className="tr rv">
                 <span className="n">01</span>
                 <h3>광고 발송 시간</h3>
-                <p>광고성 발송은 08:00–20:50에만, 넘기면 다음 날 자동 예약.</p>
+                <p>광고는 08:00–20:50에만 나가요. 시간이 넘으면 다음 날 08:00에 이어서 보내요.</p>
               </div>
               <div className="tr rv d1">
                 <span className="n">02</span>
                 <h3>수신 거부 자동 삽입</h3>
-                <p>모든 메일 · SMS에 수신 거부 링크가 자동으로 들어가요.</p>
+                <p>광고 메일엔 수신 거부 링크, 문자엔 무료 수신거부 번호가 자동으로 들어가요.</p>
               </div>
               <div className="tr rv d2">
                 <span className="n">03</span>
@@ -677,7 +615,7 @@ export default function Landing() {
               <div className="tr rv d3">
                 <span className="n">04</span>
                 <h3>쿠폰 1회 사용</h3>
-                <p>쿠폰은 1회만 사용, 사용 시각과 매장이 기록돼요.</p>
+                <p>쿠폰은 한 번만 쓸 수 있고, 사용 시각이 기록돼요.</p>
               </div>
             </div>
             <div className="band rv">
@@ -688,7 +626,7 @@ export default function Landing() {
                 <span className="seal">권한 관리</span>
                 <span className="seal">1회 쿠폰</span>
                 <span className="seal">마스킹</span>
-                <span className="seal">로그 기록</span>
+                <span className="seal">동의 이력</span>
               </div>
             </div>
           </div>
@@ -716,7 +654,7 @@ export default function Landing() {
             <div className="endp rv">
               <h2 className="h2">캠페인 운영, 오늘부터 한 화면에서</h2>
               <p className="lede">
-                고객 업로드부터 발송, 쿠폰 전환 확인까지. 계정은 조직의 OWNER가 발급해요.
+                고객 업로드부터 워크플로우 발송, 쿠폰 전환 확인까지. 계정은 조직의 OWNER가 발급해요.
               </p>
               <div className="cta">
                 <a href="/login" className="btn k">
@@ -735,9 +673,9 @@ export default function Landing() {
             <div className="fb">
               <span className="logo">withus</span>
               <p>
-                팬 마케팅을 위한 CRM 운영 시스템.
+                반응에 따라 이어지는 팬 마케팅 자동화.
                 <br />
-                고객 · 세그먼트 · 발송 · 쿠폰 · 성과를 한 곳에서.
+                고객 · 세그먼트 · 워크플로우 · 쿠폰 · 성과를 한 곳에서.
               </p>
             </div>
             <nav className="fc" aria-label="둘러보기">
@@ -749,7 +687,7 @@ export default function Landing() {
             <div className="fc">
               <b>발송 원칙</b>
               <span>광고 발송은 08:00–20:50</span>
-              <span>수신 거부 링크 자동 삽입</span>
+              <span>광고에 수신 거부 수단 자동 삽입</span>
               <span>쿠폰은 1회만 사용</span>
             </div>
             <div className="fc">
