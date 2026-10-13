@@ -235,11 +235,7 @@ export default function CustomersPage() {
       )}
 
       <UploadDialog open={uploading} onOpenChange={setUploading} />
-      <CustomerFormDialog
-        open={creating}
-        onOpenChange={setCreating}
-        onSaved={(c) => router.push(`/customers/${c.customerId}`)}
-      />
+      <CustomerFormDialog open={creating} onOpenChange={setCreating} />
     </div>
   );
 }

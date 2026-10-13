@@ -190,7 +190,12 @@ export default function CustomerDetailPage() {
       <PurchaseCard customerId={id} />
       <ActivityCards customerId={id} />
 
-      <CustomerFormDialog open={editing} onOpenChange={setEditing} customer={c} />
+      <CustomerFormDialog
+        open={editing}
+        onOpenChange={setEditing}
+        customer={c}
+        onSaved={() => router.push("/customers")}
+      />
       <ConsentDialog
         customer={c}
         channel={consentChannel}

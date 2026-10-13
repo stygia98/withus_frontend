@@ -106,10 +106,10 @@ export function TemplateForm(props: TemplateFormProps) {
             }),
           });
     },
-    onSuccess: (saved) => {
+    onSuccess: () => {
       toast.success(props.mode === "create" ? "템플릿을 만들었어요." : "템플릿을 수정했어요.");
       queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
-      router.push(`/templates/${saved.templateId}`);
+      router.push("/templates");
     },
     onError: (err) => {
       // 시스템이 자동으로 넣는 (광고)·수신거부 문구를 직접 쓴 경우 — 어느 입력칸인지 서버가 알려 준다

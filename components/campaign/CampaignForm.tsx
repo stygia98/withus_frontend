@@ -165,11 +165,11 @@ export function CampaignForm(props: CampaignFormProps) {
             body: JSON.stringify({ ...body, type: values.type }),
           });
     },
-    onSuccess: (saved) => {
+    onSuccess: () => {
       toast.success(editing ? "캠페인을 수정했어요." : "캠페인을 만들었어요.");
       queryClient.invalidateQueries({ queryKey: queryKeys.campaigns.all });
-      // 생성 직후에는 예약·시작을 이어서 설정할 수 있게 편집 화면으로 보낸다
-      router.push(`/campaigns/${saved.campaignId}/edit`);
+      // 저장하면 목록으로 돌아간다. 예약·시작·워크플로우는 목록에서 캠페인을 다시 열어 설정한다
+      router.push("/campaigns");
     },
     onError: (err) => {
       // CAMPAIGN_COUPON_REQUIRED(템플릿에 {{couponUrl}} 이 있는데 쿠폰 없음) 등은 백엔드 메시지를 그대로 보여준다
