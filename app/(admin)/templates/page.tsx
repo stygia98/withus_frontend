@@ -27,6 +27,7 @@ import {
 import { api, type Page } from "@/lib/api-client";
 import { formatDateTime } from "@/lib/datetime";
 import { TemplateCouponTabs } from "@/components/layout/section-tabs";
+import { PageHeader } from "@/components/withus";
 import { queryKeys } from "@/lib/query-keys";
 import type { Channel, Template } from "@/lib/types/template";
 
@@ -68,12 +69,19 @@ export default function TemplatesPage() {
 
   return (
     <main className="mx-auto max-w-5xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">메시지 템플릿</h1>
-        <Button render={<Link href="/templates/new" />} nativeButton={false}>
-          새 템플릿
-        </Button>
-      </div>
+      <PageHeader
+        en="Templates"
+        title={
+          <>
+            메시지 <span className="hl">템플릿</span>
+          </>
+        }
+        actions={
+          <Button render={<Link href="/templates/new" />} nativeButton={false}>
+            새 템플릿
+          </Button>
+        }
+      />
 
       <TemplateCouponTabs />
 

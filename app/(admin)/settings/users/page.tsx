@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import type { Me, Role } from "@/components/layout/admin-shell";
+import { PageHeader } from "@/components/withus";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -80,13 +81,16 @@ export default function UsersPage() {
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
-      <header className="flex items-end justify-between">
-        <div>
-          <p className="text-xs text-muted-foreground">시스템 설정</p>
-          <h1 className="text-2xl font-semibold">사용자 관리</h1>
-        </div>
-        {!forbidden && <Button onClick={() => setCreating(true)}>사용자 추가</Button>}
-      </header>
+      <PageHeader
+        en="Settings"
+        title={
+          <>
+            사용자 <span className="hl">관리</span>
+          </>
+        }
+        sub="시스템 설정"
+        actions={!forbidden && <Button onClick={() => setCreating(true)}>사용자 추가</Button>}
+      />
 
       <div className="rounded-xl border bg-card p-4">
         {forbidden ? (

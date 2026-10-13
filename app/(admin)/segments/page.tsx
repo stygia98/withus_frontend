@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
 import { CustomerTabs } from "@/components/layout/section-tabs";
+import { PageHeader } from "@/components/withus";
 import { queryKeys } from "@/lib/query-keys";
 
 // 세그먼트 목록 (PRD 4장 /segments): 조건 요약, 현재 대상 고객 수
@@ -36,12 +37,19 @@ export default function SegmentsPage() {
 
   return (
     <div className="space-y-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">고객 타겟팅</h1>
-        <Link href="/segments/new" className={buttonVariants()}>
-          세그먼트 만들기
-        </Link>
-      </div>
+      <PageHeader
+        en="Segments"
+        title={
+          <>
+            고객 <span className="hl">타겟팅</span>
+          </>
+        }
+        actions={
+          <Link href="/segments/new" className={buttonVariants()}>
+            세그먼트 만들기
+          </Link>
+        }
+      />
 
       <CustomerTabs />
 

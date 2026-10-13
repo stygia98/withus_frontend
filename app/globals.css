@@ -58,43 +58,43 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* 디자인 토큰 — docs/withus-design-kit 팔레트(종이·남색·레몬)에 맞춘 shadcn 변수.
+/* 디자인 토큰 — docs/withus-design-kit 팔레트(시안 B: 크림·먹색·라벤더)에 맞춘 shadcn 변수.
    킷으로 옮기지 않은 화면도 같은 색을 쓰도록 매핑한다. 새 색은 만들지 않는다 */
 :root {
-  --background: #e8eae6; /* 종이 */
-  --foreground: #14213d; /* 남색 글자 */
-  --card: #f3f4f1; /* 면 */
-  --card-foreground: #14213d;
-  --popover: #f3f4f1;
-  --popover-foreground: #14213d;
-  --primary: #14213d; /* 주 버튼은 남색 */
-  --primary-foreground: #f3f4f1;
-  --secondary: #dcdfd9;
-  --secondary-foreground: #14213d;
-  --muted: #dcdfd9;
-  --muted-foreground: #5f6676;
-  --accent: #e4e8f0; /* 선택·배지 바탕 */
-  --accent-foreground: #2f4b8a;
+  --background: #fbfaf6; /* 종이 */
+  --foreground: #111111; /* 먹색 글자 */
+  --card: #ffffff; /* 면 */
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+  --primary: #111111; /* 주 버튼은 먹색 */
+  --primary-foreground: #ffffff;
+  --secondary: #f1f0eb;
+  --secondary-foreground: #111111;
+  --muted: #f1f0eb;
+  --muted-foreground: #76746e;
+  --accent: #efe9ff; /* 선택·배지 바탕 */
+  --accent-foreground: #7c5cf0;
   --warning: #f6e7c4;
-  --warning-foreground: #8a5a00;
-  --destructive: #b42a1f;
-  --border: rgba(20, 33, 61, 0.12);
-  --input: rgba(20, 33, 61, 0.24);
-  --ring: #2f4b8a;
-  --chart-1: #14213d;
-  --chart-2: #2f4b8a;
-  --chart-3: #8aa0cc;
-  --chart-4: #8a5a00;
-  --chart-5: #5f6676;
+  --warning-foreground: #9a5e00;
+  --destructive: #c4321f;
+  --border: rgba(17, 17, 17, 0.12);
+  --input: rgba(17, 17, 17, 0.22);
+  --ring: #7c5cf0;
+  --chart-1: #111111;
+  --chart-2: #7c5cf0;
+  --chart-3: #cdbcff;
+  --chart-4: #9a5e00;
+  --chart-5: #76746e;
   --radius: 0.75rem;
-  --sidebar: #e8eae6;
-  --sidebar-foreground: #5f6676;
-  --sidebar-primary: #14213d;
-  --sidebar-primary-foreground: #f3f4f1;
-  --sidebar-accent: #f3f4f1;
-  --sidebar-accent-foreground: #14213d;
-  --sidebar-border: rgba(20, 33, 61, 0.12);
-  --sidebar-ring: #2f4b8a;
+  --sidebar: #fbfaf6;
+  --sidebar-foreground: #76746e;
+  --sidebar-primary: #111111;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: #111111;
+  --sidebar-border: rgba(17, 17, 17, 0.12);
+  --sidebar-ring: #7c5cf0;
 }
 
 .dark {

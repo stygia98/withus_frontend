@@ -154,7 +154,7 @@ export function DashboardView({
 
       <KpiRow items={kpis[period]} />
 
-      <div className="grid">
+      <div className="wu-grid">
         <div className="panel">
           <h2>
             활성 캠페인 현황{" "}

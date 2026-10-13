@@ -127,21 +127,25 @@ function AnalyticsBody({
       </p>
       <section aria-label="캠페인 핵심 지표" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile
+          tone="lav"
           label="발송 성공"
           value={formatCount(kpi.sent)}
           hint={`시도 ${formatCount(kpi.attempted)} · 성공률 ${formatRate(kpi.successRate)}`}
         />
         <StatTile
+          tone="mint"
           label="오픈율"
           value={formatRate(kpi.openRate)}
           hint={`고유 오픈 ${formatCount(kpi.uniqueOpens)}명`}
         />
         <StatTile
+          tone="cream"
           label="클릭률"
           value={formatRate(kpi.clickRate)}
           hint={`고유 클릭 ${formatCount(kpi.uniqueClicks)}명`}
         />
         <StatTile
+          tone="pink"
           label="전환율(쿠폰 사용)"
           value={formatRate(kpi.conversionRate)}
           hint={`쿠폰 사용 ${formatCount(kpi.couponUsed)}명`}

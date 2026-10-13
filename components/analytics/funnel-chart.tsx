@@ -11,7 +11,7 @@ import {
 import { FUNNEL_LABEL, type FunnelStage, formatCount, formatRate } from "@/lib/dashboard";
 
 const config = {
-  count: { label: "고객·건수", theme: { light: "#14213d", dark: "#8aa0cc" } },
+  count: { label: "고객·건수", theme: { light: "#111111", dark: "#cdbcff" } },
 } satisfies ChartConfig;
 
 /** 전환 흐름: 순서 있는 단계의 크기 비교 → 가로 막대 한 계열. 각 막대 끝에 값과 시도 대비 비율을 적는다 */
