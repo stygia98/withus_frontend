@@ -9,7 +9,8 @@ import {
   formatDateTime,
   SEND_STATUS_LABEL,
 } from "@/components/customer/types";
-import { Badge } from "@/components/ui/badge";
+import { COUPON_STATUS_TONE, SEND_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -50,8 +51,8 @@ export function ActivityCards({ customerId }: { customerId: number }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {activity.isError && <EmptyRow colSpan={6} text="불러오지 못했습니다." />}
-              {sends?.length === 0 && <EmptyRow colSpan={6} text="발송 이력이 없습니다." />}
+              {activity.isError && <EmptyRow colSpan={6} text="불러오지 못했어요." />}
+              {sends?.length === 0 && <EmptyRow colSpan={6} text="발송 이력이 없어요." />}
               {sends?.map((s) => (
                 <TableRow key={s.sendLogId}>
                   <TableCell>{formatDateTime(s.sentAt ?? s.createdAt)}</TableCell>
@@ -60,9 +61,7 @@ export function ActivityCards({ customerId }: { customerId: number }) {
                   </TableCell>
                   <TableCell>{CHANNEL_LABEL[s.channel]}</TableCell>
                   <TableCell>
-                    <Badge variant={s.status === "SENT" ? "default" : "outline"}>
-                      {SEND_STATUS_LABEL[s.status]}
-                    </Badge>
+                    <Status tone={SEND_STATUS_TONE[s.status]}>{SEND_STATUS_LABEL[s.status]}</Status>
                     {s.errorMessage && (
                       <span className="ml-2 text-xs text-muted-foreground">{s.errorMessage}</span>
                     )}
@@ -74,7 +73,7 @@ export function ActivityCards({ customerId }: { customerId: number }) {
             </TableBody>
           </Table>
           {sends?.length === 100 && (
-            <p className="mt-2 text-xs text-muted-foreground">최근 100건만 표시합니다.</p>
+            <p className="mt-2 text-xs text-muted-foreground">최근 100건만 표시해요.</p>
           )}
         </CardContent>
       </Card>
@@ -95,8 +94,8 @@ export function ActivityCards({ customerId }: { customerId: number }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {activity.isError && <EmptyRow colSpan={5} text="불러오지 못했습니다." />}
-              {coupons?.length === 0 && <EmptyRow colSpan={5} text="발급된 쿠폰이 없습니다." />}
+              {activity.isError && <EmptyRow colSpan={5} text="불러오지 못했어요." />}
+              {coupons?.length === 0 && <EmptyRow colSpan={5} text="발급된 쿠폰이 없어요." />}
               {coupons?.map((c) => (
                 <TableRow key={c.issueId}>
                   <TableCell>{formatDateTime(c.issuedAt)}</TableCell>
@@ -105,9 +104,9 @@ export function ActivityCards({ customerId }: { customerId: number }) {
                     {c.validFrom} ~ {c.validTo}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={c.status === "USABLE" ? "default" : "outline"}>
+                    <Status tone={COUPON_STATUS_TONE[c.status]}>
                       {COUPON_STATUS_LABEL[c.status]}
-                    </Badge>
+                    </Status>
                   </TableCell>
                   <TableCell>{c.usedAt ? formatDateTime(c.usedAt) : "-"}</TableCell>
                 </TableRow>

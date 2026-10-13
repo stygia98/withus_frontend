@@ -31,11 +31,11 @@ export default function EditTemplatePage() {
   });
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-6">
+    <main className="max-w-3xl space-y-4">
       {isLoading && <p className="text-muted-foreground">불러오는 중...</p>}
       {isError && (
         <QueryError
-          message={error instanceof ApiError ? error.message : "템플릿을 불러오지 못했습니다."}
+          message={error instanceof ApiError ? error.message : "템플릿을 불러오지 못했어요."}
           onRetry={() => refetch()}
         />
       )}

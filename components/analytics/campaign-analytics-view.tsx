@@ -46,12 +46,12 @@ export function CampaignAnalyticsView({ campaignId }: { campaignId: number }) {
 
   const canRetry = error && !(error instanceof ApiError && [400, 404].includes(error.status));
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       {/* 오류가 나도 제목과 기간 필터는 남겨 다른 기간으로 다시 조회할 수 있게 한다 */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-muted-foreground text-sm">캠페인 성과</p>
-          <h1 className="text-2xl font-semibold">{data?.name ?? name ?? "캠페인"}</h1>
+          <h1 className="wb-title">{data?.name ?? name ?? "캠페인"}</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* 목업 06: 다른 캠페인 성과로 가는 진입점 (성과 리포트 목록) */}
@@ -98,10 +98,10 @@ export function CampaignAnalyticsView({ campaignId }: { campaignId: number }) {
 }
 
 function errorMessage(error: Error): string {
-  if (error instanceof ApiError && error.status === 404) return "캠페인을 찾을 수 없습니다.";
+  if (error instanceof ApiError && error.status === 404) return "캠페인을 찾을 수 없어요.";
   // 기간 초과(최대 366일) 같은 입력 오류는 서버 메시지를 그대로 보여 준다
   if (error instanceof ApiError && error.status === 400) return error.message;
-  return "캠페인 성과를 불러오지 못했습니다.";
+  return "캠페인 성과를 불러오지 못했어요.";
 }
 
 function AnalyticsBody({
@@ -127,25 +127,21 @@ function AnalyticsBody({
       </p>
       <section aria-label="캠페인 핵심 지표" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile
-          tone="lav"
           label="발송 성공"
           value={formatCount(kpi.sent)}
           hint={`시도 ${formatCount(kpi.attempted)} · 성공률 ${formatRate(kpi.successRate)}`}
         />
         <StatTile
-          tone="mint"
           label="오픈율"
           value={formatRate(kpi.openRate)}
           hint={`고유 오픈 ${formatCount(kpi.uniqueOpens)}명`}
         />
         <StatTile
-          tone="cream"
           label="클릭률"
           value={formatRate(kpi.clickRate)}
           hint={`고유 클릭 ${formatCount(kpi.uniqueClicks)}명`}
         />
         <StatTile
-          tone="pink"
           label="전환율(쿠폰 사용)"
           value={formatRate(kpi.conversionRate)}
           hint={`쿠폰 사용 ${formatCount(kpi.couponUsed)}명`}
@@ -166,8 +162,8 @@ function AnalyticsBody({
       <CampaignReportCard campaignId={campaignId} kpi={wholePeriod && !loading ? kpi : null} />
       {/* PRD 8.1: 오픈율 한계 안내 문구를 리포트에 표시한다 */}
       <p className="text-muted-foreground text-xs">
-        Apple Mail 개인정보 보호, Gmail 이미지 프록시 등으로 오픈율은 실제와 다를 수 있습니다.
-        클릭률과 전환율을 함께 보세요. 봇 이벤트와 테스트·안내 발송은 모든 지표에서 뺍니다.
+        Apple Mail 개인정보 보호, Gmail 이미지 프록시 등으로 오픈율은 실제와 다를 수 있어요.
+        클릭률과 전환율을 함께 보세요. 봇 이벤트와 테스트·안내 발송은 모든 지표에서 빼요.
       </p>
     </>
   );

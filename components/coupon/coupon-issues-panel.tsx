@@ -4,7 +4,8 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { COUPON_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -47,7 +48,7 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
           <CardTitle>발급 현황 · {coupon.name}</CardTitle>
           <CardDescription>
             {formatDiscount(coupon)} · 발급 {formatCount(coupon.issuedCount)} · 사용{" "}
-            {formatCount(coupon.usedCount)}. 최근 발급순입니다.
+            {formatCount(coupon.usedCount)}. 최근 발급순이에요.
           </CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={onClose} aria-label="발급 현황 닫기">
@@ -60,8 +61,8 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
             {/* key 를 바꿔 다시 그려야 재시도가 또 실패했을 때 스크린리더가 문구를 다시 읽는다 */}
             <p key={errorUpdateCount} role="alert" className="text-destructive text-sm">
               {forbidden
-                ? "발급 현황은 OWNER·MANAGER만 볼 수 있습니다."
-                : "발급 현황을 불러오지 못했습니다."}
+                ? "발급 현황은 OWNER·MANAGER만 볼 수 있어요."
+                : "발급 현황을 불러오지 못했어요."}
             </p>
             {/* 권한 문제는 다시 시도해도 같아서 버튼을 두지 않는다 */}
             {!forbidden && (
@@ -84,7 +85,7 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
               {isPending ? (
                 <EmptyRow>불러오는 중...</EmptyRow>
               ) : data.content.length === 0 ? (
-                <EmptyRow>아직 발급된 쿠폰이 없습니다. 발송 직전에 고객별로 발급됩니다.</EmptyRow>
+                <EmptyRow>아직 발급된 쿠폰이 없어요. 발송 직전에 고객별로 발급돼요.</EmptyRow>
               ) : (
                 data.content.map((issue) => (
                   <TableRow key={issue.issueId}>
@@ -101,9 +102,9 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
                       {issue.usedAt ? formatDateTime(issue.usedAt) : "–"}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={issue.status === "USED" ? "secondary" : "outline"}>
+                      <Status tone={COUPON_STATUS_TONE[issue.status]}>
                         {ISSUE_STATUS_LABEL[issue.status]}
-                      </Badge>
+                      </Status>
                     </TableCell>
                   </TableRow>
                 ))

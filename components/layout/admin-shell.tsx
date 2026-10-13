@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { ChangePasswordDialog } from "@/components/layout/change-password-dialog";
-import { AdminShell as WuAdminShell } from "@/components/withus";
+import { AppShell } from "@/components/withus-b";
 import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -14,7 +14,7 @@ export type Role = "OWNER" | "MANAGER" | "STAFF";
 export type Me = { memberId: number; email: string; name: string; role: Role };
 
 /**
- * 관리자 화면 공통 틀: 디자인 키트의 왼쪽 메뉴 + 본문 (메뉴 구성은 components/withus/AdminShell.tsx 의 NAV).
+ * 관리자 화면 공통 틀: 디자인 키트 B의 왼쪽 메뉴 + 위쪽 줄 + 본문 (메뉴 구성은 components/withus-b/AppShell.tsx 의 NAV).
  * 인증 가드도 여기서 한다. Access 쿠키가 만료돼도 Refresh 가 남아 있을 수 있어
  * 서버(미들웨어)에서 쿠키 유무로 판단하지 않고, /auth/me 결과(필요하면 재발급 후)로 판단한다
  */
@@ -48,16 +48,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   // 로그인 확인 전에는 화면(과 각 페이지의 API 호출)을 띄우지 않는다
   if (!me.data) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
-        {me.isError && !unauthorized ? "사용자 정보를 불러오지 못했습니다." : "불러오는 중..."}
+      <div className="wb flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
+        {me.isError && !unauthorized ? "사용자 정보를 불러오지 못했어요." : "불러오는 중..."}
       </div>
     );
   }
 
   return (
-    <WuAdminShell me={me.data} onLogout={logout} onChangePassword={() => setChangingPassword(true)}>
+    <AppShell user={me.data} onLogout={logout} onChangePassword={() => setChangingPassword(true)}>
       {children}
       <ChangePasswordDialog open={changingPassword} onOpenChange={setChangingPassword} />
-    </WuAdminShell>
+    </AppShell>
   );
 }

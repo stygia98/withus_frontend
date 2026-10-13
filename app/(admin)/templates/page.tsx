@@ -5,9 +5,9 @@ import { Copy, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { Status } from "@/components/withus-b";
 import { DeleteTemplateDialog } from "@/components/template/DeleteTemplateDialog";
 import { useTemplateActions } from "@/components/template/useTemplateActions";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -27,7 +27,6 @@ import {
 import { api, type Page } from "@/lib/api-client";
 import { formatDateTime } from "@/lib/datetime";
 import { TemplateCouponTabs } from "@/components/layout/section-tabs";
-import { PageHeader } from "@/components/withus";
 import { queryKeys } from "@/lib/query-keys";
 import type { Channel, Template } from "@/lib/types/template";
 
@@ -68,20 +67,13 @@ export default function TemplatesPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl space-y-6 p-6">
-      <PageHeader
-        en="Templates"
-        title={
-          <>
-            메시지 <span className="hl">템플릿</span>
-          </>
-        }
-        actions={
-          <Button render={<Link href="/templates/new" />} nativeButton={false}>
-            새 템플릿
-          </Button>
-        }
-      />
+    <main className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="wb-title">메시지 템플릿</h1>
+        <Button render={<Link href="/templates/new" />} nativeButton={false}>
+          새 템플릿
+        </Button>
+      </div>
 
       <TemplateCouponTabs />
 
@@ -123,7 +115,7 @@ export default function TemplatesPage() {
           {!isLoading && data?.content.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} className="text-center text-muted-foreground">
-                템플릿이 없습니다.
+                템플릿이 없어요.
               </TableCell>
             </TableRow>
           )}
@@ -136,9 +128,9 @@ export default function TemplatesPage() {
               </TableCell>
               <TableCell>{template.channel}</TableCell>
               <TableCell>
-                <Badge variant={template.adYn === "Y" ? "default" : "secondary"}>
+                <Status tone={template.adYn === "Y" ? "info" : "mute"}>
                   {template.adYn === "Y" ? "광고" : "비광고"}
-                </Badge>
+                </Status>
               </TableCell>
               <TableCell>{formatDateTime(template.updatedAt)}</TableCell>
               <TableCell className="flex justify-end gap-1">

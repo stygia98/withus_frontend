@@ -33,10 +33,10 @@ export function TemplatePreviewPanel({ template }: { template: Template }) {
       }),
     onSuccess: () => {
       // 적재만 한 것이다 — 실제 발송은 발송 큐가 곧바로 처리한다
-      toast.success("테스트 발송을 요청했습니다. 잠시 후 도착합니다.");
+      toast.success("테스트 발송을 요청했어요. 잠시 후 도착해요.");
     },
     onError: (err) => {
-      toast.error(err instanceof ApiError ? err.message : "테스트 발송에 실패했습니다.");
+      toast.error(err instanceof ApiError ? err.message : "테스트 발송에 실패했어요.");
     },
   });
 
@@ -57,8 +57,8 @@ export function TemplatePreviewPanel({ template }: { template: Template }) {
       </CardHeader>
       <CardContent className="space-y-6">
         <p className="text-sm text-muted-foreground">
-          저장된 내용 기준입니다. 수정한 내용은 저장한 뒤에 반영됩니다. 이름·지역 등은 고정 샘플
-          값으로 채워지고, 쿠폰·수신거부 링크는 동작하지 않는 예시 주소입니다.
+          저장된 내용 기준이에요. 수정한 내용은 저장한 뒤에 반영돼요. 이름·지역 등은 고정 샘플
+          값으로 채워지고, 쿠폰·수신거부 링크는 동작하지 않는 예시 주소예요.
         </p>
 
         {preview.isLoading && <p className="text-sm text-muted-foreground">불러오는 중...</p>}
@@ -67,7 +67,7 @@ export function TemplatePreviewPanel({ template }: { template: Template }) {
             message={
               preview.error instanceof ApiError
                 ? preview.error.message
-                : "미리보기를 불러오지 못했습니다."
+                : "미리보기를 불러오지 못했어요."
             }
             onRetry={() => preview.refetch()}
           />
@@ -100,7 +100,7 @@ export function TemplatePreviewPanel({ template }: { template: Template }) {
               }
             >
               {preview.data.smsBytes}바이트 · {preview.data.smsType}
-              {preview.data.smsType === "LMS" && " (90바이트를 넘어 LMS로 발송됩니다)"}
+              {preview.data.smsType === "LMS" && " (90바이트를 넘어 LMS로 발송돼요)"}
             </p>
           </div>
         )}
@@ -123,7 +123,7 @@ export function TemplatePreviewPanel({ template }: { template: Template }) {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            발송 시간 제한과 수신동의 확인 없이 바로 나가며 대시보드 통계에는 잡히지 않습니다.
+            발송 시간 제한과 수신동의 확인 없이 바로 나가며 대시보드 통계에는 잡히지 않아요.
           </p>
         </form>
       </CardContent>

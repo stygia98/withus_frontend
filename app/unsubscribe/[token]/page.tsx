@@ -4,7 +4,7 @@ import { UnsubscribeCard } from "@/components/customer/unsubscribe-card";
 
 // 고객별 링크라 검색에 노출되지 않게 한다
 export const metadata: Metadata = {
-  title: "수신거부 · 위드어스",
+  title: "수신거부 · withus",
   robots: { index: false, follow: false },
   referrer: "no-referrer",
 };

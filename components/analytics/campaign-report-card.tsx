@@ -26,10 +26,10 @@ const NO_LLM_MODEL = "none";
 
 function errorMessage(err: unknown): string {
   if (err instanceof ApiError) {
-    if (err.status === 403) return "요약 생성은 OWNER·MANAGER만 할 수 있습니다.";
+    if (err.status === 403) return "요약 생성은 OWNER·MANAGER만 할 수 있어요.";
     return err.message;
   }
-  return "요약을 만들지 못했습니다. 잠시 후 다시 시도해 주세요.";
+  return "요약을 만들지 못했어요. 잠시 후 다시 시도해 주세요.";
 }
 
 /** AI-03 성과 요약 카드 (PRD 5.3: ai_report 저장, 재생성 버튼). 현재 지표와 요약 시점 지표가 다르면 재생성을 권한다 */
@@ -56,7 +56,7 @@ export function CampaignReportCard({
       api<CampaignReport>(`/api/v1/ai/reports/campaigns/${campaignId}`, { method: "POST" }),
     onSuccess: (created) => {
       queryClient.setQueryData(queryKeys.analytics.report(campaignId), created);
-      toast.success("성과 요약을 만들었습니다.");
+      toast.success("성과 요약을 만들었어요.");
     },
     onError: (err) => toast.error(errorMessage(err)),
   });
@@ -79,8 +79,8 @@ export function CampaignReportCard({
             AI 성과 요약
           </CardTitle>
           <CardDescription>
-            캠페인 전체 기간의 집계 지표만 AI에 보내 5문장 이내로 요약합니다. 고객 개인정보는 보내지
-            않습니다.
+            캠페인 전체 기간의 집계 지표만 AI에 보내 5문장 이내로 요약해요. 고객 개인정보는 보내지
+            않아요.
           </CardDescription>
         </div>
         {report != null && (
@@ -94,17 +94,17 @@ export function CampaignReportCard({
         {isPending ? (
           <p className="text-muted-foreground text-sm">불러오는 중...</p>
         ) : isError ? (
-          <p className="text-destructive text-sm">성과 요약을 불러오지 못했습니다.</p>
+          <p className="text-destructive text-sm">성과 요약을 불러오지 못했어요.</p>
         ) : report == null ? (
           <div className="flex flex-col items-start gap-3">
-            <p className="text-muted-foreground text-sm">아직 만든 요약이 없습니다.</p>
+            <p className="text-muted-foreground text-sm">아직 만든 요약이 없어요.</p>
             <Button onClick={() => generate.mutate()} disabled={generate.isPending}>
               <Sparkles aria-hidden />
               {generate.isPending ? "요약 중..." : "요약 생성"}
             </Button>
             {generate.isError && (
               <p role="alert" className="text-destructive text-sm">
-                {errorMessage(generate.error)} 버튼을 눌러 다시 시도할 수 있습니다.
+                {errorMessage(generate.error)} 버튼을 눌러 다시 시도할 수 있어요.
               </p>
             )}
           </div>
@@ -117,7 +117,7 @@ export function CampaignReportCard({
             </p>
             {stale && (
               <p role="status" className="bg-muted rounded-md px-3 py-2 text-sm">
-                요약 이후 지표가 바뀌었습니다. 재생성하면 최신 지표로 다시 요약합니다.
+                요약 이후 지표가 바뀌었어요. 재생성하면 최신 지표로 다시 요약해요.
               </p>
             )}
           </>

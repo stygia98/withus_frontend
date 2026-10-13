@@ -10,7 +10,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "위드어스",
+  title: "withus",
   description: "세그먼트 기반 CRM 마케팅 자동화",
 };
 

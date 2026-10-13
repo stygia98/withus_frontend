@@ -11,15 +11,15 @@ import {
 } from "@/components/ui/chart";
 import { type DailySend, formatCount } from "@/lib/dashboard";
 
-// 한 계열 → 색 하나, 범례 없음(제목이 계열을 말한다). 색은 밝은·어두운 카드 배경에서 검증한 값
+// 한 계열 → 색 하나, 범례 없음(제목이 계열을 말한다). billow.so 기준 파랑(--wb-purple / --wb-lav)
 const config = {
-  sent: { label: "발송 성공", theme: { light: "#111111", dark: "#cdbcff" } },
+  sent: { label: "발송 성공", theme: { light: "#1a4bff", dark: "#8fd3ff" } },
 } satisfies ChartConfig;
 
 export function DailySendsChart({ data }: { data: DailySend[] }) {
   return (
     <>
-      <ChartContainer config={config} className="aspect-auto min-h-56 w-full flex-1">
+      <ChartContainer config={config} className="aspect-auto h-56 w-full">
         <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap={2}>
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
           <XAxis
@@ -28,7 +28,7 @@ export function DailySendsChart({ data }: { data: DailySend[] }) {
             axisLine={false}
             tickMargin={8}
             minTickGap={16}
-            tickFormatter={(d: string) => format(parseISO(d), "M/d")}
+            tickFormatter={(d: string) => format(parseISO(d), "M.d")}
           />
           <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={40} />
           <ChartTooltip
@@ -37,7 +37,7 @@ export function DailySendsChart({ data }: { data: DailySend[] }) {
               <ChartTooltipContent
                 labelFormatter={(_, payload) => {
                   const d = payload?.[0]?.payload?.date as string | undefined;
-                  return d ? format(parseISO(d), "yyyy-MM-dd") : "";
+                  return d ? format(parseISO(d), "yyyy.MM.dd") : "";
                 }}
               />
             }

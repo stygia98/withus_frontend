@@ -21,11 +21,11 @@ import { ApiError, api } from "@/lib/api-client";
 const schema = z
   .object({
     currentPassword: z.string().min(1, "현재 비밀번호를 입력하세요."),
-    newPassword: z.string().min(8, "8자 이상 입력하세요.").max(72, "72자까지 입력할 수 있습니다."),
+    newPassword: z.string().min(8, "8자 이상 입력하세요.").max(72, "72자까지 입력할 수 있어요."),
     confirm: z.string(),
   })
   .refine((v) => v.newPassword === v.confirm, {
-    message: "새 비밀번호가 서로 다릅니다.",
+    message: "새 비밀번호가 서로 달라요.",
     path: ["confirm"],
   })
   .refine((v) => v.newPassword !== v.currentPassword, {
@@ -53,11 +53,11 @@ export function ChangePasswordDialog({
         body: JSON.stringify({ currentPassword: v.currentPassword, newPassword: v.newPassword }),
       }),
     onSuccess: () => {
-      toast.success("비밀번호를 변경했습니다. 다른 기기의 로그인은 해제됩니다.");
+      toast.success("비밀번호를 변경했어요. 다른 기기의 로그인은 해제돼요.");
       close(false);
     },
     onError: (err) =>
-      toast.error(err instanceof ApiError ? err.message : "비밀번호를 변경하지 못했습니다."),
+      toast.error(err instanceof ApiError ? err.message : "비밀번호를 변경하지 못했어요."),
   });
 
   // 닫을 때마다 입력값을 비운다 (비밀번호가 폼 상태에 남지 않게)

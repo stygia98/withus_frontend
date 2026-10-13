@@ -5,10 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { CONSENT_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { CustomerFormDialog } from "@/components/customer/customer-form-dialog";
 import { type CustomerListItem, REGIONS, regionName } from "@/components/customer/types";
 import { UploadDialog } from "@/components/customer/upload-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,7 +29,6 @@ import {
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
 import { CustomerTabs } from "@/components/layout/section-tabs";
-import { PageHeader } from "@/components/withus";
 import { queryKeys } from "@/lib/query-keys";
 
 // 고객 목록 (PRD 4장 /customers)
@@ -103,23 +103,16 @@ export default function CustomersPage() {
   }
 
   return (
-    <div className="space-y-4 p-6">
-      <PageHeader
-        en="Customers"
-        title={
-          <>
-            고객 <span className="hl">목록</span>
-          </>
-        }
-        actions={
-          <>
-            <Button variant="outline" onClick={() => setUploading(true)}>
-              업로드
-            </Button>
-            <Button onClick={() => setCreating(true)}>고객 등록</Button>
-          </>
-        }
-      />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="wb-title">고객 목록</h1>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setUploading(true)}>
+            업로드
+          </Button>
+          <Button onClick={() => setCreating(true)}>고객 등록</Button>
+        </div>
+      </div>
 
       <CustomerTabs />
 
@@ -173,8 +166,8 @@ export default function CustomersPage() {
         </TableHeader>
         <TableBody>
           {isPending && <MessageRow text="불러오는 중..." />}
-          {isError && <MessageRow text="목록을 불러오지 못했습니다." />}
-          {data?.content.length === 0 && <MessageRow text="고객이 없습니다." />}
+          {isError && <MessageRow text="목록을 불러오지 못했어요." />}
+          {data?.content.length === 0 && <MessageRow text="고객이 없어요." />}
           {data?.content.map((c) => (
             <TableRow
               key={c.customerId}
@@ -192,14 +185,12 @@ export default function CustomersPage() {
               <TableCell>{c.joinedAt}</TableCell>
               <TableCell className="text-right">{c.totalPurchase.toLocaleString()}원</TableCell>
               <TableCell>
-                <YnBadge value={c.emailConsent} />
+                <ConsentStatus value={c.emailConsent} />
               </TableCell>
               <TableCell>
-                <YnBadge value={c.smsConsent} />
+                <ConsentStatus value={c.smsConsent} />
               </TableCell>
-              <TableCell>
-                {c.dormant === "Y" ? <Badge variant="secondary">휴면</Badge> : "-"}
-              </TableCell>
+              <TableCell>{c.dormant === "Y" ? <Status tone="warn">휴면</Status> : "-"}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -267,8 +258,8 @@ function FilterSelect({
   );
 }
 
-function YnBadge({ value }: { value: "Y" | "N" }) {
-  return value === "Y" ? <Badge>동의</Badge> : <Badge variant="outline">거부</Badge>;
+function ConsentStatus({ value }: { value: "Y" | "N" }) {
+  return <Status tone={CONSENT_TONE[value]}>{value === "Y" ? "동의" : "거부"}</Status>;
 }
 
 function MessageRow({ text }: { text: string }) {

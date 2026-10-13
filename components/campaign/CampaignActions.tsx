@@ -39,7 +39,7 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
     queryClient.invalidateQueries({ queryKey: queryKeys.campaigns.all });
   }
   function onError(err: unknown) {
-    toast.error(err instanceof ApiError ? err.message : "요청에 실패했습니다.");
+    toast.error(err instanceof ApiError ? err.message : "요청에 실패했어요.");
   }
 
   const transition = useMutation({
@@ -48,10 +48,10 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
     onSuccess: (_, action) => {
       toast.success(
         {
-          start: "캠페인을 시작했습니다.",
-          pause: "일시정지했습니다.",
-          resume: "재개했습니다.",
-          complete: "종료했습니다.",
+          start: "캠페인을 시작했어요.",
+          pause: "일시정지했어요.",
+          resume: "재개했어요.",
+          complete: "종료했어요.",
         }[action],
       );
       setConfirmComplete(false);
@@ -63,7 +63,7 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
   const duplicate = useMutation({
     mutationFn: () => api<Campaign>(`${base}/duplicate`, { method: "POST" }),
     onSuccess: (copy) => {
-      toast.success(`"${copy.name}"(으)로 복제했습니다.`);
+      toast.success(`"${copy.name}"(으)로 복제했어요.`);
       refresh();
       router.push(`/campaigns/${copy.campaignId}/edit`);
     },
@@ -73,7 +73,7 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
   const remove = useMutation({
     mutationFn: () => api<null>(base, { method: "DELETE" }),
     onSuccess: () => {
-      toast.success("캠페인을 삭제했습니다.");
+      toast.success("캠페인을 삭제했어요.");
       setConfirmDelete(false);
       // 삭제된 캠페인의 상세를 다시 불러오면 404 가 깜빡이므로 목록만 오래된 것으로 표시하고 목록 화면으로 간다
       queryClient.invalidateQueries({ queryKey: queryKeys.campaigns.all, refetchType: "none" });
@@ -129,9 +129,9 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
           <AlertDialogHeader>
             <AlertDialogTitle>캠페인을 삭제할까요?</AlertDialogTitle>
             <AlertDialogDescription>
-              &ldquo;{campaign.name}&rdquo;을(를) 삭제합니다.
-              {campaign.type === "WORKFLOW" && " 워크플로우 구성도 함께 삭제됩니다."} 되돌릴 수
-              없습니다.
+              &ldquo;{campaign.name}&rdquo;을(를) 삭제해요.
+              {campaign.type === "WORKFLOW" && " 워크플로우 구성도 함께 삭제돼요."} 되돌릴 수
+              없어요.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -148,8 +148,8 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
           <AlertDialogHeader>
             <AlertDialogTitle>캠페인을 종료할까요?</AlertDialogTitle>
             <AlertDialogDescription>
-              &ldquo;{campaign.name}&rdquo;을(를) 종료합니다. 진행 중인 고객 흐름은 취소되고 대기
-              중인 발송은 나가지 않습니다. 되돌릴 수 없습니다.
+              &ldquo;{campaign.name}&rdquo;을(를) 종료해요. 진행 중인 고객 흐름은 취소되고 대기 중인
+              발송은 나가지 않아요. 되돌릴 수 없어요.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

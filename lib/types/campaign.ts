@@ -50,13 +50,3 @@ export const CAMPAIGN_STATUS_LABEL: Record<CampaignStatus, string> = {
 };
 
 // 실행 중은 강조, 종료·예약은 약하게, 일시정지는 경고색(destructive)으로 구분한다
-export const CAMPAIGN_STATUS_VARIANT: Record<
-  CampaignStatus,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  DRAFT: "outline",
-  SCHEDULED: "secondary",
-  ACTIVE: "default",
-  PAUSED: "destructive",
-  COMPLETED: "secondary",
-};

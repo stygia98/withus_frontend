@@ -1,7 +1,6 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,8 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
+import { formatSeoul } from "@/lib/datetime";
 import { CustomerTabs } from "@/components/layout/section-tabs";
-import { PageHeader } from "@/components/withus";
 import { queryKeys } from "@/lib/query-keys";
 
 // 세그먼트 목록 (PRD 4장 /segments): 조건 요약, 현재 대상 고객 수
@@ -36,20 +35,13 @@ export default function SegmentsPage() {
   });
 
   return (
-    <div className="space-y-4 p-6">
-      <PageHeader
-        en="Segments"
-        title={
-          <>
-            고객 <span className="hl">타겟팅</span>
-          </>
-        }
-        actions={
-          <Link href="/segments/new" className={buttonVariants()}>
-            세그먼트 만들기
-          </Link>
-        }
-      />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="wb-title">고객 타겟팅</h1>
+        <Link href="/segments/new" className={buttonVariants()}>
+          세그먼트 만들기
+        </Link>
+      </div>
 
       <CustomerTabs />
 
@@ -64,8 +56,8 @@ export default function SegmentsPage() {
         </TableHeader>
         <TableBody>
           {isPending && <MessageRow text="불러오는 중..." />}
-          {isError && <MessageRow text="목록을 불러오지 못했습니다." />}
-          {data?.content.length === 0 && <MessageRow text="세그먼트가 없습니다." />}
+          {isError && <MessageRow text="목록을 불러오지 못했어요." />}
+          {data?.content.length === 0 && <MessageRow text="세그먼트가 없어요." />}
           {data?.content.map((s) => (
             <TableRow
               key={s.segmentId}
@@ -82,7 +74,7 @@ export default function SegmentsPage() {
                 {summarize(s.rule)}
               </TableCell>
               <TableCell className="text-right">{s.targetCount.toLocaleString()}명</TableCell>
-              <TableCell>{format(new Date(s.createdAt), "yyyy-MM-dd")}</TableCell>
+              <TableCell>{formatSeoul(s.createdAt, "yyyy.MM.dd")}</TableCell>
             </TableRow>
           ))}
         </TableBody>

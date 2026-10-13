@@ -1,21 +1,24 @@
-/* 레이어 순서: 킷(wu)은 Tailwind 유틸(utilities)보다 낮다. 킷의 `.wu-admin * { padding: 0 }` 같은 리셋이
-   레이어 밖에 있으면 shadcn 화면의 Tailwind 간격을 모두 덮어버린다 */
-@layer theme, base, wu, components, utilities;
+/* 레이어 순서: 디자인 키트 B(wb)는 Tailwind 기본(base)보다 높고 유틸(utilities)보다 낮다.
+   키트의 `:where(.wb) button { background: none }` 같은 기본값이 shadcn 화면의 Tailwind 클래스를 덮지 않게 한다 */
+@layer theme, base, wb, components, utilities;
 
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "../styles/withus-tokens.css" layer(wu);
-@import "../styles/withus-landing.css" layer(wu);
-@import "../styles/withus-admin.css" layer(wu);
-@import "../styles/withus-public.css" layer(wu);
+@import "../styles/withus-b.css" layer(wb);
+@import "../styles/withus-b-app.css" layer(wb);
+@import "../styles/withus-b-login.css" layer(wb);
+@import "../styles/withus-b-public.css" layer(wb);
+@import "../styles/withus-b-landing.css" layer(wb);
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--wu-font-sans), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-sans:
+    var(--wb-font-sans-en), var(--wb-font-sans-kr), "Apple SD Gothic Neo", "Malgun Gothic",
+    sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -58,43 +61,43 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* 디자인 토큰 — docs/withus-design-kit 팔레트(시안 B: 크림·먹색·라벤더)에 맞춘 shadcn 변수.
-   킷으로 옮기지 않은 화면도 같은 색을 쓰도록 매핑한다. 새 색은 만들지 않는다 */
+/* 디자인 토큰 — billow.so 기준 팔레트(차가운 흰 바탕 · 남색 글자 · 전기 파랑)에 맞춘 shadcn 변수.
+   키트 컴포넌트로 옮기지 않은 화면(shadcn)도 같은 색을 쓰도록 styles/withus-b.css 의 --wb-* 와 같은 값으로 맞춘다 */
 :root {
-  --background: #fbfaf6; /* 종이 */
-  --foreground: #111111; /* 먹색 글자 */
-  --card: #ffffff; /* 면 */
-  --card-foreground: #111111;
+  --background: #fcfdff; /* --wb-paper */
+  --foreground: #001c2e; /* --wb-ink */
+  --card: #ffffff;
+  --card-foreground: #001c2e;
   --popover: #ffffff;
-  --popover-foreground: #111111;
-  --primary: #111111; /* 주 버튼은 먹색 */
-  --primary-foreground: #ffffff;
-  --secondary: #f1f0eb;
-  --secondary-foreground: #111111;
-  --muted: #f1f0eb;
-  --muted-foreground: #76746e;
-  --accent: #efe9ff; /* 선택·배지 바탕 */
-  --accent-foreground: #7c5cf0;
-  --warning: #f6e7c4;
-  --warning-foreground: #9a5e00;
-  --destructive: #c4321f;
-  --border: rgba(17, 17, 17, 0.12);
-  --input: rgba(17, 17, 17, 0.22);
-  --ring: #7c5cf0;
-  --chart-1: #111111;
-  --chart-2: #7c5cf0;
-  --chart-3: #cdbcff;
-  --chart-4: #9a5e00;
-  --chart-5: #76746e;
-  --radius: 0.75rem;
-  --sidebar: #fbfaf6;
-  --sidebar-foreground: #76746e;
-  --sidebar-primary: #111111;
-  --sidebar-primary-foreground: #ffffff;
+  --popover-foreground: #001c2e;
+  --primary: #1a4bff; /* 주 버튼 — 실제 버튼은 components/ui/button.tsx 에서 그라데이션 */
+  --primary-foreground: #fcfdff;
+  --secondary: #f3f6f9; /* --wb-grey */
+  --secondary-foreground: #001c2e;
+  --muted: #f3f6f9;
+  --muted-foreground: #446278; /* --wb-mute */
+  --accent: #ebf2ff; /* 선택 · 배지 바탕 */
+  --accent-foreground: #1a4bff;
+  --warning: #fff6e0;
+  --warning-foreground: #a86a00;
+  --destructive: #d1242f; /* --wb-err */
+  --border: #e6ecf1; /* --wb-line */
+  --input: #d3dde5; /* --wb-line2 */
+  --ring: #1a4bff;
+  --chart-1: #1a4bff;
+  --chart-2: #18c8ff;
+  --chart-3: #001c2e;
+  --chart-4: #a86a00;
+  --chart-5: #446278;
+  --radius: 0.75rem; /* 카드 · 입력칸 12px (버튼은 알약) */
+  --sidebar: #f7f9fb;
+  --sidebar-foreground: #1d3a4f;
+  --sidebar-primary: #1a4bff;
+  --sidebar-primary-foreground: #fcfdff;
   --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #111111;
-  --sidebar-border: rgba(17, 17, 17, 0.12);
-  --sidebar-ring: #7c5cf0;
+  --sidebar-accent-foreground: #001c2e;
+  --sidebar-border: #e6ecf1;
+  --sidebar-ring: #1a4bff;
 }
 
 .dark {
@@ -129,6 +132,11 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* 아이콘 선 굵기 통일 — lucide 아이콘(shadcn 화면)을 키트 아이콘과 같은 1.75 로 */
+svg.lucide {
+  stroke-width: 1.75;
 }
 
 @layer base {

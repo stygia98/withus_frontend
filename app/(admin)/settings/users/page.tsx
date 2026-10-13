@@ -7,9 +7,8 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { Status } from "@/components/withus-b";
 import type { Me, Role } from "@/components/layout/admin-shell";
-import { PageHeader } from "@/components/withus";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -72,31 +71,28 @@ export default function UsersPage() {
       api<Member>(`/api/v1/members/${memberId}`, { method: "PATCH", body: JSON.stringify(body) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
-      toast.success("변경했습니다. 그 사용자는 늦어도 30분 안에 다시 로그인하게 됩니다.");
+      toast.success("변경했어요. 그 사용자는 늦어도 30분 안에 다시 로그인하게 돼요.");
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "변경하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "변경하지 못했어요."),
   });
 
   const forbidden = members.error instanceof ApiError && members.error.status === 403;
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
-      <PageHeader
-        en="Settings"
-        title={
-          <>
-            사용자 <span className="hl">관리</span>
-          </>
-        }
-        sub="시스템 설정"
-        actions={!forbidden && <Button onClick={() => setCreating(true)}>사용자 추가</Button>}
-      />
+    <div className="flex flex-col gap-6">
+      <header className="flex items-end justify-between">
+        <div>
+          <p className="text-xs text-muted-foreground">시스템 설정</p>
+          <h1 className="wb-title">사용자 관리</h1>
+        </div>
+        {!forbidden && <Button onClick={() => setCreating(true)}>사용자 추가</Button>}
+      </header>
 
       <div className="rounded-xl border bg-card p-4">
         {forbidden ? (
-          <p className="text-sm text-muted-foreground">사용자 관리는 OWNER 만 할 수 있습니다.</p>
+          <p className="text-sm text-muted-foreground">사용자 관리는 OWNER 만 할 수 있어요.</p>
         ) : members.isError ? (
-          <p className="text-sm text-destructive">사용자 목록을 불러오지 못했습니다.</p>
+          <p className="text-sm text-destructive">사용자 목록을 불러오지 못했어요.</p>
         ) : (
           <Table>
             <TableHeader>
@@ -143,15 +139,9 @@ export default function UsersPage() {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        className={
-                          m.active
-                            ? "bg-accent text-accent-foreground"
-                            : "bg-warning text-warning-foreground"
-                        }
-                      >
+                      <Status tone={m.active ? "ok" : "warn"}>
                         {m.active ? "활성" : "비활성"}
-                      </Badge>
+                      </Status>
                     </TableCell>
                     <TableCell className="space-x-2 text-right">
                       {/* 본인은 사이드바의 '비밀번호 변경'으로 바꾼다 (MEMBER_SELF_PASSWORD) */}
@@ -189,7 +179,7 @@ export default function UsersPage() {
 }
 
 const resetSchema = z.object({
-  newPassword: z.string().min(8, "8자 이상 입력하세요.").max(72, "72자까지 입력할 수 있습니다."),
+  newPassword: z.string().min(8, "8자 이상 입력하세요.").max(72, "72자까지 입력할 수 있어요."),
 });
 type ResetValues = z.infer<typeof resetSchema>;
 
@@ -207,10 +197,10 @@ function ResetPasswordDialog({ target, onClose }: { target: Member | null; onClo
         body: JSON.stringify(v),
       }),
     onSuccess: () => {
-      toast.success("비밀번호를 재설정했습니다. 새 비밀번호를 그 사용자에게 직접 전달해 주세요.");
+      toast.success("비밀번호를 재설정했어요. 새 비밀번호를 그 사용자에게 직접 전달해 주세요.");
       close();
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "재설정하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "재설정하지 못했어요."),
   });
 
   // 닫을 때마다 입력값을 비운다 (비밀번호가 폼 상태에 남지 않게)
@@ -227,8 +217,8 @@ function ResetPasswordDialog({ target, onClose }: { target: Member | null; onClo
         </DialogHeader>
         <form onSubmit={form.handleSubmit((v) => reset.mutate(v))} className="flex flex-col gap-4">
           <p className="text-sm text-muted-foreground">
-            {target?.name} ({target?.email})의 비밀번호를 새로 정합니다. 기존 비밀번호는 확인할 수
-            없고, 재설정하면 그 사용자의 현재 로그인이 해제됩니다.
+            {target?.name} ({target?.email})의 비밀번호를 새로 정해요. 기존 비밀번호는 확인할 수
+            없고, 재설정하면 그 사용자의 현재 로그인이 해제돼요.
           </p>
           <Field
             label="새 비밀번호 (8자 이상)"
@@ -257,7 +247,7 @@ function ResetPasswordDialog({ target, onClose }: { target: Member | null; onClo
 }
 
 const schema = z.object({
-  email: z.string().trim().min(1, "이메일을 입력하세요.").email("이메일 형식이 아닙니다."),
+  email: z.string().trim().min(1, "이메일을 입력하세요.").email("이메일 형식이 아니에요."),
   name: z.string().trim().min(1, "이름을 입력하세요.").max(50),
   role: z.enum(["OWNER", "MANAGER", "STAFF"]),
   password: z.string().min(8, "8자 이상 입력하세요.").max(72),
@@ -282,11 +272,11 @@ function CreateMemberDialog({
       api<Member>("/api/v1/members", { method: "POST", body: JSON.stringify(v) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
-      toast.success("사용자를 추가했습니다. 초기 비밀번호를 직접 전달해 주세요.");
+      toast.success("사용자를 추가했어요. 초기 비밀번호를 직접 전달해 주세요.");
       form.reset();
       onOpenChange(false);
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "추가하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "추가하지 못했어요."),
   });
 
   const errors = form.formState.errors;

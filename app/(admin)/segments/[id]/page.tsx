@@ -37,30 +37,30 @@ export default function SegmentDetailPage() {
     onSuccess: (s) => {
       queryClient.setQueryData(queryKeys.segments.detail(id), s);
       queryClient.invalidateQueries({ queryKey: queryKeys.segments.lists });
-      toast.success("저장했습니다.");
+      toast.success("저장했어요.");
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했어요."),
   });
   const remove = useMutation({
     mutationFn: () => api(`/api/v1/segments/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       // 상세 쿼리를 무효화하면 지운 세그먼트를 다시 불러 404 가 난다 → 목록만
       queryClient.invalidateQueries({ queryKey: queryKeys.segments.lists });
-      toast.success("삭제했습니다.");
+      toast.success("삭제했어요.");
       router.replace("/segments");
     },
     onError: (err) => {
       setDeleting(false);
       // SEGMENT_IN_USE(409): 캠페인이 쓰는 세그먼트
-      toast.error(err instanceof ApiError ? err.message : "삭제하지 못했습니다.");
+      toast.error(err instanceof ApiError ? err.message : "삭제하지 못했어요.");
     },
   });
 
-  if (segment.isPending) return <div className="p-6 text-muted-foreground">불러오는 중...</div>;
+  if (segment.isPending) return <div className="text-muted-foreground">불러오는 중...</div>;
   if (segment.isError) {
     return (
-      <div className="space-y-2 p-6">
-        <p>세그먼트를 찾을 수 없습니다.</p>
+      <div className="space-y-2">
+        <p>세그먼트를 찾을 수 없어요.</p>
         <Link href="/segments" className="text-sm underline">
           목록으로
         </Link>
@@ -70,12 +70,12 @@ export default function SegmentDetailPage() {
   const s = segment.data;
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-4">
       <div>
         <Link href="/segments" className="text-sm text-muted-foreground hover:underline">
           ← 세그먼트 목록
         </Link>
-        <h1 className="text-xl font-semibold">{s.name}</h1>
+        <h1 className="wb-title">{s.name}</h1>
       </div>
       <SegmentEditor
         initial={{ name: s.name, description: s.description ?? "", rule: s.rule }}
@@ -93,7 +93,7 @@ export default function SegmentDetailPage() {
           <DialogHeader>
             <DialogTitle>세그먼트를 삭제할까요?</DialogTitle>
             <DialogDescription>
-              이 세그먼트를 쓰는 캠페인이 있으면 삭제할 수 없습니다.
+              이 세그먼트를 쓰는 캠페인이 있으면 삭제할 수 없어요.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

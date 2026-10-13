@@ -4,8 +4,8 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { PageHeader } from "@/components/withus";
+import { CAMPAIGN_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -61,52 +61,47 @@ export function CampaignListView() {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
-      <PageHeader
-        en="Reports"
-        title={
-          <>
-            성과 <span className="hl">리포트</span>
-          </>
-        }
-        sub="캠페인을 누르면 발송·오픈·클릭·전환 성과를 볼 수 있습니다. 최근 만든 순서입니다."
-        actions={
-          <>
-            <div
-              role="group"
-              aria-label="캠페인 상태"
-              className="bg-muted inline-flex flex-wrap gap-0.5 rounded-lg p-0.5"
-            >
-              {STATUS_FILTERS.map((f) => {
-                const selected = status === f.value;
-                return (
-                  <Button
-                    key={f.label}
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    aria-pressed={selected}
-                    onClick={() => changeStatus(f.value)}
-                    className={
-                      selected
-                        ? "bg-background text-foreground hover:bg-background font-medium shadow-sm"
-                        : "text-muted-foreground"
-                    }
-                  >
-                    {f.label}
-                  </Button>
-                );
-              })}
-            </div>
-          </>
-        }
-      />
+    <div className="flex flex-col gap-6">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="wb-title">성과 리포트</h1>
+          <p className="text-muted-foreground text-sm">
+            캠페인을 누르면 발송·오픈·클릭·전환 성과를 볼 수 있어요. 최근 만든 순서예요.
+          </p>
+        </div>
+        <div
+          role="group"
+          aria-label="캠페인 상태"
+          className="bg-muted inline-flex flex-wrap gap-0.5 rounded-lg p-0.5"
+        >
+          {STATUS_FILTERS.map((f) => {
+            const selected = status === f.value;
+            return (
+              <Button
+                key={f.label}
+                type="button"
+                size="sm"
+                variant="ghost"
+                aria-pressed={selected}
+                onClick={() => changeStatus(f.value)}
+                className={
+                  selected
+                    ? "bg-background text-foreground hover:bg-background font-medium shadow-sm"
+                    : "text-muted-foreground"
+                }
+              >
+                {f.label}
+              </Button>
+            );
+          })}
+        </div>
+      </header>
 
       <Card>
         <CardContent>
           {isError ? (
             <p role="alert" className="text-destructive text-sm">
-              캠페인 목록을 불러오지 못했습니다.
+              캠페인 목록을 불러오지 못했어요.
             </p>
           ) : (
             <Table aria-busy={isPlaceholderData}>
@@ -124,8 +119,8 @@ export function CampaignListView() {
                 ) : data.content.length === 0 ? (
                   <EmptyRow>
                     {status
-                      ? `${CAMPAIGN_STATUS_LABEL[status]} 상태인 캠페인이 없습니다.`
-                      : "아직 만든 캠페인이 없습니다."}
+                      ? `${CAMPAIGN_STATUS_LABEL[status]} 상태인 캠페인이 없어요.`
+                      : "아직 만든 캠페인이 없어요."}
                   </EmptyRow>
                 ) : (
                   data.content.map((c) => (
@@ -140,9 +135,9 @@ export function CampaignListView() {
                       </TableCell>
                       <TableCell>{CAMPAIGN_TYPE_LABEL[c.type]}</TableCell>
                       <TableCell>
-                        <Badge variant={c.status === "ACTIVE" ? "default" : "outline"}>
+                        <Status tone={CAMPAIGN_STATUS_TONE[c.status]}>
                           {CAMPAIGN_STATUS_LABEL[c.status]}
-                        </Badge>
+                        </Status>
                       </TableCell>
                       <TableCell className="text-muted-foreground tabular-nums">
                         {describePeriod(c)}

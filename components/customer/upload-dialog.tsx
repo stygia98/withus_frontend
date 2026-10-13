@@ -67,7 +67,7 @@ export function UploadDialog({
       return api<UploadResult>("/api/v1/customers/uploads", { method: "POST", body });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.customers.all }),
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "업로드하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "업로드하지 못했어요."),
   });
   // 래퍼로 받아야 Access 만료 시 재발급되고, 실패하면 토스트로 알린다
   const template = useMutation({
@@ -80,8 +80,7 @@ export function UploadDialog({
       a.click();
       URL.revokeObjectURL(url);
     },
-    onError: (err) =>
-      toast.error(err instanceof ApiError ? err.message : "양식을 받지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "양식을 받지 못했어요."),
   });
   const result = upload.data;
   const tooLarge = file != null && file.size > MAX_BYTES;
@@ -101,8 +100,8 @@ export function UploadDialog({
           <DialogTitle>고객 업로드</DialogTitle>
           <DialogDescription>
             xlsx 또는 csv, 최대 10MB·10,000행. 이메일이 같은 고객은 갱신하고(누적구매액은 유지)
-            없으면 새로 등록합니다. 수신거부 이력이 있는 채널은 파일 값과 관계없이 수신거부로
-            저장합니다.
+            없으면 새로 등록해요. 수신거부 이력이 있는 채널은 파일 값과 관계없이 수신거부로
+            저장해요.
           </DialogDescription>
         </DialogHeader>
 
@@ -123,7 +122,7 @@ export function UploadDialog({
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
             {tooLarge && (
-              <p className="text-xs text-destructive">10MB를 넘는 파일은 올릴 수 없습니다.</p>
+              <p className="text-xs text-destructive">10MB를 넘는 파일은 올릴 수 없어요.</p>
             )}
           </div>
         ) : (
@@ -139,7 +138,7 @@ export function UploadDialog({
             {result.suppressed > 0 && (
               <p className="text-muted-foreground">
                 과거 수신거부 이력 {result.suppressed.toLocaleString()}행은 해당 채널을 수신거부로
-                저장했습니다.
+                저장했어요.
               </p>
             )}
             {result.failures.length > 0 && (

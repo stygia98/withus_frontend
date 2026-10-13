@@ -1,0 +1,427 @@
+/* =========================================================
+   withus 디자인 — 관리자 화면 (틀 · 대시보드)
+   레이아웃(왼쪽 메뉴 240px · 위쪽 줄 · 본문 최대 1440px 가운데)은 그대로, 모양은 billow.so 기준
+   ========================================================= */
+.wb-app {
+  /* 본문: 메뉴 옆 남은 영역의 가운데에 두어 넓은 화면에서 한쪽으로 쏠리지 않게 한다 */
+  --wb-page-max: 1440px;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--wb-paper);
+}
+
+/* 왼쪽 메뉴 — 옅은 회청색 바탕, 선택 메뉴는 흰 카드처럼 떠 있게 */
+.wb-side {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 14px;
+  background: #f7f9fb;
+  border-right: 1px solid var(--wb-line);
+  overflow-y: auto;
+}
+.wb-side__logo {
+  padding: 6px 8px 18px;
+}
+.wb-side__group {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--wb-faint);
+  padding: 16px 10px 6px;
+}
+.wb-nav {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--wb-r-sm);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--wb-ink2);
+  transition:
+    background 0.15s,
+    box-shadow 0.15s;
+}
+.wb-nav svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--wb-mute);
+}
+.wb-nav:hover {
+  background: rgba(0, 28, 46, 0.04);
+}
+.wb-nav[aria-current="page"] {
+  background: #fff;
+  color: var(--wb-ink);
+  font-weight: 600;
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow-sm);
+}
+.wb-nav[aria-current="page"] svg {
+  color: var(--wb-purple);
+}
+.wb-nav__badge {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--wb-mute);
+}
+.wb-side__me {
+  position: relative;
+  margin-top: auto;
+}
+.wb-me {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: var(--wb-r-md);
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow-sm);
+  text-align: left;
+}
+.wb-me:hover {
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line2),
+    var(--wb-shadow-sm);
+}
+.wb-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--wb-grad);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--wb-glow);
+}
+.wb-me b {
+  display: block;
+  font-size: 13px;
+}
+.wb-me small {
+  display: block;
+  font-size: 11.5px;
+  color: var(--wb-mute);
+}
+.wb-me__menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 6px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: var(--wb-r-md);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow);
+  padding: 6px;
+  animation: wb-up 0.25s var(--wb-ease);
+}
+.wb-me__menu button {
+  display: flex;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: var(--wb-r-sm);
+  font-size: 13.5px;
+  text-align: left;
+}
+.wb-me__menu button:hover {
+  background: var(--wb-grey);
+}
+
+/* 위쪽 줄 · 본문 */
+.wb-main {
+  position: relative;
+  min-width: 0;
+  isolation: isolate;
+  overflow-x: clip;
+}
+.wb-top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 60px;
+  /* 넓은 화면에서도 경로 표시가 가운데 놓인 본문의 시작선과 맞도록 */
+  padding: 0 max(40px, calc((100% - var(--wb-page-max)) / 2 + 40px));
+  background: rgba(252, 253, 255, 0.72);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 28, 46, 0.06);
+}
+.wb-top__crumb {
+  font-size: 13px;
+  color: var(--wb-mute);
+}
+.wb-top__crumb b {
+  color: var(--wb-ink);
+  font-weight: 600;
+}
+.wb-top__menu {
+  display: none;
+}
+.wb-page {
+  max-width: var(--wb-page-max);
+  margin: 0 auto;
+  padding: 28px 40px 80px;
+}
+
+/* 화면 제목 */
+.wb-ph {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.wb-ph h1 {
+  font: 500 clamp(32px, 3vw, 42px) / 1.12 var(--wb-serif);
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+/* 관리자 화면은 한글 제목만 — 같은 뜻의 영어 이름표는 숨긴다 */
+.wb-ph .wb-eyebrow {
+  display: none;
+}
+.wb-ph p {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--wb-mute);
+}
+.wb-ph__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.wb-ph__range {
+  font-size: 12.5px;
+  color: var(--wb-mute);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 숫자 카드 — billow 의 오른쪽 숫자 카드처럼 흰 카드 · 굵은 고딕 숫자 */
+.wb-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.wb-kpi {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border-radius: var(--wb-r-lg);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow-sm);
+  padding: 18px 20px;
+  min-width: 0;
+  transition:
+    transform 0.3s var(--wb-ease),
+    box-shadow 0.3s;
+}
+.wb-kpi:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow);
+}
+.wb-kpi__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wb-mute);
+}
+.wb-kpi__value {
+  font: 600 34px/1 var(--wb-sans);
+  letter-spacing: -0.04em;
+  margin-top: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.wb-kpi__sub {
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: var(--wb-mute);
+}
+.wb-kpi__delta--up {
+  color: var(--wb-ok);
+  font-weight: 700;
+}
+.wb-kpi__delta--down {
+  color: var(--wb-err);
+  font-weight: 700;
+}
+
+/* 그리드: 모든 줄 같은 비율 */
+.wb-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+  align-items: stretch;
+}
+
+/* 화면 제목만 따로 쓰는 곳 (제목 옆에 버튼 줄이 있는 shadcn 화면) — .wb-ph h1 과 같은 글꼴 */
+.wb-title {
+  font: 500 clamp(30px, 3vw, 42px) / 1.12 var(--wb-serif);
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+/* 하나로 합친 메뉴 안의 섹션 탭 (링크) — .wb-seg 버튼과 같은 알약 */
+.wb-seg a {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wb-mute);
+  white-space: nowrap;
+}
+.wb-seg a[aria-current="page"] {
+  background: #fff;
+  color: var(--wb-ink);
+  box-shadow: var(--wb-shadow-sm);
+}
+
+/* 이벤트가 많으면 카드 안에서 스크롤 (옆 카드보다 길어지지 않게) */
+.wb-events--scroll {
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.wb-events--scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* 휴대폰: 메뉴 서랍 뒤 가림막 */
+.wb-side__scrim {
+  display: none;
+}
+
+/* 발송 큐 */
+.wb-queue {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.wb-queue div {
+  background: var(--wb-grey);
+  border-radius: var(--wb-r-md);
+  box-shadow: inset 0 0 0 1px var(--wb-line);
+  padding: 14px 12px;
+}
+.wb-queue small {
+  display: block;
+  font-size: 12px;
+  color: var(--wb-mute);
+}
+.wb-queue b {
+  display: block;
+  font: 600 28px/1.1 var(--wb-sans);
+  letter-spacing: -0.04em;
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 이벤트 목록 */
+.wb-events {
+  display: grid;
+}
+.wb-event {
+  display: grid;
+  grid-template-columns: auto 60px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--wb-line);
+  font-size: 13.5px;
+}
+.wb-event:last-child {
+  border: 0;
+}
+.wb-event .wb-status {
+  justify-self: start;
+}
+.wb-event time {
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--wb-mute);
+  font-variant-numeric: tabular-nums;
+}
+.wb-event span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .wb-kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+  .wb-row {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 820px) {
+  .wb-side__scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(0, 28, 46, 0.25);
+    backdrop-filter: blur(2px);
+  }
+  .wb-app {
+    grid-template-columns: 1fr;
+  }
+  .wb-side {
+    position: fixed;
+    left: 0;
+    z-index: 60;
+    width: 270px;
+    transform: translateX(-100%);
+    transition: transform 0.35s var(--wb-ease);
+    box-shadow: 20px 0 60px -20px rgba(0, 28, 46, 0.3);
+  }
+  .wb-side[data-open="true"] {
+    transform: none;
+  }
+  .wb-top {
+    padding: 0 16px;
+  }
+  .wb-top__menu {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--wb-line);
+  }
+  .wb-page {
+    padding: 20px 16px 72px;
+  }
+  .wb-kpis {
+    grid-template-columns: 1fr;
+  }
+}

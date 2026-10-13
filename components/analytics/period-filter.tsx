@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PERIOD_LABEL, type Period, type PeriodPreset, customRangeError } from "@/lib/period";
 
@@ -23,31 +22,17 @@ export function PeriodFilter({
   return (
     <div className="relative">
       {/* 선택 상태는 aria-pressed 로 알린다 (radio 역할은 화살표 키 이동까지 구현해야 해서 쓰지 않음) */}
-      <div
-        role="group"
-        aria-label="조회 기간"
-        className="bg-muted inline-flex gap-0.5 rounded-lg p-0.5"
-      >
-        {presets.map((p) => {
-          const selected = value.preset === p;
-          return (
-            <Button
-              key={p}
-              type="button"
-              size="sm"
-              variant="ghost"
-              aria-pressed={selected}
-              onClick={() => onChange({ ...value, preset: p })}
-              className={
-                selected
-                  ? "bg-background text-foreground hover:bg-background font-medium shadow-sm"
-                  : "text-muted-foreground"
-              }
-            >
-              {PERIOD_LABEL[p]}
-            </Button>
-          );
-        })}
+      <div role="group" aria-label="조회 기간" className="wb wb-seg">
+        {presets.map((p) => (
+          <button
+            key={p}
+            type="button"
+            aria-pressed={value.preset === p}
+            onClick={() => onChange({ ...value, preset: p })}
+          >
+            {PERIOD_LABEL[p]}
+          </button>
+        ))}
       </div>
       {value.preset === "CUSTOM" && (
         // 버튼 줄은 제자리에 두고 날짜 입력은 그 아래에 띄워 레이아웃이 밀리지 않게 한다

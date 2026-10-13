@@ -1,35 +1,34 @@
-// app/fonts.ts — withus 글꼴 (시안 B: 제목 Instrument Serif + Noto Serif KR, 본문 Inter + Noto Sans KR)
-import { Inter, Instrument_Serif, Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
+// withus 글꼴 — 제목: Newsreader(영문) + Hahmlet(한글 명조), 본문: Inter(영문) + Pretendard(한글)
+// Google 글꼴은 next/font/google 이 빌드할 때 받아 같이 배포하고, Pretendard 는 Google Fonts 에 없어
+// app/fonts/PretendardVariable.woff2 (SIL OFL 1.1, app/fonts/Pretendard-LICENSE.txt) 를 next/font/local 로 불러온다
+import { Hahmlet, Inter, Newsreader } from "next/font/google";
+import localFont from "next/font/local";
 
-export const display = Instrument_Serif({
+const serifEn = Newsreader({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--wu-font-display",
+  weight: ["400", "500", "600"],
+  variable: "--wb-font-serif-en",
   display: "swap",
 });
-
-export const kr = Noto_Serif_KR({
+const serifKr = Hahmlet({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--wu-font-kr",
+  weight: ["400", "500", "600"],
+  variable: "--wb-font-serif-kr",
   display: "swap",
-  preload: false, // 한글 글꼴은 크기가 커서 미리 불러오지 않아요
+  preload: false, // 한글 글꼴은 크기가 커서 미리 불러오지 않는다
 });
-
-const latin = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--wu-font-latin",
-  display: "swap",
-});
-
-const krSans = Noto_Sans_KR({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--wu-font-kr-sans",
+const sansEn = Inter({ subsets: ["latin"], variable: "--wb-font-sans-en", display: "swap" });
+const sansKr = localFont({
+  src: "./fonts/PretendardVariable.woff2",
+  weight: "45 920",
+  variable: "--wb-font-sans-kr",
   display: "swap",
   preload: false,
 });
 
-/** <html className={withusFonts}> 에 넣어 주세요 */
-export const withusFonts = `${display.variable} ${kr.variable} ${latin.variable} ${krSans.variable}`;
+export const withusFonts = [
+  serifEn.variable,
+  serifKr.variable,
+  sansEn.variable,
+  sansKr.variable,
+].join(" ");

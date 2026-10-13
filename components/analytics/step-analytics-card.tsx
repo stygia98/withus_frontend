@@ -47,7 +47,7 @@ export function StepAnalyticsCard({ campaignId, range }: { campaignId: number; r
   });
 
   if (isError) {
-    return <p className="text-destructive text-sm">단계별 성과를 불러오지 못했습니다.</p>;
+    return <p className="text-destructive text-sm">단계별 성과를 불러오지 못했어요.</p>;
   }
   if (!data || data.type !== "WORKFLOW") return null;
 
@@ -56,13 +56,13 @@ export function StepAnalyticsCard({ campaignId, range }: { campaignId: number; r
       <CardHeader>
         <CardTitle>단계별 성과</CardTitle>
         <CardDescription>
-          워크플로우의 발송 단계마다 따로 집계합니다. 비율은 그 단계의 발송 성공 대비입니다. 문자는
-          오픈·클릭을 추적하지 않아 –로 표시합니다.
+          워크플로우의 발송 단계마다 따로 집계해요. 비율은 그 단계의 발송 성공 대비예요. 문자는
+          오픈·클릭을 추적하지 않아 –로 표시해요.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {data.steps.length === 0 ? (
-          <p className="text-muted-foreground text-sm">아직 발송 단계가 없습니다.</p>
+          <p className="text-muted-foreground text-sm">아직 발송 단계가 없어요.</p>
         ) : (
           <>
             <Table>
@@ -105,7 +105,7 @@ export function StepAnalyticsCard({ campaignId, range }: { campaignId: number; r
                     <StepLabel step={step} index={i} />
                   </h3>
                   {step.kpi.attempted === 0 ? (
-                    <p className="text-muted-foreground text-sm">아직 발송이 없습니다.</p>
+                    <p className="text-muted-foreground text-sm">아직 발송이 없어요.</p>
                   ) : (
                     <FunnelChart
                       caption={`${stepTitle(step, i)} 전환 흐름`}

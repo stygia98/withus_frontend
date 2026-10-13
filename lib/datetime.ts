@@ -32,7 +32,7 @@ export function formatSeoul(iso: string, pattern: string): string {
   return pattern.replace(/yyyy|MM|M|dd|d|HH|mm|ss/g, (token) => tokens[token]);
 }
 
-/** ISO-8601 → "2026-10-02 09:30" (서울 시간) */
+/** ISO-8601 → "2026.10.02 09:30" (서울 시간). 화면의 날짜 표기는 모두 점(.)으로 통일한다 */
 export function formatDateTime(iso: string): string {
-  return formatSeoul(iso, "yyyy-MM-dd HH:mm");
+  return formatSeoul(iso, "yyyy.MM.dd HH:mm");
 }

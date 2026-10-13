@@ -4,10 +4,10 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 
+import { CAMPAIGN_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { QueryError } from "@/components/common/QueryError";
-import { PageHeader } from "@/components/withus";
 import { TemplateCouponTabs } from "@/components/layout/section-tabs";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -30,7 +30,6 @@ import { queryKeys } from "@/lib/query-keys";
 import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import {
   CAMPAIGN_STATUS_LABEL,
-  CAMPAIGN_STATUS_VARIANT,
   CAMPAIGN_TYPE_LABEL,
   type Campaign,
   type CampaignStatus,
@@ -75,22 +74,15 @@ export default function CampaignsPage() {
   });
 
   return (
-    <main className="mx-auto max-w-5xl space-y-6 p-6">
-      <PageHeader
-        en="Campaigns"
-        title={
-          <>
-            캠페인 <span className="hl">목록</span>
-          </>
-        }
-        actions={
-          canManage && (
-            <Button render={<Link href="/campaigns/new" />} nativeButton={false}>
-              새 캠페인
-            </Button>
-          )
-        }
-      />
+    <main className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="wb-title">캠페인 목록</h1>
+        {canManage && (
+          <Button render={<Link href="/campaigns/new" />} nativeButton={false}>
+            새 캠페인
+          </Button>
+        )}
+      </div>
 
       <TemplateCouponTabs />
 
@@ -156,17 +148,14 @@ export default function CampaignsPage() {
           {isError && (
             <TableRow>
               <TableCell colSpan={5}>
-                <QueryError
-                  message="캠페인 목록을 불러오지 못했습니다."
-                  onRetry={() => refetch()}
-                />
+                <QueryError message="캠페인 목록을 불러오지 못했어요." onRetry={() => refetch()} />
               </TableCell>
             </TableRow>
           )}
           {!isLoading && data?.content.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} className="text-center text-muted-foreground">
-                캠페인이 없습니다.
+                캠페인이 없어요.
               </TableCell>
             </TableRow>
           )}
@@ -179,9 +168,9 @@ export default function CampaignsPage() {
               </TableCell>
               <TableCell>{CAMPAIGN_TYPE_LABEL[campaign.type]}</TableCell>
               <TableCell>
-                <Badge variant={CAMPAIGN_STATUS_VARIANT[campaign.status]}>
+                <Status tone={CAMPAIGN_STATUS_TONE[campaign.status]}>
                   {CAMPAIGN_STATUS_LABEL[campaign.status]}
-                </Badge>
+                </Status>
               </TableCell>
               <TableCell>
                 {campaign.scheduledAt ? formatDateTime(campaign.scheduledAt) : "-"}
