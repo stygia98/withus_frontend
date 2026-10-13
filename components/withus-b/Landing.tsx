@@ -71,33 +71,29 @@ export default function Landing() {
     addEventListener("scroll", onScroll, { passive: true });
     off.push(() => removeEventListener("scroll", onScroll));
 
-    // 나타나기 (위 · 아래 양방향) + 숫자 올라가기
-    const count = (c: HTMLElement & { _on?: number }) => {
+    // 나타나기 + 숫자 올라가기 — 처음 한 번만. 화면을 벗어날 때마다 다시 숨기면 위로 올라갈 때
+    // 이미 본 문단이 반투명하게 다시 떠오르며 앞뒤 화면이 겹쳐 보인다
+    const count = (c: HTMLElement) => {
       const to = Number(c.dataset.count),
         t0 = performance.now();
       const f = (t: number) => {
         const p = Math.min(1, (t - t0) / 1200);
         c.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))).toLocaleString("ko-KR");
-        if (p < 1 && c._on) requestAnimationFrame(f);
+        if (p < 1) requestAnimationFrame(f);
       };
       requestAnimationFrame(f);
     };
     const io = new IntersectionObserver(
       (es) =>
         es.forEach((e) => {
+          if (e.intersectionRatio < 0.15) return;
           const t = e.target as HTMLElement;
-          if (e.intersectionRatio >= 0.15) t.classList.add("in");
-          else if (!e.isIntersecting) t.classList.remove("in");
-          const c = t.querySelector<HTMLElement & { _on?: number }>("[data-count]");
-          if (c && e.intersectionRatio >= 0.15 && !c._on) {
-            c._on = 1;
-            count(c);
-          } else if (c && !e.isIntersecting) {
-            c._on = 0;
-            c.textContent = "0";
-          }
+          t.classList.add("in");
+          const c = t.querySelector<HTMLElement>("[data-count]");
+          if (c) count(c);
+          io.unobserve(t);
         }),
-      { threshold: [0, 0.15] },
+      { threshold: 0.15 },
     );
     $$(".rv").forEach((n) => io.observe(n));
     off.push(() => io.disconnect());
