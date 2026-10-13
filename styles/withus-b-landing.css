@@ -1,0 +1,1139 @@
+/* withus — 홈(서비스 소개). .wb-landing 안에서만 적용. 배치는 시안 B, 색 · 버튼 · 블러는 billow.so 기준 */
+.wb-landing {
+  --white: #ffffff;
+  --cream: #fcfdff;
+  --grey: #f3f6f9;
+  --grey2: #e9eef3;
+  --line: #e6ecf1;
+  --ink: #001c2e;
+  --ink2: #1d3a4f;
+  --mute: #446278;
+  --lav: #8fd3ff;
+  --lav2: #bfe6ff;
+  --purple: #1a4bff;
+  --deep: #001c2e;
+  --mint: #2fd1ff;
+  --yel: #cfeaff;
+  --org: #1a4bff;
+  --pink: #a9dcff;
+  --cyan: #18c8ff;
+  --serif: var(--wb-serif);
+  --sans: var(--wb-sans);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.wb-landing * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+.wb-landing {
+  -webkit-text-size-adjust: 100%;
+}
+.wb-landing {
+  background: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: var(--ink);
+  font: 400 15px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  word-break: keep-all;
+}
+.wb-landing a {
+  color: inherit;
+  text-decoration: none;
+}
+.wb-landing button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.wb-landing :focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 3px;
+}
+.wb-landing h1,
+.wb-landing h2,
+.wb-landing h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.wb-landing .w {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 40px);
+}
+.wb-landing .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 16px;
+  font: 500 14px/1 var(--sans);
+  border-radius: 2px;
+  white-space: nowrap;
+  transition:
+    transform 0.2s var(--ease),
+    box-shadow 0.2s;
+}
+.wb-landing .btn.k {
+  background: var(--ink);
+  color: #fff;
+}
+.wb-landing .btn.o {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px #d3dde5;
+}
+.wb-landing .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 0 var(--lav);
+}
+.wb-landing .btn.o:hover {
+  box-shadow:
+    inset 0 0 0 1px var(--ink),
+    0 3px 0 var(--mint);
+}
+.wb-landing .box {
+  display: inline-block;
+  padding: 0 0.12em;
+  line-height: 1.08;
+  border-radius: 0.06em;
+}
+.wb-landing .box.l {
+  background: var(--lav);
+}
+.wb-landing .box.m {
+  background: var(--mint);
+}
+.wb-landing .tex {
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.25) 0.8px, transparent 0.8px),
+    radial-gradient(rgba(0, 0, 0, 0.06) 0.8px, transparent 0.8px);
+  background-size:
+    5px 5px,
+    7px 7px;
+}
+.wb-landing .nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--cream);
+  transition:
+    background 0.3s,
+    box-shadow 0.3s;
+}
+.wb-landing .nav.sc {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 var(--line);
+}
+.wb-landing .nav .w {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  max-width: 1440px;
+}
+.wb-landing .nav .l {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+.wb-landing .logo {
+  font: 700 26px/1 var(--sans);
+  letter-spacing: -0.06em;
+}
+.wb-landing .nav nav {
+  display: flex;
+  gap: 22px;
+  font-size: 14px;
+  color: var(--ink2);
+}
+.wb-landing .nav nav a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.wb-landing .nav nav a i {
+  width: 0;
+  height: 0;
+  border: 4px solid transparent;
+  border-top: 5px solid var(--purple);
+  margin-top: 4px;
+}
+.wb-landing .nav .r {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  font-size: 14px;
+}
+.wb-landing .hero {
+  background: var(--cream);
+  text-align: center;
+  padding: 64px 0 72px;
+}
+.wb-landing .hero h1 {
+  font-size: clamp(44px, 5.6vw, 72px);
+  line-height: 1.12;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.wb-landing .hero p {
+  max-width: 520px;
+  margin: 22px auto 0;
+  color: var(--ink2);
+  font-size: 15.5px;
+}
+.wb-landing .hero .cta {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 28px;
+}
+.wb-landing .stage {
+  position: relative;
+  background: var(--lav);
+  overflow: hidden;
+  padding: 56px 0 0;
+  min-height: 520px;
+}
+.wb-landing .grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+.wb-landing .stage .in {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: end;
+  padding: 0 24px;
+}
+.wb-landing .appk {
+  background: #fff;
+  border-radius: 6px 6px 0 0;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  overflow: hidden;
+  box-shadow: 0 30px 60px -30px rgba(1, 27, 46, 0.6);
+  text-align: left;
+  font-size: 12px;
+  min-height: 420px;
+}
+.wb-landing .appk aside {
+  background: var(--deep);
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 12px 0;
+  justify-items: center;
+}
+.wb-landing .appk aside b {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: var(--lav);
+  display: grid;
+  place-items: center;
+  color: var(--deep);
+  font-size: 12px;
+}
+.wb-landing .appk aside svg {
+  width: 15px;
+  height: 15px;
+  stroke: #8ba1b3;
+  fill: none;
+  stroke-width: 1.75;
+}
+.wb-landing .appk main {
+  padding: 18px 20px;
+}
+.wb-landing .appk h6 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 600 13px/1 var(--sans);
+  margin: 4px 0 10px;
+}
+.wb-landing .appk h6 span {
+  font: 500 11px/1 var(--sans);
+  padding: 5px 9px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.wb-landing .tools {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.wb-landing .tools button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 11.5px;
+  text-align: left;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.wb-landing .tools button.on {
+  background: var(--purple);
+  color: #fff;
+  box-shadow: none;
+}
+.wb-landing .tools button i {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex: none;
+}
+.wb-landing .q {
+  margin-top: 14px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  padding: 4px 10px;
+}
+.wb-landing .q div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+.wb-landing .q div:last-child {
+  border: 0;
+}
+.wb-landing .q b {
+  font-weight: 600;
+  display: block;
+  font-size: 12px;
+}
+.wb-landing .q small {
+  color: var(--mute);
+  font-size: 10.5px;
+}
+.wb-landing .due {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.wb-landing .due.r {
+  background: #fdeeee;
+  color: #d1242f;
+}
+.wb-landing .due.y {
+  background: #fff6e0;
+  color: #a86a00;
+}
+.wb-landing .due.g {
+  background: #ebf9f0;
+  color: #13803f;
+}
+.wb-landing .chat {
+  position: relative;
+  background: #fff;
+  border-radius: 6px 6px 0 0;
+  box-shadow:
+    inset 0 0 0 2px var(--lav2),
+    0 30px 60px -30px rgba(1, 27, 46, 0.6);
+  min-height: 380px;
+  padding: 14px;
+  text-align: center;
+  font-size: 12px;
+}
+.wb-landing .chat .hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  text-align: left;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.wb-landing .chat .hd b {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--org);
+}
+.wb-landing .chat .art {
+  width: 110px;
+  height: 110px;
+  margin: 26px auto 0;
+  border-radius: 8px;
+  background: conic-gradient(from 200deg, #a9dcff, #8fd3ff, #1a4bff, #a9dcff);
+  filter: saturate(1.1);
+}
+.wb-landing .chat h5 {
+  font: 500 20px/1.2 var(--sans);
+  margin-top: 16px;
+}
+.wb-landing .chat .sg {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+  justify-items: center;
+}
+.wb-landing .chat .sg span {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #ebf2ff;
+  color: #1a4bff;
+  font-size: 11px;
+}
+.wb-landing .circle {
+  position: absolute;
+  right: -40px;
+  top: 40px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--purple);
+  z-index: 0;
+}
+.wb-landing .pencil {
+  position: absolute;
+  left: -30px;
+  top: 170px;
+  width: 120px;
+  height: auto;
+  transform: rotate(-30deg);
+}
+.wb-landing .scr1 {
+  position: absolute;
+  right: 16%;
+  top: 120px;
+  width: 90px;
+}
+.wb-landing .scr2 {
+  position: absolute;
+  left: 4%;
+  top: 340px;
+  width: 80px;
+}
+.wb-landing .sec {
+  padding-top: clamp(150px, 15vw, 220px);
+}
+.wb-landing .c {
+  text-align: center;
+}
+.wb-landing .h2 {
+  font-size: clamp(36px, 4.4vw, 54px);
+  line-height: 1.14;
+  max-width: 820px;
+  margin: 0 auto;
+}
+.wb-landing .lede {
+  max-width: 560px;
+  margin: 22px auto 0;
+  color: var(--mute);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+.wb-landing .lede + .lede {
+  margin-top: 14px;
+}
+.wb-landing .st {
+  position: relative;
+  white-space: nowrap;
+}
+.wb-landing .st svg {
+  position: absolute;
+  left: -4%;
+  top: 42%;
+  width: 108%;
+  height: 30%;
+  overflow: visible;
+}
+.wb-landing .st path {
+  fill: none;
+  stroke: var(--org);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  transition: stroke-dashoffset 1s var(--ease) 0.3s;
+}
+.wb-landing .in .st path {
+  stroke-dashoffset: 0;
+}
+.wb-landing .hlx {
+  background: var(--lav);
+  padding: 0 0.14em;
+}
+.wb-landing .scrib {
+  display: block;
+  width: min(1000px, 100%);
+  margin: 40px auto 0;
+  overflow: visible;
+}
+.wb-landing .scrib .s {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 3200;
+  stroke-dashoffset: 3200;
+  transition: stroke-dashoffset 2.6s var(--ease);
+}
+.wb-landing .scrib.in .s {
+  stroke-dashoffset: 0;
+}
+.wb-landing .rows {
+  display: grid;
+  gap: 28px;
+  margin-top: 64px;
+}
+.wb-landing .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 320px;
+}
+.wb-landing .row .pic {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 22px 40px 0;
+}
+.wb-landing .row .txt {
+  background: var(--grey);
+  padding: 22px 44px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.wb-landing .row.r .pic {
+  order: 2;
+}
+.wb-landing .row .txt h3 {
+  font-size: clamp(26px, 2.4vw, 32px);
+  line-height: 1.18;
+  margin-top: auto;
+}
+.wb-landing .row .txt p {
+  margin-top: 12px;
+  color: var(--mute);
+  font-size: 14px;
+  max-width: 420px;
+}
+.wb-landing .ico {
+  width: 46px;
+  height: 46px;
+  flex: none;
+}
+.wb-landing .blob {
+  position: absolute;
+}
+.wb-landing .card {
+  position: relative;
+  z-index: 2;
+  width: min(330px, 100%);
+  background: #fff;
+  border-radius: 10px 10px 0 0;
+  padding: 16px 16px 18px;
+  font-size: 12px;
+  text-align: left;
+  box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.4);
+}
+.wb-landing .card .t {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 15px/1 var(--sans);
+  margin-bottom: 12px;
+}
+.wb-landing .card .t b {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--org);
+}
+.wb-landing .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 12px;
+  margin-top: 8px;
+}
+.wb-landing .tagp {
+  background: #ebf2ff;
+  color: #1a4bff;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.wb-landing .ol {
+  margin: 10px 0 0 16px;
+  line-height: 1.7;
+}
+.wb-landing .bar {
+  height: 5px;
+  border-radius: 3px;
+  background: #e9eef3;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.wb-landing .bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--purple);
+  transition: width 1.6s var(--ease);
+}
+.wb-landing .in .bar i {
+  width: 100%;
+}
+.wb-landing .big {
+  font: 600 40px/1 var(--sans);
+  letter-spacing: -0.04em;
+}
+.wb-landing .ring {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: conic-gradient(#8fd3ff 0 62%, #18c8ff 62% 86%, #1a4bff 86% 100%);
+  display: grid;
+  place-items: center;
+}
+.wb-landing .ring span {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  font: 600 20px/1 var(--sans);
+}
+.wb-landing .uh {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.wb-landing .uh h2 {
+  font-size: clamp(36px, 4.2vw, 52px);
+  line-height: 1.1;
+  text-align: left;
+}
+.wb-landing .uh p {
+  max-width: 340px;
+  font-size: 13.5px;
+  color: var(--mute);
+}
+.wb-landing .uses {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 48px;
+}
+.wb-landing .use {
+  background: var(--grey);
+  padding: 0 22px 26px;
+  transition: background 0.3s;
+}
+.wb-landing .use:hover {
+  background: var(--grey2);
+}
+.wb-landing .use .pic {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+  margin: 0 -22px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.wb-landing .use .pic .card {
+  width: 76%;
+  padding: 12px;
+  font-size: 11px;
+}
+.wb-landing .use h3 {
+  font-size: 21px;
+  line-height: 1.2;
+  margin-top: 22px;
+}
+.wb-landing .use p {
+  margin-top: 8px;
+  font-size: 13.5px;
+  color: var(--mute);
+}
+/* 발송 규정 — 위쪽 기능 카드와 같은 흰 카드. 아이콘 대신 번호 · 제목 · 설명 */
+.wb-landing .trust {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 44px;
+  text-align: left;
+}
+.wb-landing .tr {
+  background: #fff;
+  border-radius: var(--wb-r-lg);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--wb-shadow-sm);
+  padding: 22px 22px 24px;
+}
+.wb-landing .tr .n {
+  display: block;
+  font: 600 13px/1 var(--sans);
+  letter-spacing: -0.02em;
+  color: var(--wb-purple);
+  font-variant-numeric: tabular-nums;
+}
+.wb-landing .tr h3 {
+  margin-top: 18px;
+  font: 600 17px/1.3 var(--sans);
+  letter-spacing: -0.03em;
+}
+.wb-landing .tr p {
+  margin-top: 8px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--mute);
+}
+/* 규정 한 줄 + 연하늘 알약 칩 */
+.wb-landing .band {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px 24px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding: 22px 24px;
+  border-radius: var(--wb-r-lg);
+  background: linear-gradient(180deg, #f2f9ff 0%, #fbfdff 100%);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.wb-landing .band p {
+  font: 600 16px/1.4 var(--sans);
+  letter-spacing: -0.03em;
+}
+.wb-landing .seals {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.wb-landing .seal {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--wb-chip);
+  box-shadow: inset 0 0 0 1px rgba(77, 113, 140, 0.22);
+  font: 600 12.5px/1 var(--sans);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+/* 쓰던 방식 — 같은 크기의 흰 카드를 반듯하게 */
+.wb-landing .tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 170px));
+  justify-content: center;
+  gap: 14px;
+  margin-top: 40px;
+  padding: 0 20px;
+}
+.wb-landing .tile {
+  height: 96px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border-radius: var(--wb-r-lg);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--wb-shadow-sm);
+  font: 600 18px/1 var(--sans);
+  letter-spacing: -0.03em;
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow 0.3s;
+}
+.wb-landing .tile:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--wb-shadow);
+}
+/* 마지막 권유 — 옅은 블러 위의 한 문장 + 버튼 하나 */
+.wb-landing .end {
+  padding: clamp(150px, 15vw, 220px) 0 clamp(96px, 9vw, 140px);
+  text-align: center;
+}
+.wb-landing .endp {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(64px, 8vw, 104px) 24px;
+  border-radius: var(--wb-r-xl);
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--wb-shadow-sm);
+}
+.wb-landing .endp::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 20% -10% -60%;
+  background: var(--wb-cloud);
+  filter: blur(70px);
+  opacity: 0.32;
+}
+.wb-landing .endp .cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+/* 푸터 — 밝은 바탕 · 4단 (서비스 소개 · 둘러보기 · 발송 원칙 · 관리자) */
+.wb-landing footer {
+  background: var(--wb-paper);
+  border-top: 1px solid var(--line);
+  color: var(--mute);
+  font-size: 13.5px;
+}
+.wb-landing footer .w {
+  max-width: 1200px;
+}
+.wb-landing .ft {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  padding: 56px 0 44px;
+}
+.wb-landing .fb .logo {
+  font-size: 22px;
+  color: var(--ink);
+}
+.wb-landing .fb p {
+  margin-top: 14px;
+  line-height: 1.7;
+}
+.wb-landing .fc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wb-landing .fc b {
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.wb-landing .fc a:hover {
+  color: var(--ink);
+}
+.wb-landing .fbot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 20px 0 28px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+  color: var(--wb-faint);
+}
+.wb-landing .rv {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.9s var(--ease),
+    transform 0.9s var(--ease);
+}
+.wb-landing .rv.in {
+  opacity: 1;
+  transform: none;
+}
+.wb-landing .d1 {
+  transition-delay: 0.08s;
+}
+.wb-landing .d2 {
+  transition-delay: 0.16s;
+}
+.wb-landing .d3 {
+  transition-delay: 0.24s;
+}
+/* ---------------------------------------------------------
+   billow.so 모양 덮어쓰기 — 배치는 그대로, 바탕 · 버튼 · 무대 · 카드만 바꾼다
+   --------------------------------------------------------- */
+.wb-landing {
+  background: var(--wb-paper);
+}
+.wb-landing h1,
+.wb-landing h2,
+.wb-landing h3 {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.wb-landing .btn {
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font: 600 14.5px/1 var(--sans);
+  letter-spacing: -0.03em;
+  transition:
+    transform 0.2s var(--ease),
+    box-shadow 0.2s,
+    filter 0.2s;
+}
+.wb-landing .btn.k {
+  background: var(--wb-grad);
+  color: #fcfdff;
+  box-shadow:
+    var(--wb-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.wb-landing .btn.o {
+  background: rgba(252, 253, 255, 0.85);
+  color: var(--ink);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line2),
+    var(--wb-shadow-sm);
+  backdrop-filter: blur(10px);
+}
+.wb-landing .btn:hover,
+.wb-landing .btn.o:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+.wb-landing .btn.k:hover {
+  box-shadow:
+    var(--wb-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.wb-landing .btn.o:hover {
+  box-shadow:
+    inset 0 0 0 1px #b9c9d6,
+    var(--wb-shadow-sm);
+}
+.wb-landing .box {
+  padding: 0 0.14em;
+  border-radius: 0.12em;
+}
+.wb-landing .box.l {
+  background: #dff1fd;
+}
+.wb-landing .box.m {
+  background: #d6f5ff;
+}
+.wb-landing .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.wb-landing .logo::before {
+  content: "";
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  background: var(--wb-grad);
+  box-shadow: var(--wb-glow);
+  transform: rotate(12deg);
+}
+.wb-landing .nav {
+  background: rgba(252, 253, 255, 0.72);
+  backdrop-filter: blur(10px);
+}
+.wb-landing .nav.sc {
+  background: rgba(252, 253, 255, 0.85);
+  box-shadow: 0 1px 0 rgba(0, 28, 46, 0.06);
+}
+.wb-landing .hero {
+  background: transparent;
+}
+.wb-landing .hero h1 {
+  font-size: clamp(42px, 5.6vw, 80px);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  max-width: 900px;
+}
+.wb-landing .hero p {
+  color: var(--mute);
+  font-size: 17px;
+}
+/* 무대: 보라 모눈판 대신 크게 번지는 청록 · 파랑 블러 구름 */
+.wb-landing .stage {
+  background: transparent;
+  overflow: visible;
+}
+.wb-landing .grid-bg {
+  inset: 8% -6% -6%;
+  background: var(--wb-cloud);
+  background-size: auto;
+  filter: blur(50px);
+  border-radius: 50%;
+}
+/* 앱 화면: billow 앱 프레임처럼 유리 테두리 */
+.wb-landing .appk {
+  border-radius: var(--wb-r-lg) var(--wb-r-lg) 0 0;
+  outline: 4px solid rgba(255, 255, 255, 0.4);
+  box-shadow: var(--wb-shadow);
+}
+.wb-landing .chat {
+  border-radius: var(--wb-r-lg) var(--wb-r-lg) 0 0;
+  outline: 4px solid rgba(255, 255, 255, 0.4);
+}
+.wb-landing .card {
+  border-radius: var(--wb-r-md) var(--wb-r-md) 0 0;
+  box-shadow:
+    0 -10px 40px -30px rgba(41, 125, 251, 0.4),
+    var(--wb-shadow);
+}
+.wb-landing .chip {
+  border-radius: 999px;
+  background: var(--wb-chip);
+  box-shadow: inset 0 0 0 1px rgba(77, 113, 140, 0.22);
+}
+/* 덜어내기 — 장식 그림(연필 · 낙서 · 원 · 도형 블롭 · 기능 아이콘 · AI 그림 상자)은 보여 주지 않는다.
+   글과 화면 예시만 남기고, 블러는 히어로 무대와 마지막 권유 두 곳에만 둔다 */
+.wb-landing .pencil,
+.wb-landing .scr1,
+.wb-landing .scr2,
+.wb-landing .scrib,
+.wb-landing .circle,
+.wb-landing .blob,
+.wb-landing .ico,
+.wb-landing .chat .art {
+  display: none;
+}
+.wb-landing .box.l,
+.wb-landing .box.m {
+  background: none;
+  padding: 0;
+}
+.wb-landing .grid-bg {
+  opacity: 0.55;
+}
+.wb-landing .row .pic,
+.wb-landing .use .pic {
+  background: linear-gradient(180deg, #eaf5ff 0%, #f7fbff 100%) !important;
+}
+.wb-landing .row {
+  border-radius: var(--wb-r-xl);
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--wb-shadow-sm);
+}
+.wb-landing .row .txt {
+  background: #fff;
+}
+.wb-landing .use {
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--wb-shadow-sm);
+}
+@media (max-width: 980px) {
+  .wb-landing .nav nav {
+    display: none;
+  }
+  .wb-landing .ft {
+    grid-template-columns: 1fr 1fr;
+  }
+  .wb-landing .stage .in {
+    grid-template-columns: 1fr;
+  }
+  .wb-landing .chat {
+    display: none;
+  }
+  .wb-landing .tools {
+    grid-template-columns: 1fr 1fr;
+  }
+  .wb-landing .row,
+  .wb-landing .row.r {
+    grid-template-columns: 1fr;
+  }
+  .wb-landing .row.r .pic {
+    order: 0;
+  }
+  .wb-landing .row .pic {
+    min-height: 280px;
+  }
+  .wb-landing .uses {
+    grid-template-columns: 1fr 1fr;
+  }
+  .wb-landing .trust {
+    grid-template-columns: 1fr 1fr;
+  }
+  .wb-landing .circle {
+    width: 120px;
+    height: 120px;
+  }
+}
+@media (max-width: 640px) {
+  .wb-landing .ft {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  .wb-landing .nav .r .x {
+    display: none;
+  }
+  .wb-landing .hero {
+    padding-top: 44px;
+  }
+  .wb-landing .uses {
+    grid-template-columns: 1fr;
+  }
+  .wb-landing .row .txt {
+    padding: 22px 24px 26px;
+    gap: 40px;
+  }
+  .wb-landing .row .pic {
+    padding: 22px 20px 0;
+  }
+  .wb-landing .pencil,
+  .wb-landing .scr1,
+  .wb-landing .scr2 {
+    display: none;
+  }
+  .wb-landing .tiles {
+    grid-template-columns: 1fr 1fr;
+  }
+  .wb-landing .tile {
+    height: 80px;
+    font-size: 16px;
+  }
+  .wb-landing .trust {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wb-landing * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .wb-landing .rv {
+    opacity: 1;
+    transform: none;
+  }
+  .wb-landing .scrib .s,
+  .wb-landing .st path {
+    stroke-dashoffset: 0;
+  }
+}
