@@ -223,7 +223,8 @@
   min-height: 420px;
 }
 .wb-landing .appk aside {
-  background: var(--deep);
+  background: #f7f9fb;
+  border-right: 1px solid var(--line);
   display: grid;
   align-content: start;
   gap: 14px;
@@ -234,10 +235,11 @@
   width: 22px;
   height: 22px;
   border-radius: 5px;
-  background: var(--lav);
+  background: var(--wb-grad);
+  box-shadow: var(--wb-glow);
   display: grid;
   place-items: center;
-  color: var(--deep);
+  color: #fff;
   font-size: 12px;
 }
 .wb-landing .appk aside svg {
@@ -586,22 +588,68 @@
   font: 600 40px/1 var(--sans);
   letter-spacing: -0.04em;
 }
-.wb-landing .ring {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: conic-gradient(#8fd3ff 0 62%, #18c8ff 62% 86%, #1a4bff 86% 100%);
-  display: grid;
-  place-items: center;
-}
-.wb-landing .ring span {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  background: #fff;
-  display: grid;
-  place-items: center;
+/* 작은 카드 안의 숫자 — 도형 대신 굵은 숫자로만 보여 준다 */
+.wb-landing .num {
   font: 600 20px/1 var(--sans);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 워크플로우 미리보기 — 단계는 흰 줄, 갈래(예/아니오)는 들여 쓰고 세로선으로 잇는다 */
+.wb-landing .flow {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  text-align: left;
+}
+.wb-landing .flow li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--wb-r-sm);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 12px;
+  color: var(--ink);
+}
+.wb-landing .flow i {
+  flex: none;
+  min-width: 34px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #ebf2ff;
+  color: #1a4bff;
+  font: 600 10.5px/1.2 var(--sans);
+  font-style: normal;
+  text-align: center;
+}
+.wb-landing .flow .yes,
+.wb-landing .flow .no {
+  margin-left: 20px;
+}
+.wb-landing .flow .yes::before,
+.wb-landing .flow .no::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: -6px;
+  bottom: 50%;
+  width: 9px;
+  border-left: 1.5px solid var(--line);
+  border-bottom: 1.5px solid var(--line);
+  border-bottom-left-radius: 6px;
+}
+.wb-landing .flow .yes i {
+  background: #ebf9f0;
+  color: #13803f;
+}
+.wb-landing .flow .no i {
+  background: #fff6e5;
+  color: #a15c00;
 }
 .wb-landing .uh {
   display: flex;
@@ -984,6 +1032,7 @@
 .wb-landing .chat {
   border-radius: var(--wb-r-lg) var(--wb-r-lg) 0 0;
   outline: 4px solid rgba(255, 255, 255, 0.4);
+  text-align: left;
 }
 .wb-landing .card {
   border-radius: var(--wb-r-md) var(--wb-r-md) 0 0;
