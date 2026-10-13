@@ -291,8 +291,9 @@ export default function Landing() {
               쿠폰은 또 다른 곳에. 연결은 마케터가 손으로 하고, 결과는 끝나고 나서야 보여요.
             </p>
             <p className="lede rv d2">
-              withus는 그 우회로를 없애요. 고객 데이터가 기준이 되고, 반응이 신호가 되고,
-              워크플로우가 그 둘을 이어 줘요.
+              withus는 그 우회로를 없애요. 고객 데이터가 기준이 되고,
+              <br />
+              반응이 신호가 되고, 워크플로우가 그 둘을 이어 줘요.
             </p>
           </div>
           <svg className="scrib rv" viewBox="0 0 1000 230" aria-hidden="true">
@@ -631,8 +632,9 @@ export default function Landing() {
           <div className="w">
             <h2 className="h2 rv">쓰던 방식 그대로</h2>
             <p className="lede rv d1" style={{ color: "var(--mute)" }}>
-              withus는 지금 쓰는 고객 파일과 채널 위에서 바로 동작하고, 필요한 만큼 점점 더 많은
-              일을 맡을 수 있어요.
+              withus는 지금 쓰는 고객 파일과 채널 위에서 바로 동작하고,
+              <br />
+              필요한 만큼 점점 더 많은 일을 맡을 수 있어요.
             </p>
           </div>
           <div className="tiles rv">

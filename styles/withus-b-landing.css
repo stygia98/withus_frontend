@@ -450,6 +450,9 @@
   color: var(--wb-faint, #8aa0b2);
 }
 .wb-landing .em {
+  padding: 0.14em 0 0.08em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   color: var(--wb-purple);
   background: var(--wb-grad);
   -webkit-background-clip: text;
@@ -753,8 +756,10 @@
   margin-top: 14px;
   padding: 22px 24px;
   border-radius: var(--wb-r-lg);
-  background: linear-gradient(180deg, #f2f9ff 0%, #fbfdff 100%);
-  box-shadow: inset 0 0 0 1px var(--line);
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--wb-shadow-sm);
 }
 .wb-landing .band p {
   font: 600 16px/1.4 var(--sans);
@@ -771,11 +776,10 @@
   height: 28px;
   padding: 0 12px;
   border-radius: 999px;
-  background: var(--wb-chip);
-  box-shadow: inset 0 0 0 1px rgba(77, 113, 140, 0.22);
+  background: var(--grey);
   font: 600 12.5px/1 var(--sans);
-  letter-spacing: -0.02em;
-  color: var(--ink);
+  letter-spacing: -0.01em;
+  color: var(--ink2);
 }
 /* 쓰던 방식 — 같은 크기의 흰 카드를 반듯하게 */
 .wb-landing .tiles {
@@ -827,7 +831,7 @@
   content: "";
   position: absolute;
   z-index: -1;
-  inset: 20% -10% -60%;
+  inset: -60% -10% 20%;
   background: var(--wb-cloud);
   filter: blur(70px);
   opacity: 0.32;
@@ -917,11 +921,11 @@
   letter-spacing: -0.03em;
 }
 .wb-landing .btn {
-  height: 42px;
-  padding: 0 20px;
+  height: 46px;
+  padding: 0 26px;
   border-radius: 999px;
-  font: 600 14.5px/1 var(--sans);
-  letter-spacing: -0.03em;
+  font: 600 15px/1 var(--sans);
+  letter-spacing: 0.01em;
   transition:
     transform 0.2s var(--ease),
     box-shadow 0.2s,
