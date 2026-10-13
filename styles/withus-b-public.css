@@ -168,22 +168,26 @@
 .wb-coupon__act {
   padding: 4px 22px 22px;
 }
-.wb-coupon__confirm {
+/* 매장 바코드 — 스캐너가 잘 읽도록 흰 바탕 · 검은 막대, 양옆 여백은 SVG 안에 있다 */
+.wb-barcode {
+  margin: 4px 0 0;
+  padding: 14px 14px 10px;
   border-radius: var(--wb-r-md);
-  background: var(--wb-grey);
+  background: #fff;
   box-shadow: inset 0 0 0 1px var(--wb-line);
-  padding: 16px;
-  animation: wb-up 0.35s var(--wb-ease) both;
 }
-.wb-coupon__confirm p {
-  margin: 0;
-  font-size: 14px;
+.wb-barcode svg {
+  display: block;
+  width: 100%;
+  height: 84px;
 }
-.wb-coupon__confirm div {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 8px;
-  margin-top: 12px;
+.wb-barcode figcaption {
+  margin-top: 8px;
+  text-align: center;
+  font: 600 17px/1 var(--wb-sans);
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+  color: var(--wb-ink);
 }
 .wb-coupon__help {
   margin: 12px 0 0;

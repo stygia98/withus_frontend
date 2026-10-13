@@ -1,23 +1,22 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { differenceInCalendarDays, parseISO } from "date-fns";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
-import { Button, LinkError, PublicShell, Status, type Tone } from "@/components/withus-b";
+import { CouponBarcode } from "@/components/coupon/coupon-barcode";
+import { LinkError, PublicShell, Status, type Tone } from "@/components/withus-b";
 import { ApiError, api } from "@/lib/api-client";
 import { type PublicCoupon, formatPeriod } from "@/lib/coupon";
 import { queryKeys } from "@/lib/query-keys";
 import { useSeoulToday } from "@/lib/period";
 
 const SOON_DAYS = 3; // 만료 3일 전부터 '곧 만료'로 보여 준다
-const pad = (n: number) => String(n).padStart(2, "0");
+const WATCH_MS = 5000; // 쓸 수 있는 쿠폰은 5초마다 다시 읽어, 매장에서 찍자마자 '사용한 쿠폰'으로 바뀌게 한다
 
 /**
  * 고객 쿠폰 화면 (PRD F-10, API_SPEC 8장) — 디자인 키트 B의 팬 화면. 로그인 없이 메일 속 링크의 UUID 토큰으로 연다.
- * 조회(GET)는 상태를 바꾸지 않고, 사용 처리는 확인 단계를 거쳐 POST 로만 한다.
- * API 가 주지 않는 값(쿠폰 코드·최소 구매금액·매장 이름·사용 시각)은 보여 주지 않는다.
+ * 쿠폰은 오프라인(매장) 전용이다(project #51): 이 화면은 조회만 하고 바코드와 12자리 쿠폰 번호를 보여 준다.
+ * 사용 처리는 매장 직원이 관리자 화면(/coupons/redeem)에서 바코드를 찍어 한다.
  */
 export function PublicCouponCard({ token }: { token: string }) {
   return (
@@ -28,10 +27,7 @@ export function PublicCouponCard({ token }: { token: string }) {
 }
 
 function CouponBody({ token }: { token: string }) {
-  const queryClient = useQueryClient();
   const today = useSeoulToday();
-  const [confirm, setConfirm] = useState(false);
-  const [now, setNow] = useState<Date | null>(null);
   const path = `/api/v1/public/coupons/${encodeURIComponent(token)}` as const;
   const key = queryKeys.coupons.publicCard(token);
 
@@ -39,33 +35,8 @@ function CouponBody({ token }: { token: string }) {
     queryKey: key,
     queryFn: () => api<PublicCoupon>(path),
     retry: (count, err) => !(err instanceof ApiError && err.status === 404) && count < 2,
+    refetchInterval: (q) => (q.state.data?.status === "USABLE" ? WATCH_MS : false),
   });
-
-  const use = useMutation({
-    mutationFn: () => api<PublicCoupon>(`${path}/use`, { method: "POST" }),
-    onSuccess: (card) => {
-      queryClient.setQueryData(key, card);
-      setConfirm(false);
-      toast.success("사용 처리됐어요");
-    },
-    onError: (err) => {
-      // 다른 기기에서 먼저 썼거나(409) 기간이 바뀐(422) 경우: 화면을 최신 상태로 바꾸고 확인 단계를 닫는다
-      if (err instanceof ApiError && (err.status === 409 || err.status === 422)) {
-        setConfirm(false);
-        toast.error(err.message);
-      }
-      queryClient.invalidateQueries({ queryKey: key });
-    },
-  });
-
-  const used = data?.status === "USED";
-  // 사용 완료 화면에는 초 단위로 흐르는 현재 시각을 보여 줘서, 캡처한 화면이 아님을 직원이 알 수 있게 한다
-  useEffect(() => {
-    if (!used) return;
-    setNow(new Date());
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
-  }, [used]);
 
   if (isPending) return <p className="wb-public__lead">쿠폰을 불러오는 중...</p>;
   if (error) {
@@ -74,6 +45,7 @@ function CouponBody({ token }: { token: string }) {
   }
 
   const daysLeft = differenceInCalendarDays(parseISO(data.validTo), parseISO(today));
+  const used = data.status === "USED";
   const expired = data.status === "EXPIRED";
   const off = used || expired;
   const soon = data.status === "USABLE" && daysLeft <= SOON_DAYS;
@@ -100,7 +72,7 @@ function CouponBody({ token }: { token: string }) {
       ? ["기한이 지난 쿠폰이에요", `${who}께 드렸던 쿠폰이에요. 사용 기간이 끝났어요.`]
       : [
           "쿠폰이 도착했어요",
-          `${who}께 드리는 쿠폰이에요. 사용할 때 직원에게 이 화면을 보여 주세요.`,
+          `${who}께 드리는 쿠폰이에요. 매장에서 계산할 때 직원에게 바코드를 보여 주세요.`,
         ];
 
   return (
@@ -133,81 +105,27 @@ function CouponBody({ token }: { token: string }) {
               {dDay && ` · ${dDay}`}
             </dd>
           </div>
-          {used && (
-            <div>
-              <dt>지금 시각</dt>
-              <dd className="wb-num">
-                {now
-                  ? `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
-                  : ""}
-              </dd>
-            </div>
-          )}
         </dl>
         <div className="wb-coupon__act">
-          {used ? (
-            <p className="wb-coupon__help" style={{ marginTop: 0 }}>
-              사용 처리가 끝났어요. 흐르는 지금 시각은 캡처한 화면이 아니라는 표시예요.
-            </p>
-          ) : expired ? (
+          {data.status === "USABLE" ? (
             <>
-              <p className="wb-coupon__help" style={{ marginTop: 0 }}>
-                새 쿠폰은 메일 또는 문자로 안내해 드려요.
-              </p>
-            </>
-          ) : data.status === "NOT_STARTED" ? (
-            <>
-              <Button variant="secondary" size="lg" block disabled>
-                사용 기간이 되면 쓸 수 있어요
-              </Button>
-              <p className="wb-coupon__help">
-                {formatPeriod(data.validFrom, data.validTo)}에 사용할 수 있어요.
-              </p>
-            </>
-          ) : confirm ? (
-            // 확인 단계: 여기서 한 번 더 눌러야 POST 가 나간다
-            <div className="wb-coupon__confirm" role="alertdialog" aria-label="쿠폰 사용 확인">
-              <p>
-                <b>직원이 확인했나요?</b>
-                <br />
-                <span style={{ color: "var(--wb-mute)" }}>
-                  사용하면 되돌릴 수 없어요. 쿠폰은 1회만 쓸 수 있어요.
-                </span>
-              </p>
-              {use.isError &&
-              !(use.error instanceof ApiError && [409, 422].includes(use.error.status)) ? (
-                <p role="alert" style={{ marginTop: 10, color: "var(--wb-err)", fontSize: 13 }}>
-                  {use.error instanceof ApiError
-                    ? use.error.message
-                    : "연결이 잠깐 끊겼어요. 쿠폰은 아직 그대로예요. 다시 눌러 주세요."}
-                </p>
-              ) : null}
-              <div>
-                <Button
-                  variant="secondary"
-                  onClick={() => setConfirm(false)}
-                  disabled={use.isPending}
-                >
-                  취소
-                </Button>
-                <Button onClick={() => use.mutate()} loading={use.isPending}>
-                  {use.isPending ? "처리 중" : "사용 확정"}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <>
-              <Button size="lg" block onClick={() => setConfirm(true)}>
-                사용하기
-              </Button>
+              <CouponBarcode code={data.code} />
               <p className="wb-coupon__help">
                 {soon
                   ? daysLeft <= 0
-                    ? "오늘까지 사용할 수 있어요."
-                    : `사용 기한이 ${daysLeft}일 남았어요.`
-                  : "계산할 때 직원이 확인한 뒤 눌러 주세요."}
+                    ? "오늘까지 쓸 수 있어요. 화면 밝기를 올리면 더 잘 찍혀요."
+                    : `사용 기한이 ${daysLeft}일 남았어요. 화면 밝기를 올리면 더 잘 찍혀요.`
+                  : "직원이 바코드를 찍으면 사용 처리돼요. 화면 밝기를 올리면 더 잘 찍혀요."}
               </p>
             </>
+          ) : (
+            <p className="wb-coupon__help" style={{ marginTop: 0 }}>
+              {used
+                ? "매장에서 사용 처리가 끝났어요."
+                : expired
+                  ? "새 쿠폰은 메일 또는 문자로 안내해 드려요."
+                  : `${formatPeriod(data.validFrom, data.validTo)}에 쓸 수 있어요. 기간이 되면 바코드가 열려요.`}
+            </p>
           )}
         </div>
       </article>
