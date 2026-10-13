@@ -33,13 +33,14 @@
   padding: clamp(32px, 7vh, 72px) 20px 0;
 }
 .wb-login__hero h1 {
-  font: 500 clamp(34px, 4vw, 52px) / 1.14 var(--wb-serif);
-  letter-spacing: -0.03em;
+  font: 500 clamp(34px, 4vw, 50px) / var(--wb-lh-display) var(--wb-serif);
+  letter-spacing: var(--wb-track-display);
   margin: 0;
 }
 .wb-login__hero p {
   margin: 14px 0 0;
   font-size: 15px;
+  line-height: 1.6;
   color: var(--wb-mute);
 }
 .wb-login__stage {

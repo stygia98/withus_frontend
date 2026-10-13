@@ -36,8 +36,13 @@ export default function SegmentsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="wb-title">고객 타겟팅</h1>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="wb-title">고객 타겟팅</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            조건으로 고객을 묶어요. 대상 고객은 발송할 때마다 다시 계산돼요.
+          </p>
+        </div>
         <Link href="/segments/new" className={buttonVariants()}>
           세그먼트 만들기
         </Link>

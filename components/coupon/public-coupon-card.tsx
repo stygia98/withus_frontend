@@ -90,16 +90,24 @@ function CouponBody({ token }: { token: string }) {
     data.discountType === "RATE"
       ? `${data.discountValue}% 할인`
       : `${data.discountValue.toLocaleString("ko-KR")}원 할인`;
-  const dDay = expired ? "종료" : daysLeft <= 0 ? "D-DAY" : `D-${daysLeft}`;
+  // 남은 날은 아직 쓸 수 있는 쿠폰에만 붙인다 (사용 완료·만료에는 의미가 없다)
+  const dDay = off ? null : daysLeft <= 0 ? "D-DAY" : `D-${daysLeft}`;
+  const who = data.customerName ? `${data.customerName}님` : "고객님";
+  // 제목·안내는 상태에 맞춘다 — 다 쓴 쿠폰에 '도착했어요'가 뜨지 않게
+  const [title, lead] = used
+    ? ["사용한 쿠폰이에요", `${who}이 사용한 쿠폰이에요.`]
+    : expired
+      ? ["기한이 지난 쿠폰이에요", `${who}께 드렸던 쿠폰이에요. 사용 기간이 끝났어요.`]
+      : [
+          "쿠폰이 도착했어요",
+          `${who}께 드리는 쿠폰이에요. 사용할 때 직원에게 이 화면을 보여 주세요.`,
+        ];
 
   return (
     <>
       <span className="wb-eyebrow">내 쿠폰</span>
-      <h1 className="wb-public__title wb-anim">쿠폰이 도착했어요</h1>
-      <p className="wb-public__lead">
-        {data.customerName ? `${data.customerName}님` : "고객님"}께 드리는 쿠폰이에요. 매장에서
-        직원에게 이 화면을 보여 주세요.
-      </p>
+      <h1 className="wb-public__title wb-anim">{title}</h1>
+      <p className="wb-public__lead">{lead}</p>
       <article className="wb-public__card wb-coupon" data-off={off}>
         <div className="wb-coupon__visual">
           <div className="wb-coupon__ticket">
@@ -121,7 +129,8 @@ function CouponBody({ token }: { token: string }) {
           <div>
             <dt>사용 기간</dt>
             <dd>
-              {formatPeriod(data.validFrom, data.validTo)} · {dDay}
+              {formatPeriod(data.validFrom, data.validTo)}
+              {dDay && ` · ${dDay}`}
             </dd>
           </div>
           {used && (
@@ -138,14 +147,13 @@ function CouponBody({ token }: { token: string }) {
         <div className="wb-coupon__act">
           {used ? (
             <p className="wb-coupon__help" style={{ marginTop: 0 }}>
-              사용이 끝난 쿠폰이에요. 이 화면을 직원에게 보여 주세요.
+              사용 처리가 끝났어요. 흐르는 지금 시각은 캡처한 화면이 아니라는 표시예요.
             </p>
           ) : expired ? (
             <>
-              <Button variant="secondary" size="lg" block disabled>
-                기한이 지난 쿠폰이에요
-              </Button>
-              <p className="wb-coupon__help">새 쿠폰은 메일 또는 문자로 안내해 드려요.</p>
+              <p className="wb-coupon__help" style={{ marginTop: 0 }}>
+                새 쿠폰은 메일 또는 문자로 안내해 드려요.
+              </p>
             </>
           ) : data.status === "NOT_STARTED" ? (
             <>
@@ -190,7 +198,7 @@ function CouponBody({ token }: { token: string }) {
           ) : (
             <>
               <Button size="lg" block onClick={() => setConfirm(true)}>
-                매장에서 사용하기
+                사용하기
               </Button>
               <p className="wb-coupon__help">
                 {soon

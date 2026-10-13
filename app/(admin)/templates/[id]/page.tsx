@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { Copy, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -41,23 +42,31 @@ export default function EditTemplatePage() {
       )}
       {data && (
         <>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              disabled={duplicate.isPending}
-              onClick={() =>
-                duplicate.mutate(templateId, {
-                  onSuccess: (copy) => router.push(`/templates/${copy.templateId}`),
-                })
-              }
-            >
-              <Copy className="size-4" />
-              복제
-            </Button>
-            <Button variant="outline" onClick={() => setDeleteOpen(true)}>
-              <Trash2 className="size-4" />
-              삭제
-            </Button>
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <Link href="/templates" className="text-sm text-muted-foreground hover:underline">
+                ← 메시지 템플릿
+              </Link>
+              <h1 className="wb-title">{data.name}</h1>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                disabled={duplicate.isPending}
+                onClick={() =>
+                  duplicate.mutate(templateId, {
+                    onSuccess: (copy) => router.push(`/templates/${copy.templateId}`),
+                  })
+                }
+              >
+                <Copy className="size-4" />
+                복제
+              </Button>
+              <Button variant="outline" onClick={() => setDeleteOpen(true)}>
+                <Trash2 className="size-4" />
+                삭제
+              </Button>
+            </div>
           </div>
           <TemplateForm mode="edit" templateId={templateId} template={data} />
           <TemplatePreviewPanel template={data} />
