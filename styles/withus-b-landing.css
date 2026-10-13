@@ -931,6 +931,12 @@
     box-shadow 0.2s,
     filter 0.2s;
 }
+/* 위쪽 메뉴 줄의 로그인은 보조 행동이라 본문 버튼보다 작게 (높이 36px) */
+.wb-landing .nav .btn {
+  height: 36px;
+  padding: 0 18px;
+  font-size: 14px;
+}
 .wb-landing .btn.k {
   background: var(--wb-grad);
   color: #fcfdff;
