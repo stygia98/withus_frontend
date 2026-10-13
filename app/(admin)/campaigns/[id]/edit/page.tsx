@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import { CAMPAIGN_STATUS_TONE } from "@/lib/status-tone";
@@ -35,6 +36,12 @@ export default function EditCampaignPage() {
       {isError && <QueryError message="캠페인을 불러오지 못했어요." onRetry={() => refetch()} />}
       {data && (
         <>
+          <div>
+            <Link href="/campaigns" className="text-sm text-muted-foreground hover:underline">
+              ← 캠페인 목록
+            </Link>
+            <h1 className="wb-title">{data.name}</h1>
+          </div>
           <div className="flex items-center justify-between gap-2">
             <Status tone={CAMPAIGN_STATUS_TONE[data.status]}>
               {CAMPAIGN_STATUS_LABEL[data.status]}

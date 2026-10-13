@@ -104,8 +104,13 @@ export default function CustomersPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="wb-title">고객 목록</h1>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="wb-title">고객 목록</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            수신동의와 휴면 여부를 확인하고, 엑셀·CSV 파일로 한 번에 등록할 수 있어요.
+          </p>
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setUploading(true)}>
             업로드

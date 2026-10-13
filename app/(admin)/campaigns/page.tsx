@@ -75,8 +75,13 @@ export default function CampaignsPage() {
 
   return (
     <main className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="wb-title">캠페인 목록</h1>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="wb-title">캠페인 목록</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            일회성 예약 발송과 워크플로우 캠페인을 만들고, 시작하거나 멈출 수 있어요.
+          </p>
+        </div>
         {canManage && (
           <Button render={<Link href="/campaigns/new" />} nativeButton={false}>
             새 캠페인

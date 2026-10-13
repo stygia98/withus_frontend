@@ -188,7 +188,7 @@ export function TemplateForm(props: TemplateFormProps) {
     <form onSubmit={handleSubmit((values) => mutation.mutate(values))} className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{props.mode === "create" ? "새 템플릿" : "템플릿 수정"}</CardTitle>
+          <CardTitle>템플릿 내용</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {locked && (

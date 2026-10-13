@@ -181,7 +181,7 @@ export function CampaignForm(props: CampaignFormProps) {
     <form onSubmit={handleSubmit((values) => mutation.mutate(values))} className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{editing ? "캠페인 수정" : "새 캠페인"}</CardTitle>
+          <CardTitle>기본 정보</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {locked && (

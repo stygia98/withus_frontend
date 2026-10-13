@@ -58,7 +58,13 @@ export function CheckRow({
 }
 
 /* ---------- 링크 오류 ---------- */
-const ERR: Record<"notFound" | "expired" | "network", [IconName, string, string]> = {
+const ERR: Record<"page" | "notFound" | "expired" | "network", [IconName, string, string]> = {
+  // 없는 주소 — 고객(잘린 링크)과 관리자(잘못 친 주소)가 모두 보는 화면이라 둘 다에게 맞는 문장
+  page: [
+    "link",
+    "페이지를 찾을 수 없어요",
+    "주소가 바뀌었거나 없는 페이지예요. 메일이나 문자로 받은 링크라면 그 링크를 다시 눌러 주세요.",
+  ],
   notFound: [
     "link",
     "링크를 찾을 수 없어요",

@@ -80,10 +80,12 @@ export default function UsersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-end justify-between">
+      <header className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs text-muted-foreground">시스템 설정</p>
           <h1 className="wb-title">사용자 관리</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            관리자 계정을 만들고 역할(OWNER · MANAGER · STAFF)을 정해요.
+          </p>
         </div>
         {!forbidden && <Button onClick={() => setCreating(true)}>사용자 추가</Button>}
       </header>

@@ -68,8 +68,13 @@ export default function TemplatesPage() {
 
   return (
     <main className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="wb-title">메시지 템플릿</h1>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="wb-title">메시지 템플릿</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            광고성 템플릿에는 (광고) 표기와 수신거부 안내가 발송할 때 자동으로 들어가요.
+          </p>
+        </div>
         <Button render={<Link href="/templates/new" />} nativeButton={false}>
           새 템플릿
         </Button>
