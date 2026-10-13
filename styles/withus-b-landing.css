@@ -891,9 +891,10 @@
 .wb-landing .rv {
   opacity: 0;
   transform: translateY(22px);
+  /* 휠을 빠르게 굴려도 빈 화면 · 반투명 글자가 오래 남지 않게 짧게 */
   transition:
-    opacity 0.9s var(--ease),
-    transform 0.9s var(--ease);
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
 }
 .wb-landing .rv.in {
   opacity: 1;
