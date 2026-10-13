@@ -173,11 +173,11 @@ export default function Landing() {
           big = m2 - m1 > 720 ? 1 : 0;
         return `M${x1} ${y1} A${r} ${r} 0 ${big} 1 ${x2} ${y2}`;
       };
-      let h = `<circle cx="${C}" cy="${C}" r="${R}" fill="#f3f4f1"/><path d="${arc(480, 1250, R - 18)}" fill="none" stroke="#e9f542" stroke-width="36"/>`;
+      let h = `<circle cx="${C}" cy="${C}" r="${R}" fill="#ffffff"/><path d="${arc(480, 1250, R - 18)}" fill="none" stroke="#cdbcff" stroke-width="36"/>`;
       for (let i = 0; i < 24; i++) {
         const [x1, y1] = pt(i * 60, R - 2),
           [x2, y2] = pt(i * 60, R - (i % 6 ? 8 : 16));
-        h += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#14213d" stroke-width="${i % 6 ? 1 : 2}"/>`;
+        h += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#111111" stroke-width="${i % 6 ? 1 : 2}"/>`;
       }
       [0, 6, 12, 18].forEach((hh) => {
         const [x, y] = pt(hh * 60, R + 26);
@@ -188,10 +188,10 @@ export default function Landing() {
         [1250, "20:50"],
       ].forEach(([m, t]) => {
         const [x, y] = pt(m, R - 60);
-        h += `<text class="dial-n" x="${x}" y="${y + 4}" text-anchor="middle" style="fill:#14213d">${t}</text>`;
+        h += `<text class="dial-n" x="${x}" y="${y + 4}" text-anchor="middle" style="fill:#111111">${t}</text>`;
       });
-      h += `<g class="dial-hand" id="hand"><line x1="${C}" y1="${C}" x2="${C}" y2="${C - R + 40}" stroke="#14213d" stroke-width="4" stroke-linecap="round"/><circle cx="${C}" cy="${C - R + 40}" r="9" fill="#14213d"/></g><circle cx="${C}" cy="${C}" r="92" fill="#14213d"/>`;
-      h += `<text class="dial-big" id="dT" x="${C}" y="${C + 14}" text-anchor="middle" style="fill:#f3f4f1;font-size:52px">00:00</text><text class="dial-s" id="dS" x="${C}" y="${C + 44}" text-anchor="middle" style="fill:#e9f542">보낼 수 있어요</text>`;
+      h += `<g class="dial-hand" id="hand"><line x1="${C}" y1="${C}" x2="${C}" y2="${C - R + 40}" stroke="#111111" stroke-width="4" stroke-linecap="round"/><circle cx="${C}" cy="${C - R + 40}" r="9" fill="#111111"/></g><circle cx="${C}" cy="${C}" r="92" fill="#111111"/>`;
+      h += `<text class="dial-big" id="dT" x="${C}" y="${C + 14}" text-anchor="middle" style="fill:#ffffff;font-size:52px">00:00</text><text class="dial-s" id="dS" x="${C}" y="${C + 44}" text-anchor="middle" style="fill:#cdbcff">보낼 수 있어요</text>`;
       svg.innerHTML = h;
       const tick = () => {
         const n = new Date(),
@@ -210,7 +210,7 @@ export default function Landing() {
       const g = $("planes");
       if (!g) return;
       const P =
-        '<path d="M0 0 L26 10 L0 20 L6 10 Z" fill="#14213d"/><path d="M6 10 L26 10" stroke="#e9f542" stroke-width="2"/>';
+        '<path d="M0 0 L26 10 L0 20 L6 10 Z" fill="#111111"/><path d="M6 10 L26 10" stroke="#cdbcff" stroke-width="2"/>';
       g.innerHTML = ["t1", "t2", "t3"]
         .map(
           (t, i) =>
@@ -302,11 +302,11 @@ export default function Landing() {
             d.y += (ty - d.y) * 0.15;
             ctx.beginPath();
             ctx.arc(d.x, d.y, on && stage ? 6 : 3.4, 0, 7);
-            ctx.fillStyle = stage === 0 ? "#14213d" : on ? "#e9f542" : "rgba(20,33,61,.18)";
+            ctx.fillStyle = stage === 0 ? "#111111" : on ? "#cdbcff" : "rgba(17, 17, 17,.18)";
             ctx.fill();
             if (on && stage) {
               ctx.lineWidth = 1.5;
-              ctx.strokeStyle = "#14213d";
+              ctx.strokeStyle = "#111111";
               ctx.stroke();
             }
           });
@@ -484,10 +484,10 @@ export default function Landing() {
       const S = 230,
         T = 64;
       const rows = [
-        ["REPORTS", "리포트", "#e9f542", "#c9d43a", "#b5bf2f", "#14213d"],
-        ["CAMPAIGNS", "캠페인 · 자동 흐름", "#f3f4f1", "#dcdfd9", "#c8ccc5", "#14213d"],
-        ["SEGMENTS", "세그먼트", "#2c3852", "#22304a", "#1a263c", "#f3f4f1"],
-        ["CUSTOMERS", "고객 1만 명", "#14213d", "#0e1830", "#0a1224", "#e9f542"],
+        ["REPORTS", "리포트", "#cdbcff", "#b6a2f5", "#a48ef0", "#111111"],
+        ["CAMPAIGNS", "캠페인 · 자동 흐름", "#ffffff", "#f1f0eb", "#e4e1d8", "#111111"],
+        ["SEGMENTS", "세그먼트", "#2c3852", "#22304a", "#1a263c", "#ffffff"],
+        ["CUSTOMERS", "고객 1만 명", "#111111", "#000000", "#000000", "#cdbcff"],
       ];
       const slabs = rows.map((r, i) => {
         const b = box(S, T, S, {

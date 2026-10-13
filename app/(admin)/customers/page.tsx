@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
 import { CustomerTabs } from "@/components/layout/section-tabs";
+import { PageHeader } from "@/components/withus";
 import { queryKeys } from "@/lib/query-keys";
 
 // 고객 목록 (PRD 4장 /customers)
@@ -103,15 +104,22 @@ export default function CustomersPage() {
 
   return (
     <div className="space-y-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">고객 목록</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setUploading(true)}>
-            업로드
-          </Button>
-          <Button onClick={() => setCreating(true)}>고객 등록</Button>
-        </div>
-      </div>
+      <PageHeader
+        en="Customers"
+        title={
+          <>
+            고객 <span className="hl">목록</span>
+          </>
+        }
+        actions={
+          <>
+            <Button variant="outline" onClick={() => setUploading(true)}>
+              업로드
+            </Button>
+            <Button onClick={() => setCreating(true)}>고객 등록</Button>
+          </>
+        }
+      />
 
       <CustomerTabs />
 

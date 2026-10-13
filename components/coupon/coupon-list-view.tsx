@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { CouponIssuesPanel } from "@/components/coupon/coupon-issues-panel";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/withus";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -52,18 +53,22 @@ export function CouponListView() {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">쿠폰 관리</h1>
-          <p className="text-muted-foreground text-sm">
-            유효기간은 모든 발급 건에 같게 적용됩니다. 사용률 = 사용 / 발급. 쿠폰명을 누르면 발급
-            현황을 볼 수 있습니다.
-          </p>
-        </div>
-        <Button nativeButton={false} render={<Link href="/coupons/new" />}>
-          <Plus aria-hidden />새 쿠폰
-        </Button>
-      </header>
+      <PageHeader
+        en="Coupons"
+        title={
+          <>
+            쿠폰 <span className="hl">관리</span>
+          </>
+        }
+        sub="유효기간은 모든 발급 건에 같게 적용됩니다. 사용률 = 사용 / 발급. 쿠폰명을 누르면 발급 현황을 볼 수 있습니다."
+        actions={
+          <>
+            <Button nativeButton={false} render={<Link href="/coupons/new" />}>
+              <Plus aria-hidden />새 쿠폰
+            </Button>
+          </>
+        }
+      />
       <TemplateCouponTabs />
 
       <Card>

@@ -13,13 +13,13 @@ import { type DailySend, formatCount } from "@/lib/dashboard";
 
 // 한 계열 → 색 하나, 범례 없음(제목이 계열을 말한다). 색은 밝은·어두운 카드 배경에서 검증한 값
 const config = {
-  sent: { label: "발송 성공", theme: { light: "#14213d", dark: "#8aa0cc" } },
+  sent: { label: "발송 성공", theme: { light: "#111111", dark: "#cdbcff" } },
 } satisfies ChartConfig;
 
 export function DailySendsChart({ data }: { data: DailySend[] }) {
   return (
     <>
-      <ChartContainer config={config} className="aspect-auto h-56 w-full">
+      <ChartContainer config={config} className="aspect-auto min-h-56 w-full flex-1">
         <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap={2}>
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
           <XAxis
