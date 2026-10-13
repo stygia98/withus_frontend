@@ -166,14 +166,14 @@ export function CampaignForm(props: CampaignFormProps) {
           });
     },
     onSuccess: (saved) => {
-      toast.success(editing ? "캠페인을 수정했습니다." : "캠페인을 만들었습니다.");
+      toast.success(editing ? "캠페인을 수정했어요." : "캠페인을 만들었어요.");
       queryClient.invalidateQueries({ queryKey: queryKeys.campaigns.all });
       // 생성 직후에는 예약·시작을 이어서 설정할 수 있게 편집 화면으로 보낸다
       router.push(`/campaigns/${saved.campaignId}/edit`);
     },
     onError: (err) => {
       // CAMPAIGN_COUPON_REQUIRED(템플릿에 {{couponUrl}} 이 있는데 쿠폰 없음) 등은 백엔드 메시지를 그대로 보여준다
-      toast.error(err instanceof ApiError ? err.message : "저장에 실패했습니다.");
+      toast.error(err instanceof ApiError ? err.message : "저장에 실패했어요.");
     },
   });
 
@@ -186,7 +186,7 @@ export function CampaignForm(props: CampaignFormProps) {
         <CardContent className="space-y-4">
           {locked && (
             <p className="rounded-md border bg-muted px-3 py-2 text-sm text-muted-foreground">
-              작성 중(DRAFT) 상태에서만 수정할 수 있습니다.
+              작성 중(DRAFT) 상태에서만 수정할 수 있어요.
             </p>
           )}
 
@@ -289,7 +289,7 @@ export function CampaignForm(props: CampaignFormProps) {
                 {defaultValueCount && (
                   <p className="text-xs text-muted-foreground">
                     대상 {defaultValueCount.total.toLocaleString()}명 중{" "}
-                    {defaultValueCount.usingDefault.toLocaleString()}명은 기본값으로 발송됩니다.
+                    {defaultValueCount.usingDefault.toLocaleString()}명은 기본값으로 발송돼요.
                   </p>
                 )}
               </div>
@@ -320,7 +320,7 @@ export function CampaignForm(props: CampaignFormProps) {
                   )}
                 />
                 <p className="text-xs text-muted-foreground">
-                  템플릿 본문에 {"{{couponUrl}}"}이 있으면 쿠폰을 반드시 연결해야 합니다.
+                  템플릿 본문에 {"{{couponUrl}}"}이 있으면 쿠폰을 반드시 연결해야 해요.
                 </p>
               </div>
             </>
@@ -356,7 +356,7 @@ export function CampaignForm(props: CampaignFormProps) {
                 <p className="text-sm text-destructive">{errors.triggerType.message}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                워크플로우 단계 구성(노드 편집)은 저장 후 편집 화면에서 추가됩니다.
+                워크플로우 단계 구성(노드 편집)은 저장 후 편집 화면에서 추가돼요.
               </p>
             </div>
           )}

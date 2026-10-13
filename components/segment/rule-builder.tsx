@@ -150,9 +150,7 @@ export function RuleBuilder({
       >
         <Plus /> 그룹 추가
       </Button>
-      {full && (
-        <p className="text-xs text-muted-foreground">조건은 최대 {MAX_CONDITIONS}개입니다.</p>
-      )}
+      {full && <p className="text-xs text-muted-foreground">조건은 최대 {MAX_CONDITIONS}개예요.</p>}
     </div>
   );
 }

@@ -31,7 +31,7 @@ import { type Customer, REGIONS } from "./types";
 // 이메일·휴대폰·지역 정규화는 서버가 한다 (PRD F-01). 여기서는 필수·기본 형식만 본다
 const schema = z.object({
   name: z.string().max(50),
-  email: z.string().trim().min(1, "이메일을 입력하세요.").email("이메일 형식이 아닙니다."),
+  email: z.string().trim().min(1, "이메일을 입력하세요.").email("이메일 형식이 아니에요."),
   phone: z.string(),
   region: z.string(),
   birthDate: z.string(),
@@ -99,14 +99,14 @@ export function CustomerFormDialog({
     onSuccess: (saved) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.customers.all });
       if (!editing && saved.suppressedChannels.length > 0) {
-        toast.warning("과거 수신거부 이력이 있어 해당 채널은 수신거부로 등록했습니다.");
+        toast.warning("과거 수신거부 이력이 있어 해당 채널은 수신거부로 등록했어요.");
       } else {
-        toast.success(editing ? "수정했습니다." : "등록했습니다.");
+        toast.success(editing ? "수정했어요." : "등록했어요.");
       }
       onOpenChange(false);
       onSaved?.(saved);
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했어요."),
   });
 
   const errors = form.formState.errors;
@@ -205,7 +205,7 @@ export function CustomerFormDialog({
         </form>
         {editing && (
           <p className="text-xs text-muted-foreground">
-            누적구매액은 구매 등록으로만, 수신동의는 상세 화면의 동의 변경으로만 바뀝니다.
+            누적구매액은 구매 등록으로만, 수신동의는 상세 화면의 동의 변경으로만 바뀌어요.
           </p>
         )}
         <DialogFooter>

@@ -97,7 +97,7 @@ export function SegmentEditor({
               />
             ) : (
               <p className="text-sm text-muted-foreground">
-                {fields.isError ? "조건 필드를 불러오지 못했습니다." : "불러오는 중..."}
+                {fields.isError ? "조건 필드를 불러오지 못했어요." : "불러오는 중..."}
               </p>
             )}
           </CardContent>
@@ -117,7 +117,7 @@ export function SegmentEditor({
                 <Count label="SMS 수신동의" value={preview.data.smsConsent} />
                 <Count label="휴면" value={preview.data.dormant} />
                 <p className="pt-2 text-xs text-muted-foreground">
-                  발송할 때 조건으로 다시 계산합니다. 수신거부 여부는 발송 직전에 확인합니다.
+                  발송할 때 조건으로 다시 계산해요. 수신거부 여부는 발송 직전에 확인해요.
                 </p>
               </>
             ) : (

@@ -46,7 +46,7 @@ const formSchema = z
     adYn: z.enum(["Y", "N"]),
   })
   .refine((data) => data.channel !== "EMAIL" || !!data.subject?.trim(), {
-    message: "메일 템플릿은 제목이 필요합니다.",
+    message: "메일 템플릿은 제목이 필요해요.",
     path: ["subject"],
   });
 
@@ -107,7 +107,7 @@ export function TemplateForm(props: TemplateFormProps) {
           });
     },
     onSuccess: (saved) => {
-      toast.success(props.mode === "create" ? "템플릿을 만들었습니다." : "템플릿을 수정했습니다.");
+      toast.success(props.mode === "create" ? "템플릿을 만들었어요." : "템플릿을 수정했어요.");
       queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
       router.push(`/templates/${saved.templateId}`);
     },
@@ -119,7 +119,7 @@ export function TemplateForm(props: TemplateFormProps) {
         setError(field, { message: `${err.message}${d?.found ? ` (${d.found})` : ""}` });
         return;
       }
-      toast.error(err instanceof ApiError ? err.message : "저장에 실패했습니다.");
+      toast.error(err instanceof ApiError ? err.message : "저장에 실패했어요.");
     },
   });
 
@@ -151,10 +151,10 @@ export function TemplateForm(props: TemplateFormProps) {
     // { remove: true } 로 거절한다 — 그대로 두면 깨진 이미지가 본문에 저장된다
     const blob = blobInfo.blob();
     if (!["image/jpeg", "image/png", "image/gif"].includes(blob.type)) {
-      return Promise.reject({ message: "jpg, png, gif 이미지만 올릴 수 있습니다.", remove: true });
+      return Promise.reject({ message: "jpg, png, gif 이미지만 올릴 수 있어요.", remove: true });
     }
     if (blob.size > 5 * 1024 * 1024) {
-      return Promise.reject({ message: "이미지는 5MB 이하만 올릴 수 있습니다.", remove: true });
+      return Promise.reject({ message: "이미지는 5MB 이하만 올릴 수 있어요.", remove: true });
     }
     const formData = new FormData();
     formData.append("file", blobInfo.blob(), blobInfo.filename());
@@ -193,7 +193,7 @@ export function TemplateForm(props: TemplateFormProps) {
         <CardContent className="space-y-4">
           {locked && (
             <p className="rounded-md border bg-muted px-3 py-2 text-sm text-muted-foreground">
-              예약·진행 중인 캠페인이 사용 중이라 수정할 수 없습니다. 바꾸려면 복제해서 새 템플릿을
+              예약·진행 중인 캠페인이 사용 중이라 수정할 수 없어요. 바꾸려면 복제해서 새 템플릿을
               만드세요.
             </p>
           )}
@@ -249,7 +249,7 @@ export function TemplateForm(props: TemplateFormProps) {
           </div>
           {adYn === "Y" && (
             <p className="text-sm text-muted-foreground">
-              (광고) 표기·발신자·수신거부 문구는 발송 시 자동으로 들어갑니다. 직접 입력하지 마세요.
+              (광고) 표기·발신자·수신거부 문구는 발송 시 자동으로 들어가요. 직접 입력하지 마세요.
             </p>
           )}
 
@@ -318,8 +318,8 @@ export function TemplateForm(props: TemplateFormProps) {
                   {smsBytes} / {SMS_BYTE_LIMIT} 바이트
                   {adYn === "Y" && " ((광고)·발신자·수신거부 문구 포함)"}
                   {serverSms && " · 서버 계산(샘플 값으로 치환 후)"}
-                  {!serverSms && " · 저장하면 서버가 정확히 계산합니다"}
-                  {smsOverLimit && " — 초과 시 LMS로 발송됩니다"}
+                  {!serverSms && " · 저장하면 서버가 정확히 계산해요"}
+                  {smsOverLimit && " — 초과 시 LMS로 발송돼요"}
                 </p>
               </>
             )}
