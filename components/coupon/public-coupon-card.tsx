@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 
-import { CouponBarcode } from "@/components/coupon/coupon-barcode";
+import { CouponBarcode, formatCouponCode } from "@/components/coupon/coupon-barcode";
 import { LinkError, PublicShell, Status, type Tone } from "@/components/withus-b";
 import { ApiError, api } from "@/lib/api-client";
 import { type PublicCoupon, formatPeriod } from "@/lib/coupon";
@@ -118,13 +118,19 @@ function CouponBody({ token }: { token: string }) {
                   : "직원이 바코드를 찍으면 사용 처리돼요. 화면 밝기를 올리면 더 잘 찍혀요."}
               </p>
             </>
+          ) : used ? (
+            <>
+              {/* 바코드는 숨기고 번호만 남긴다 — 흰 글자라 눈에 잘 띄지 않게 (다시 찍히지 않도록) */}
+              <p className="wb-barcode__used" aria-hidden>
+                {formatCouponCode(data.code)}
+              </p>
+              <p className="wb-coupon__help">사용 처리된 쿠폰이에요</p>
+            </>
           ) : (
             <p className="wb-coupon__help" style={{ marginTop: 0 }}>
-              {used
-                ? "매장에서 사용 처리가 끝났어요."
-                : expired
-                  ? "새 쿠폰은 메일 또는 문자로 안내해 드려요."
-                  : `${formatPeriod(data.validFrom, data.validTo)}에 쓸 수 있어요. 기간이 되면 바코드가 열려요.`}
+              {expired
+                ? "새 쿠폰은 메일 또는 문자로 안내해 드려요."
+                : `${formatPeriod(data.validFrom, data.validTo)}에 쓸 수 있어요. 기간이 되면 바코드가 열려요.`}
             </p>
           )}
         </div>

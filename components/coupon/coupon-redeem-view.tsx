@@ -63,6 +63,24 @@ export function CouponRedeemView() {
     },
   });
 
+  // 잘못 찍은 사용 처리 되돌리기 — 버튼을 한 번 더 눌러 확정해야 POST 가 나간다
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const cancelUse = useMutation({
+    mutationFn: (c: string) =>
+      api<RedeemCoupon>(`/api/v1/coupon-issues/by-code/${c}/cancel-use`, { method: "POST" }),
+    onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.coupons.redeem(data.code), data);
+      queryClient.invalidateQueries({ queryKey: queryKeys.coupons.all });
+      setConfirmCancel(false);
+      toast.success("사용을 취소했어요");
+    },
+    onError: (err) => {
+      setConfirmCancel(false);
+      toast.error(err instanceof ApiError ? err.message : "사용을 취소하지 못했어요.");
+      if (code) queryClient.invalidateQueries({ queryKey: queryKeys.coupons.redeem(code) });
+    },
+  });
+
   function lookUp(e: React.FormEvent) {
     e.preventDefault();
     const digits = digitsOf(typed);
@@ -71,6 +89,7 @@ export function CouponRedeemView() {
       return;
     }
     redeem.reset();
+    setConfirmCancel(false);
     setCode(digits);
     // 같은 번호를 다시 찍으면 최신 상태로 다시 읽는다
     if (digits === code) coupon.refetch();
@@ -176,13 +195,45 @@ export function CouponRedeemView() {
               >
                 {redeem.isPending ? "처리 중" : "사용 처리"}
               </Button>
+            ) : data.status === "USED" ? (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  {confirmCancel
+                    ? "사용을 취소하면 고객이 다시 쓸 수 있고 전환 집계에서도 빠져요."
+                    : "이미 사용한 쿠폰이에요."}
+                </p>
+                {confirmCancel ? (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      disabled={cancelUse.isPending}
+                      onClick={() => setConfirmCancel(false)}
+                    >
+                      닫기
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      disabled={cancelUse.isPending}
+                      onClick={() => cancelUse.mutate(data.code)}
+                    >
+                      {cancelUse.isPending ? "취소 중" : "사용 취소 확정"}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    disabled={!canRedeem}
+                    onClick={() => setConfirmCancel(true)}
+                  >
+                    사용 취소
+                  </Button>
+                )}
+              </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                {data.status === "USED"
-                  ? "이미 사용한 쿠폰이에요. 다시 사용할 수 없어요."
-                  : data.status === "EXPIRED"
-                    ? "사용 기간이 지난 쿠폰이에요."
-                    : "아직 사용 기간 전인 쿠폰이에요."}
+                {data.status === "EXPIRED"
+                  ? "사용 기간이 지난 쿠폰이에요."
+                  : "아직 사용 기간 전인 쿠폰이에요."}
               </p>
             )}
           </CardContent>
