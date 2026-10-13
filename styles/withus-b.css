@@ -59,6 +59,16 @@
   --wb-sans:
     var(--wb-font-sans-en, "Inter"), var(--wb-font-sans-kr, "Pretendard"), system-ui, sans-serif;
   --wb-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* 조판 — 한글은 영문보다 글자 면이 꽉 차서, 자간을 덜 좁히고 행간을 더 연다.
+     자간: 큰 제목(40px~) -0.025em · 화면 제목(24~40px) -0.02em · 본문 -0.01em · 작은 글자(13px 이하) 0
+     행간: 큰 제목 1.2 · 화면 제목 1.28 · 본문 1.7 / 문단 폭은 한 줄 40자 안팎(36em) */
+  --wb-track-display: -0.025em;
+  --wb-track-title: -0.02em;
+  --wb-track-body: -0.01em;
+  --wb-lh-display: 1.2;
+  --wb-lh-title: 1.28;
+  --wb-lh-body: 1.7;
+  --wb-measure: 36em;
   --wb-ease: cubic-bezier(0.16, 1, 0.3, 1);
   /* 모서리 4단계 — shadcn 의 --radius(12px)에서 파생해 두 디자인 체계가 같은 둥글기를 쓴다.
      버튼 · 알약 · 상태 표시는 999px(완전한 알약) */
@@ -86,8 +96,8 @@
   box-sizing: border-box;
 }
 .wb {
-  font: 400 15px/1.6 var(--wb-sans);
-  letter-spacing: -0.01em;
+  font: 400 15px/var(--wb-lh-body) var(--wb-sans);
+  letter-spacing: var(--wb-track-body);
   color: var(--wb-ink);
   -webkit-font-smoothing: antialiased;
   word-break: keep-all;
@@ -112,7 +122,7 @@
 .wb-serif {
   font-family: var(--wb-serif);
   font-weight: 500;
-  letter-spacing: -0.03em;
+  letter-spacing: var(--wb-track-title);
 }
 /* 제목 위 작은 이름표 — 연하늘 유리 알약 */
 .wb-eyebrow {
@@ -458,4 +468,21 @@
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* =========================================================
+   조판 — 사이트 전체 (홈 · 로그인 · 관리자 shadcn 화면 · 고객 화면)
+   ========================================================= */
+/* 한글은 낱말 중간에서 끊지 않는다. 긴 이메일 · 주소만 칸을 넘을 때 끊는다 */
+:where(html) {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+/* 제목은 줄 길이를 고르게, 문단은 마지막 줄에 한 글자만 남지 않게 */
+:where(h1, h2, h3, h4, h5, h6) {
+  text-wrap: balance;
+}
+:where(p, li, dd, figcaption, blockquote) {
+  text-wrap: pretty;
 }

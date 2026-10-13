@@ -47,12 +47,13 @@
   padding: 28px 20px 64px;
 }
 .wb-public__title {
-  font: 500 clamp(36px, 9vw, 50px) / 1.04 var(--wb-serif);
-  letter-spacing: -0.045em;
+  font: 500 clamp(32px, 8vw, 44px) / var(--wb-lh-display) var(--wb-serif);
+  letter-spacing: var(--wb-track-display);
   margin: 14px 0 0;
 }
 .wb-public__lead {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
+  line-height: 1.65;
   color: var(--wb-mute);
 }
 /* 카드 — billow 앱 프레임처럼 반투명 유리 테두리 + 안쪽 흰 판 */
@@ -134,7 +135,7 @@
 }
 .wb-coupon__value {
   font: 600 48px/1 var(--wb-sans);
-  letter-spacing: -0.045em;
+  letter-spacing: -0.035em;
   margin: 14px 0 0;
 }
 .wb-coupon__name {
@@ -259,12 +260,13 @@
   padding: 26px 22px;
 }
 .wb-done h3 {
-  font: 500 30px/1.12 var(--wb-serif);
-  letter-spacing: -0.04em;
+  font: 500 28px / var(--wb-lh-title) var(--wb-serif);
+  letter-spacing: var(--wb-track-title);
   margin: 18px 0 0;
 }
 .wb-done p {
   margin: 8px 0 0;
+  line-height: 1.65;
   color: var(--wb-mute);
   font-size: 14px;
 }

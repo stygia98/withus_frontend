@@ -29,6 +29,7 @@
 .wb-side__group {
   font-size: 11.5px;
   font-weight: 600;
+  letter-spacing: 0;
   color: var(--wb-faint);
   padding: 16px 10px 6px;
 }
@@ -195,8 +196,8 @@
   margin-bottom: 24px;
 }
 .wb-ph h1 {
-  font: 500 clamp(32px, 3vw, 42px) / 1.12 var(--wb-serif);
-  letter-spacing: -0.03em;
+  font: 500 clamp(30px, 3vw, 40px) / var(--wb-lh-title) var(--wb-serif);
+  letter-spacing: var(--wb-track-title);
   margin: 0;
 }
 /* 관리자 화면은 한글 제목만 — 같은 뜻의 영어 이름표는 숨긴다 */
@@ -205,7 +206,9 @@
 }
 .wb-ph p {
   margin: 8px 0 0;
+  max-width: var(--wb-measure);
   font-size: 14px;
+  line-height: 1.6;
   color: var(--wb-mute);
 }
 .wb-ph__actions {
@@ -280,8 +283,8 @@
 
 /* 화면 제목만 따로 쓰는 곳 (제목 옆에 버튼 줄이 있는 shadcn 화면) — .wb-ph h1 과 같은 글꼴 */
 .wb-title {
-  font: 500 clamp(30px, 3vw, 42px) / 1.12 var(--wb-serif);
-  letter-spacing: -0.03em;
+  font: 500 clamp(30px, 3vw, 40px) / var(--wb-lh-title) var(--wb-serif);
+  letter-spacing: var(--wb-track-title);
   margin: 0;
 }
 
