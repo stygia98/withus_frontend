@@ -262,16 +262,10 @@ export default function Landing() {
         <section className="sec c">
           <div className="w">
             <h2 className="h2 rv">
-              필요한 건{" "}
-              <span className="st">
-                툴 하나 더
-                <svg viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M2 6 C30 2 60 9 98 3" />
-                </svg>
-              </span>
-              가 아니라
+              {/* 강조는 밑줄·박스 없이 색으로만: 부정하는 말은 옅게, 답은 버튼과 같은 파랑 */}
+              필요한 건 <span className="de">툴 하나 더</span>가 아니라
               <br />
-              <span className="hlx tex">시스템</span>예요.
+              <span className="em">시스템</span>이에요.
             </h2>
             <p className="lede rv d1">
               지금 CRM 마케팅은 흩어진 툴 위에서 돌아가요. 명단은 엑셀에, 발송은 문자 사이트에,
