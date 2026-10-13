@@ -53,9 +53,11 @@
     radial-gradient(closest-side at 22% 60%, #18c8ff 0%, rgba(24, 200, 255, 0) 100%),
     radial-gradient(closest-side at 52% 40%, #1a6bff 0%, rgba(26, 107, 255, 0) 100%),
     radial-gradient(closest-side at 80% 62%, #12b4ff 0%, rgba(18, 180, 255, 0) 100%);
-  /* 글꼴 */
+  /* 글꼴 — --wb-serif 는 이름만 남은 '제목 글꼴' 변수다(명조 → 끝이 둥근 나눔스퀘어라운드로 바뀜).
+     규칙 수십 곳이 이 이름을 쓰므로 이름은 두고 값만 바꾼다 */
   --wb-serif:
-    var(--wb-font-serif-en, "Newsreader"), var(--wb-font-serif-kr, "Hahmlet"), Georgia, serif;
+    var(--wb-font-title, "NanumSquareRound"), var(--wb-font-sans-kr, "Pretendard"), system-ui,
+    sans-serif;
   --wb-sans:
     var(--wb-font-sans-en, "Inter"), var(--wb-font-sans-kr, "Pretendard"), system-ui, sans-serif;
   --wb-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;

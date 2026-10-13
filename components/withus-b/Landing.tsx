@@ -237,21 +237,15 @@ export default function Landing() {
                 </h6>
                 <div className="tools" id="tools">
                   <button className="on" data-k="0">
-                    <i style={{ background: "#8fd3ff" }}></i>세그먼트
+                    세그먼트
                   </button>
-                  <button data-k="1">
-                    <i style={{ background: "#a9dcff" }}></i>템플릿
-                  </button>
-                  <button data-k="2">
-                    <i style={{ background: "#18c8ff" }}></i>캠페인
-                  </button>
-                  <button data-k="3">
-                    <i style={{ background: "#cfeaff" }}></i>쿠폰
-                  </button>
+                  <button data-k="1">템플릿</button>
+                  <button data-k="2">캠페인</button>
+                  <button data-k="3">쿠폰</button>
                 </div>
                 <h6 style={{ marginTop: "18px" }}>
                   발송 대기열{" "}
-                  <span style={{ background: "#001c2e", color: "#fff", boxShadow: "none" }} id="qn">
+                  <span className="count" id="qn">
                     3
                   </span>
                 </h6>
@@ -271,7 +265,8 @@ export default function Landing() {
             </div>
             <div className="chat">
               <div className="hd">
-                <b></b>워크플로우 · 신규 고객 환영
+                <small>워크플로우</small>
+                신규 고객 환영
               </div>
               <Flow />
             </div>
@@ -291,8 +286,9 @@ export default function Landing() {
               쿠폰은 또 다른 곳에. 연결은 마케터가 손으로 하고, 결과는 끝나고 나서야 보여요.
             </p>
             <p className="lede rv d2">
-              withus는 그 우회로를 없애요. 고객 데이터가 기준이 되고, 반응이 신호가 되고,
-              워크플로우가 그 둘을 이어 줘요.
+              withus는 그 우회로를 없애요. 고객 데이터가 기준이 되고,
+              <br />
+              반응이 신호가 되고, 워크플로우가 그 둘을 이어 줘요.
             </p>
           </div>
           <svg className="scrib rv" viewBox="0 0 1000 230" aria-hidden="true">
@@ -631,8 +627,9 @@ export default function Landing() {
           <div className="w">
             <h2 className="h2 rv">쓰던 방식 그대로</h2>
             <p className="lede rv d1" style={{ color: "var(--mute)" }}>
-              withus는 지금 쓰는 고객 파일과 채널 위에서 바로 동작하고, 필요한 만큼 점점 더 많은
-              일을 맡을 수 있어요.
+              withus는 지금 쓰는 고객 파일과 채널 위에서 바로 동작하고,
+              <br />
+              필요한 만큼 점점 더 많은 일을 맡을 수 있어요.
             </p>
           </div>
           <div className="tiles rv">

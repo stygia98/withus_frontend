@@ -6,6 +6,7 @@
  * 시안의 '로그인 상태 유지'·'비밀번호 찾기'·시안용 계정 버튼은 넣지 않았다 (계정·재설정은 OWNER 가 관리)
  * 장식(떠 있는 숫자 카드 · 연필 · 낙서 · 원 · 가짜 창 막대)은 덜어내고, 제목 · 카드 하나 · 옅은 블러 하나만 둔다
  */
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -92,8 +93,15 @@ export default function LoginView({
                   onChange={(e) => setPw(e.target.value)}
                   aria-invalid={!!err.pw}
                 />
-                <button type="button" onClick={() => setShow((s) => !s)}>
-                  {show ? "숨기기" : "보기"}
+                {/* 글자 대신 눈 아이콘 — 화면 읽기 프로그램용 이름과 눌림 상태는 따로 준다 */}
+                <button
+                  type="button"
+                  onClick={() => setShow((s) => !s)}
+                  aria-label={show ? "비밀번호 숨기기" : "비밀번호 보기"}
+                  aria-pressed={show}
+                  title={show ? "비밀번호 숨기기" : "비밀번호 보기"}
+                >
+                  {show ? <EyeOff aria-hidden /> : <Eye aria-hidden />}
                 </button>
               </div>
               {err.pw && <span className="wb-field__error">{err.pw}</span>}
