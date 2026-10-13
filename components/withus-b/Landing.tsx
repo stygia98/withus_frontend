@@ -391,21 +391,18 @@ export default function Landing() {
               <div className="row rv">
                 <div className="pic">
                   <div className="card" style={{ width: "min(380px,100%)" }}>
+                    <div className="t" style={{ fontSize: "13px" }}>
+                      쿠폰 전환율
+                    </div>
                     <div
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
-                        alignItems: "center",
+                        alignItems: "baseline",
                       }}
                     >
-                      <div>
-                        <b style={{ fontSize: "13px" }}>쿠폰 전환율</b>
-                        <br />
-                        <small style={{ color: "var(--mute)" }}>최근 7일 · 봇 클릭 제외</small>
-                      </div>
-                      <div className="ring">
-                        <span>6.7%</span>
-                      </div>
+                      <span style={{ color: "var(--mute)" }}>최근 7일 · 봇 클릭 제외</span>
+                      <span className="big">6.7%</span>
                     </div>
                     <div
                       className="chip"
@@ -507,15 +504,13 @@ export default function Landing() {
                     <div
                       style={{
                         display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        marginTop: "6px",
+                        justifyContent: "space-between",
+                        alignItems: "baseline",
+                        marginTop: "8px",
                       }}
                     >
-                      <div className="ring" style={{ width: "46px", height: "46px" }}>
-                        <span style={{ width: "32px", height: "32px", fontSize: "11px" }}>42</span>
-                      </div>
-                      <span style={{ color: "var(--mute)" }}>다시 부르기 메일 오픈율 42%</span>
+                      <span style={{ color: "var(--mute)" }}>다시 부르기 메일 오픈율</span>
+                      <b className="num">42%</b>
                     </div>
                   </div>
                 </div>

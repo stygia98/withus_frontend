@@ -588,28 +588,11 @@
   font: 600 40px/1 var(--sans);
   letter-spacing: -0.04em;
 }
-.wb-landing .ring {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: conic-gradient(#8fd3ff 0 62%, #18c8ff 62% 86%, #1a4bff 86% 100%);
-  display: grid;
-  place-items: center;
-}
-.wb-landing .ring span {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  background: #fff;
-  display: grid;
-  place-items: center;
+/* 작은 카드 안의 숫자 — 도형 대신 굵은 숫자로만 보여 준다 */
+.wb-landing .num {
   font: 600 20px/1 var(--sans);
-}
-.wb-landing .row .ring {
-  background: conic-gradient(#1a4bff 0 6.7%, #e3f0fb 6.7% 100%);
-}
-.wb-landing .row .ring span {
-  font-size: 17px;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
 }
 
 /* 워크플로우 미리보기 — 단계는 흰 줄, 갈래(예/아니오)는 들여 쓰고 세로선으로 잇는다 */
