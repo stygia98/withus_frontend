@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -85,6 +86,7 @@ function AddControl({
 }
 
 function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: BuilderNode[] }) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const canManage = useCanManageCampaign();
   const editable = campaign.status === "DRAFT" && canManage;
@@ -137,6 +139,7 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
       queryClient.invalidateQueries({
         queryKey: queryKeys.campaigns.workflow(campaign.campaignId),
       });
+      router.push("/campaigns");
     },
     onError: (err) => {
       // WORKFLOW_INVALID_STRUCTURE 는 details 에 위반 목록(문자열 배열)이 온다

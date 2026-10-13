@@ -38,6 +38,7 @@ export default function SegmentDetailPage() {
       queryClient.setQueryData(queryKeys.segments.detail(id), s);
       queryClient.invalidateQueries({ queryKey: queryKeys.segments.lists });
       toast.success("저장했어요.");
+      router.push("/segments");
     },
     onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했어요."),
   });

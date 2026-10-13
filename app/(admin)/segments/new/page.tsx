@@ -17,10 +17,10 @@ export default function NewSegmentPage() {
   const create = useMutation({
     mutationFn: (form: SegmentForm) =>
       api<Segment>("/api/v1/segments", { method: "POST", body: JSON.stringify(form) }),
-    onSuccess: (s) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.segments.lists });
       toast.success("세그먼트를 만들었어요.");
-      router.replace(`/segments/${s.segmentId}`);
+      router.push("/segments");
     },
     onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했어요."),
   });
