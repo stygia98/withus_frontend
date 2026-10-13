@@ -19,19 +19,19 @@ export default function NewSegmentPage() {
       api<Segment>("/api/v1/segments", { method: "POST", body: JSON.stringify(form) }),
     onSuccess: (s) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.segments.lists });
-      toast.success("세그먼트를 만들었습니다.");
+      toast.success("세그먼트를 만들었어요.");
       router.replace(`/segments/${s.segmentId}`);
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했어요."),
   });
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-4">
       <div>
         <Link href="/segments" className="text-sm text-muted-foreground hover:underline">
           ← 세그먼트 목록
         </Link>
-        <h1 className="text-xl font-semibold">세그먼트 만들기</h1>
+        <h1 className="wb-title">세그먼트 만들기</h1>
       </div>
       <SegmentEditor
         initial={{ name: "", description: "", rule: emptyRule() }}

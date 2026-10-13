@@ -3,8 +3,9 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { INSTANCE_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { QueryError } from "@/components/common/QueryError";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -101,17 +102,14 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
             {isError && (
               <TableRow>
                 <TableCell colSpan={5}>
-                  <QueryError
-                    message="진행 현황을 불러오지 못했습니다."
-                    onRetry={() => refetch()}
-                  />
+                  <QueryError message="진행 현황을 불러오지 못했어요." onRetry={() => refetch()} />
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && data?.content.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-muted-foreground">
-                  진행 중인 고객이 없습니다.
+                  진행 중인 고객이 없어요.
                 </TableCell>
               </TableRow>
             )}
@@ -119,9 +117,9 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
               <TableRow key={i.instanceId}>
                 <TableCell>{i.customerId}</TableCell>
                 <TableCell>
-                  <Badge variant={i.status === "FAILED" ? "destructive" : "secondary"}>
+                  <Status tone={INSTANCE_STATUS_TONE[i.status]}>
                     {INSTANCE_STATUS_LABEL[i.status]}
-                  </Badge>
+                  </Status>
                 </TableCell>
                 {/* next_run_at 이 비어 있는 WAITING 은 직전 발송 결과를 기다리는 중이다 */}
                 <TableCell>

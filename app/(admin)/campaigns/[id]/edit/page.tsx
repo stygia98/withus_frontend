@@ -3,21 +3,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
+import { CAMPAIGN_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { QueryError } from "@/components/common/QueryError";
 import { CampaignForm } from "@/components/campaign/CampaignForm";
 import { SchedulePanel } from "@/components/campaign/SchedulePanel";
-import { Badge } from "@/components/ui/badge";
 import { CampaignActions } from "@/components/campaign/CampaignActions";
 import { InstancesPanel } from "@/components/workflow/InstancesPanel";
 import { WorkflowBuilder } from "@/components/workflow/WorkflowBuilder";
 import { api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
-import {
-  CAMPAIGN_STATUS_LABEL,
-  CAMPAIGN_STATUS_VARIANT,
-  type Campaign,
-} from "@/lib/types/campaign";
+import { CAMPAIGN_STATUS_LABEL, type Campaign } from "@/lib/types/campaign";
 
 export default function EditCampaignPage() {
   const canManage = useCanManageCampaign();
@@ -32,16 +29,16 @@ export default function EditCampaignPage() {
   });
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-6">
-      {!validId && <p className="text-destructive">잘못된 캠페인 주소입니다.</p>}
+    <main className="max-w-3xl space-y-4">
+      {!validId && <p className="text-destructive">잘못된 캠페인 주소예요.</p>}
       {validId && isLoading && <p className="text-muted-foreground">불러오는 중...</p>}
-      {isError && <QueryError message="캠페인을 불러오지 못했습니다." onRetry={() => refetch()} />}
+      {isError && <QueryError message="캠페인을 불러오지 못했어요." onRetry={() => refetch()} />}
       {data && (
         <>
           <div className="flex items-center justify-between gap-2">
-            <Badge variant={CAMPAIGN_STATUS_VARIANT[data.status]}>
+            <Status tone={CAMPAIGN_STATUS_TONE[data.status]}>
               {CAMPAIGN_STATUS_LABEL[data.status]}
-            </Badge>
+            </Status>
             <CampaignActions campaign={data} />
           </div>
           {/* 상태가 바뀌면 폼의 잠금 상태가 달라지므로 key 로 다시 만든다 */}

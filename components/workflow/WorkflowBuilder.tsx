@@ -123,15 +123,15 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
     onSuccess: (data) => {
       setResult(data);
       setViolations([]);
-      if (data.valid) toast.success("구조 검사를 통과했습니다.");
+      if (data.valid) toast.success("구조 검사를 통과했어요.");
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "검사에 실패했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "검사에 실패했어요."),
   });
 
   const save = useMutation({
     mutationFn: () => api<WorkflowResponse>(path, { method: "PUT", body }),
     onSuccess: () => {
-      toast.success("워크플로우를 저장했습니다.");
+      toast.success("워크플로우를 저장했어요.");
       setResult(null);
       setViolations([]);
       queryClient.invalidateQueries({
@@ -143,7 +143,7 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
       if (err instanceof ApiError && Array.isArray(err.details)) {
         setViolations(err.details as string[]);
       }
-      toast.error(err instanceof ApiError ? err.message : "저장에 실패했습니다.");
+      toast.error(err instanceof ApiError ? err.message : "저장에 실패했어요.");
     },
   });
 
@@ -152,7 +152,7 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
     const errors = validateNodes(nodes);
     setViolations(errors);
     if (errors.length > 0) {
-      toast.error("필수 설정이 비어 있습니다.");
+      toast.error("필수 설정이 비어 있어요.");
       return;
     }
     run();
@@ -182,18 +182,22 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
         <CardContent className="space-y-2">
           {!editable && (
             <p className="rounded-md border bg-muted px-3 py-2 text-sm text-muted-foreground">
-              작성 중(DRAFT) 상태에서만 단계를 바꿀 수 있습니다.
+              작성 중(DRAFT) 상태에서만 단계를 바꿀 수 있어요.
             </p>
           )}
           {full && editable && (
             <p className="text-sm text-muted-foreground">
-              노드는 최대 {NODE_LIMIT}개까지 만들 수 있습니다.
+              노드는 최대 {NODE_LIMIT}개까지 만들 수 있어요.
             </p>
           )}
           {rows.map(({ node, depth, from }) => (
             <div key={node.key} style={{ marginLeft: depth * 28 }} className="space-y-1">
-              {from?.slot === "yes" && <p className="text-xs font-medium text-emerald-600">예</p>}
-              {from?.slot === "no" && <p className="text-xs font-medium text-rose-600">아니오</p>}
+              {from?.slot === "yes" && (
+                <p className="text-xs font-medium text-[color:var(--wb-ok)]">예</p>
+              )}
+              {from?.slot === "no" && (
+                <p className="text-xs font-medium text-[color:var(--wb-err)]">아니오</p>
+              )}
               <div className="space-y-2 rounded-md border px-3 py-2">
                 <div className="flex items-center justify-between gap-2">
                   <Badge variant={node.nodeType === "END" ? "outline" : "secondary"}>
@@ -259,7 +263,7 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
         <Card>
           <CardContent className="space-y-1 pt-4">
             <p className="text-sm font-medium text-destructive">
-              저장하지 못했습니다. 구조를 고쳐 주세요.
+              저장하지 못했어요. 구조를 고쳐 주세요.
             </p>
             <ul className="list-disc pl-5 text-sm text-destructive">
               {violations.map((v) => (
@@ -287,7 +291,7 @@ function BuilderEditor({ campaign, initial }: { campaign: Campaign; initial: Bui
               ))}
             </ul>
             {result.warnings.length > 0 && (
-              <ul className="space-y-1 rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-900">
+              <ul className="space-y-1 rounded-md border border-[color:var(--wb-warn)] bg-warning p-3 text-warning-foreground">
                 {result.warnings.map((w) => (
                   <li key={w.code}>⚠ {w.message}</li>
                 ))}
@@ -327,8 +331,7 @@ export function WorkflowBuilder({ campaign }: { campaign: Campaign }) {
     queryFn: () => api<WorkflowResponse>(`/api/v1/campaigns/${campaign.campaignId}/workflow`),
   });
 
-  if (isError)
-    return <QueryError message="단계를 불러오지 못했습니다." onRetry={() => refetch()} />;
+  if (isError) return <QueryError message="단계를 불러오지 못했어요." onRetry={() => refetch()} />;
   if (!data) return <p className="text-muted-foreground">단계를 불러오는 중...</p>;
 
   const initial =

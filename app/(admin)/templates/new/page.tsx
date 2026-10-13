@@ -2,7 +2,7 @@ import { TemplateForm } from "@/components/template/TemplateForm";
 
 export default function NewTemplatePage() {
   return (
-    <main className="mx-auto max-w-3xl p-6">
+    <main className="max-w-3xl">
       <TemplateForm mode="create" />
     </main>
   );

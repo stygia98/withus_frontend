@@ -11,7 +11,8 @@ import {
 import { FUNNEL_LABEL, type FunnelStage, formatCount, formatRate } from "@/lib/dashboard";
 
 const config = {
-  count: { label: "고객·건수", theme: { light: "#14213d", dark: "#8aa0cc" } },
+  // billow.so 기준 파랑 — 일별 발송 차트(daily-sends-chart)와 같은 색
+  count: { label: "고객·건수", theme: { light: "#1a4bff", dark: "#8fd3ff" } },
 } satisfies ChartConfig;
 
 /** 전환 흐름: 순서 있는 단계의 크기 비교 → 가로 막대 한 계열. 각 막대 끝에 값과 시도 대비 비율을 적는다 */

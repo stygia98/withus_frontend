@@ -5,8 +5,9 @@ import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
+import { COUPON_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { CouponIssuesPanel } from "@/components/coupon/coupon-issues-panel";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -51,13 +52,13 @@ export function CouponListView() {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">쿠폰 관리</h1>
+          <h1 className="wb-title">쿠폰 관리</h1>
           <p className="text-muted-foreground text-sm">
-            유효기간은 모든 발급 건에 같게 적용됩니다. 사용률 = 사용 / 발급. 쿠폰명을 누르면 발급
-            현황을 볼 수 있습니다.
+            유효기간은 모든 발급 건에 같게 적용돼요. 사용률 = 사용 / 발급. 쿠폰명을 누르면 발급
+            현황을 볼 수 있어요.
           </p>
         </div>
         <Button nativeButton={false} render={<Link href="/coupons/new" />}>
@@ -69,7 +70,7 @@ export function CouponListView() {
       <Card>
         <CardContent>
           {isError ? (
-            <p className="text-destructive text-sm">쿠폰 목록을 불러오지 못했습니다.</p>
+            <p className="text-destructive text-sm">쿠폰 목록을 불러오지 못했어요.</p>
           ) : (
             <Table>
               <TableHeader>
@@ -87,7 +88,7 @@ export function CouponListView() {
                 {isPending ? (
                   <EmptyRow>불러오는 중...</EmptyRow>
                 ) : data.content.length === 0 ? (
-                  <EmptyRow>아직 만든 쿠폰이 없습니다.</EmptyRow>
+                  <EmptyRow>아직 만든 쿠폰이 없어요.</EmptyRow>
                 ) : (
                   data.content.map((c) => {
                     const status = periodStatus(c.validFrom, c.validTo, today);
@@ -117,9 +118,7 @@ export function CouponListView() {
                           {formatPeriod(c.validFrom, c.validTo)}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={status === "USABLE" ? "secondary" : "outline"}>
-                            {PERIOD_LABEL[status]}
-                          </Badge>
+                          <Status tone={COUPON_STATUS_TONE[status]}>{PERIOD_LABEL[status]}</Status>
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
                           {formatCount(c.issuedCount)}
