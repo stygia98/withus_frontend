@@ -1,0 +1,461 @@
+/* =========================================================
+   withus 디자인 — 공통 토큰 + 기본 부품
+   레이아웃은 시안 B 그대로, 색 · 그라데이션 · 블러 · 버튼 모양은 billow.so 기준
+   (차가운 흰 바탕 · 남색 글자 · 파랑 그라데이션 알약 버튼 · 유리 카드 · 청록/파랑 블러 구름)
+   모든 클래스는 wb- 로 시작한다. 글꼴 변수(--wb-font-*)는 app/fonts.ts 에서 <html>에 붙인다.
+   예전 변수 이름(--wb-purple, --wb-lav 등)은 화면 코드가 그대로 쓰도록 남기고 값만 파랑 계열로 바꿨다.
+   ========================================================= */
+:root {
+  /* 바탕 */
+  --wb-white: #ffffff;
+  --wb-cream: #fcfdff;
+  --wb-paper: #fcfdff;
+  --wb-grey: #f3f6f9;
+  --wb-grey2: #e9eef3;
+  --wb-line: #e6ecf1;
+  --wb-line2: #d3dde5;
+  /* 글자 */
+  --wb-ink: #001c2e;
+  --wb-ink2: #1d3a4f;
+  --wb-mute: #446278;
+  --wb-faint: #8ba1b3;
+  /* 브랜드 — 파랑이 주인공, 청록은 블러 구름 · 강조에만 */
+  --wb-blue-1: #297dfb;
+  --wb-blue-2: #1a0cff;
+  --wb-purple: #1a4bff; /* 이름은 예전 그대로: 링크 · 포커스 · 정보 상태 · 그래프 */
+  --wb-purple-d: #0f3be0;
+  --wb-lav: #8fd3ff;
+  --wb-lav2: #bfe6ff;
+  --wb-lav-wash: #e9f5ff;
+  --wb-deep: #001c2e;
+  --wb-mint: #2fd1ff;
+  --wb-yellow: #cfeaff;
+  --wb-orange: #1a4bff;
+  --wb-pink: #a9dcff;
+  --wb-cyan: #18c8ff;
+  /* 상태 */
+  --wb-ok: #13803f;
+  --wb-warn: #a86a00;
+  --wb-err: #d1242f;
+  /* 그라데이션 · 그림자 (billow.so 계산값) */
+  --wb-grad: linear-gradient(180deg, #297dfb 0%, #1a0cff 100%);
+  --wb-grad-dark: linear-gradient(336deg, #001c2e 5%, #1a0cff 278%);
+  --wb-glow:
+    0 0.72px 2.75px -1.17px rgba(0, 64, 255, 0.22), 0 2.75px 10.44px -2.33px rgba(0, 64, 255, 0.19),
+    0 12px 45.6px -3.5px rgba(0, 64, 255, 0.1);
+  --wb-shadow:
+    0 0.56px 1.67px -0.5px rgba(1, 27, 46, 0.05), 0 1.69px 5.07px -1px rgba(1, 27, 46, 0.05),
+    0 4.47px 13.4px -1.5px rgba(1, 27, 46, 0.06), 0 14px 42px -2px rgba(1, 27, 46, 0.07);
+  --wb-shadow-sm: 0 1px 2px rgba(1, 27, 46, 0.04), 0 4px 12px -4px rgba(1, 27, 46, 0.06);
+  --wb-chip: linear-gradient(350deg, rgba(219, 243, 255, 0.52) 0%, rgba(255, 255, 255, 0.33) 100%);
+  /* 블러 구름: 청록 · 파랑 원 여러 개를 겹친 뒤 filter: blur 로 번지게 한다 */
+  --wb-cloud:
+    radial-gradient(closest-side at 22% 60%, #18c8ff 0%, rgba(24, 200, 255, 0) 100%),
+    radial-gradient(closest-side at 52% 40%, #1a6bff 0%, rgba(26, 107, 255, 0) 100%),
+    radial-gradient(closest-side at 80% 62%, #12b4ff 0%, rgba(18, 180, 255, 0) 100%);
+  /* 글꼴 */
+  --wb-serif:
+    var(--wb-font-serif-en, "Newsreader"), var(--wb-font-serif-kr, "Hahmlet"), Georgia, serif;
+  --wb-sans:
+    var(--wb-font-sans-en, "Inter"), var(--wb-font-sans-kr, "Pretendard"), system-ui, sans-serif;
+  --wb-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --wb-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* 모서리 4단계 — shadcn 의 --radius(12px)에서 파생해 두 디자인 체계가 같은 둥글기를 쓴다.
+     버튼 · 알약 · 상태 표시는 999px(완전한 알약) */
+  --wb-r-sm: 8px;
+  --wb-r-md: var(--radius, 12px);
+  --wb-r-lg: calc(var(--radius, 12px) * 1.4);
+  --wb-r-xl: 20px;
+  --wb-grid:
+    linear-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+}
+/* 디스플레이 P3 화면에서는 billow.so 와 같은 더 선명한 파랑 */
+@supports (color: color(display-p3 1 1 1)) {
+  :root {
+    --wb-grad: linear-gradient(
+      180deg,
+      color(display-p3 0.16 0.489 0.984) 0%,
+      color(display-p3 0.07 0 1) 100%
+    );
+    --wb-grad-dark: linear-gradient(336deg, #001c2e 5%, color(display-p3 0.07 0 1) 278%);
+  }
+}
+:where(.wb),
+:where(.wb) * {
+  box-sizing: border-box;
+}
+.wb {
+  font: 400 15px/1.6 var(--wb-sans);
+  letter-spacing: -0.01em;
+  color: var(--wb-ink);
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+:where(.wb) a {
+  color: inherit;
+  text-decoration: none;
+}
+:where(.wb) button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+:where(.wb) :focus-visible {
+  outline: 2px solid var(--wb-purple);
+  outline-offset: 2px;
+}
+
+/* 글자 */
+.wb-serif {
+  font-family: var(--wb-serif);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+/* 제목 위 작은 이름표 — 연하늘 유리 알약 */
+.wb-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 5px 11px;
+  border-radius: 50px;
+  background: var(--wb-chip);
+  box-shadow:
+    inset 0 0 0 1px rgba(77, 113, 140, 0.22),
+    0 0.36px 0.18px -1.6px rgba(0, 0, 0, 0.15),
+    0 3px 1.5px -3.25px rgba(0, 0, 0, 0.09);
+  font: 600 12.5px/1 var(--wb-sans);
+  letter-spacing: -0.02em;
+  color: var(--wb-ink);
+}
+/* 강조 글자 — 장식 없이 글자 그대로 (덜어내기: 형광펜 상자를 쓰지 않는다) */
+.wb-box {
+  display: inline;
+}
+.wb-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 로고 */
+.wb-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 700 22px/1 var(--wb-sans);
+  letter-spacing: -0.06em;
+  color: var(--wb-ink);
+}
+.wb-logo i {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--wb-grad);
+  box-shadow: var(--wb-glow);
+  transform: rotate(12deg);
+}
+
+/* 버튼 — 알약 모양. 파랑 그라데이션(주) / 유리 흰색(보조) / 남색 그라데이션(어두운) */
+.wb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font: 600 14px/1 var(--wb-sans);
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  transition:
+    transform 0.2s var(--wb-ease),
+    box-shadow 0.2s,
+    filter 0.2s,
+    opacity 0.2s;
+}
+.wb-btn--primary {
+  background: var(--wb-grad);
+  color: #fcfdff;
+  box-shadow:
+    var(--wb-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.wb-btn--primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+.wb-btn--dark {
+  background: var(--wb-grad-dark);
+  color: #fcfdff;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+.wb-btn--secondary {
+  background: rgba(252, 253, 255, 0.85);
+  color: var(--wb-ink);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line2),
+    var(--wb-shadow-sm);
+  backdrop-filter: blur(10px);
+}
+.wb-btn--secondary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 0 0 1px #b9c9d6,
+    var(--wb-shadow-sm);
+}
+.wb-btn--ghost {
+  color: var(--wb-ink2);
+}
+.wb-btn--ghost:hover {
+  background: var(--wb-grey);
+}
+.wb-btn--sm {
+  height: 32px;
+  padding: 0 13px;
+  font-size: 13px;
+}
+.wb-btn--lg {
+  height: 48px;
+  padding: 0 22px 0 26px;
+  font-size: 16px;
+}
+.wb-btn--block {
+  width: 100%;
+}
+.wb-btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* 상태 표시 — 연한 색 알약 + 같은 색 테두리 (billow 의 'Awaiting Payment' 모양) */
+.wb-status {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--wb-mute);
+  background: #f2f5f8;
+  box-shadow: inset 0 0 0 1px #dde5ec;
+}
+.wb-status--ok {
+  color: var(--wb-ok);
+  background: #ebf9f0;
+  box-shadow: inset 0 0 0 1px #bfe8cf;
+}
+.wb-status--warn {
+  color: var(--wb-warn);
+  background: #fff6e0;
+  box-shadow: inset 0 0 0 1px #f2dca4;
+}
+.wb-status--err {
+  color: var(--wb-err);
+  background: #fdeeee;
+  box-shadow: inset 0 0 0 1px #f6c4c6;
+}
+.wb-status--info {
+  color: var(--wb-purple);
+  background: #ebf2ff;
+  box-shadow: inset 0 0 0 1px #c3d5ff;
+}
+.wb-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.wb-pill--ok {
+  background: #ebf9f0;
+  color: var(--wb-ok);
+}
+.wb-pill--warn {
+  background: #fff6e0;
+  color: var(--wb-warn);
+}
+.wb-pill--err {
+  background: #fdeeee;
+  color: var(--wb-err);
+}
+.wb-pill--info {
+  background: var(--wb-lav-wash);
+  color: var(--wb-purple-d);
+}
+
+/* 카드 — 흰 바탕 · 옅은 테두리 · 여러 겹 부드러운 그림자 */
+.wb-card {
+  background: #fff;
+  border-radius: var(--wb-r-lg);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow-sm);
+  padding: 20px;
+  min-width: 0;
+}
+.wb-card--grey {
+  background: var(--wb-grey);
+  box-shadow: none;
+}
+.wb-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.wb-card__title {
+  font: 600 15px/1.3 var(--wb-sans);
+  letter-spacing: -0.03em;
+}
+.wb-card__aside {
+  font-size: 12.5px;
+  color: var(--wb-mute);
+  white-space: nowrap;
+}
+.wb-link {
+  color: var(--wb-purple);
+  font-weight: 600;
+}
+
+/* 입력 */
+.wb-field {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+}
+.wb-field > label {
+  font-size: 13px;
+  font-weight: 600;
+}
+.wb-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: var(--wb-r-md);
+  border: 1px solid var(--wb-line2);
+  background: #fff;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  font: inherit;
+}
+.wb-input:focus {
+  border-color: var(--wb-purple);
+  box-shadow: 0 0 0 3px rgba(26, 75, 255, 0.14);
+}
+.wb-input[aria-invalid="true"] {
+  border-color: var(--wb-err);
+  box-shadow: 0 0 0 3px rgba(209, 36, 47, 0.12);
+}
+.wb-field__error {
+  font-size: 12.5px;
+  color: var(--wb-err);
+}
+
+/* 기간 선택 · 섹션 탭 — 알약 */
+.wb-seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--wb-grey);
+  box-shadow: inset 0 0 0 1px var(--wb-line);
+}
+.wb-seg button {
+  height: 30px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wb-mute);
+  white-space: nowrap;
+}
+.wb-seg button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--wb-ink);
+  box-shadow: var(--wb-shadow-sm);
+}
+
+/* 표 */
+.wb-table-wrap {
+  overflow-x: auto;
+}
+.wb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.wb-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--wb-mute);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--wb-line);
+  white-space: nowrap;
+}
+.wb-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--wb-line);
+  white-space: nowrap;
+}
+.wb-table tr:last-child td {
+  border: 0;
+}
+.wb-table tbody tr:hover {
+  background: #f7fafc;
+}
+.wb-table .wb-r {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.wb-empty {
+  padding: 28px 12px;
+  text-align: center;
+  color: var(--wb-mute);
+  font-size: 13px;
+}
+@keyframes wb-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.wb-anim {
+  animation: wb-up 0.55s var(--wb-ease) both;
+}
+@keyframes wb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.wb-spin {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: wb-spin 0.7s linear infinite;
+  display: inline-block;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wb * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
