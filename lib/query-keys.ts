@@ -79,6 +79,8 @@ export const queryKeys = {
     issues: (couponId: number, page: number) => ["coupons", "issues", couponId, page] as const,
     // 고객 공개 페이지 /c/[token] — 관리자 쿠폰 캐시와 섞이지 않게 별도 키
     publicCard: (token: string) => ["public-coupon", token] as const,
+    // 매장 바코드 사용 처리 화면의 쿠폰 번호 조회
+    redeem: (code: string) => ["coupons", "redeem", code] as const,
   },
   // PL: auth
   auth: {
