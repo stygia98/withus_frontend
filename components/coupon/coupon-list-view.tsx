@@ -9,7 +9,6 @@ import { COUPON_STATUS_TONE } from "@/lib/status-tone";
 import { Status } from "@/components/withus-b";
 import { CouponIssuesPanel } from "@/components/coupon/coupon-issues-panel";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -67,72 +66,68 @@ export function CouponListView() {
       </header>
       <TemplateCouponTabs />
 
-      <Card>
-        <CardContent>
-          {isError ? (
-            <p className="text-destructive text-sm">쿠폰 목록을 불러오지 못했어요.</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>쿠폰명</TableHead>
-                  <TableHead>할인</TableHead>
-                  <TableHead>유효기간</TableHead>
-                  <TableHead>상태</TableHead>
-                  <TableHead className="text-right">발급</TableHead>
-                  <TableHead className="text-right">사용</TableHead>
-                  <TableHead className="text-right">사용률</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isPending ? (
-                  <EmptyRow>불러오는 중...</EmptyRow>
-                ) : data.content.length === 0 ? (
-                  <EmptyRow>아직 만든 쿠폰이 없어요.</EmptyRow>
-                ) : (
-                  data.content.map((c) => {
-                    const status = periodStatus(c.validFrom, c.validTo, today);
-                    const open = selected?.couponId === c.couponId;
-                    return (
-                      <TableRow key={c.couponId} data-state={open ? "selected" : undefined}>
-                        <TableCell className="font-medium">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggle(c)}
-                            aria-expanded={open}
-                            aria-controls="coupon-issues-panel"
-                            className="-ml-3 h-auto min-h-7 py-1 text-left text-sm font-medium whitespace-normal"
-                          >
-                            {c.name}
-                          </Button>
-                        </TableCell>
-                        <TableCell>{formatDiscount(c)}</TableCell>
-                        <TableCell className="tabular-nums">
-                          {formatPeriod(c.validFrom, c.validTo)}
-                        </TableCell>
-                        <TableCell>
-                          <Status tone={COUPON_STATUS_TONE[status]}>{PERIOD_LABEL[status]}</Status>
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {formatCount(c.issuedCount)}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {formatCount(c.usedCount)}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {c.issuedCount > 0 ? formatRate(c.usedCount / c.issuedCount) : "–"}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      {isError ? (
+        <p className="text-destructive text-sm">쿠폰 목록을 불러오지 못했어요.</p>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>쿠폰명</TableHead>
+              <TableHead>할인</TableHead>
+              <TableHead>유효기간</TableHead>
+              <TableHead>상태</TableHead>
+              <TableHead className="text-right">발급</TableHead>
+              <TableHead className="text-right">사용</TableHead>
+              <TableHead className="text-right">사용률</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isPending ? (
+              <EmptyRow>불러오는 중...</EmptyRow>
+            ) : data.content.length === 0 ? (
+              <EmptyRow>아직 만든 쿠폰이 없어요.</EmptyRow>
+            ) : (
+              data.content.map((c) => {
+                const status = periodStatus(c.validFrom, c.validTo, today);
+                const open = selected?.couponId === c.couponId;
+                return (
+                  <TableRow key={c.couponId} data-state={open ? "selected" : undefined}>
+                    <TableCell className="font-medium">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggle(c)}
+                        aria-expanded={open}
+                        aria-controls="coupon-issues-panel"
+                        className="-ml-3 h-auto min-h-7 py-1 text-left text-sm font-medium whitespace-normal"
+                      >
+                        {c.name}
+                      </Button>
+                    </TableCell>
+                    <TableCell>{formatDiscount(c)}</TableCell>
+                    <TableCell className="tabular-nums">
+                      {formatPeriod(c.validFrom, c.validTo)}
+                    </TableCell>
+                    <TableCell>
+                      <Status tone={COUPON_STATUS_TONE[status]}>{PERIOD_LABEL[status]}</Status>
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {formatCount(c.issuedCount)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {formatCount(c.usedCount)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {c.issuedCount > 0 ? formatRate(c.usedCount / c.issuedCount) : "–"}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+      )}
 
       {data && data.totalPages > 1 && (
         <nav aria-label="쿠폰 목록 페이지" className="flex items-center justify-end gap-2">
