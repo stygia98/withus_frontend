@@ -142,7 +142,7 @@ export default function TemplatesPage() {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label="복제"
+                  aria-label="복사"
                   disabled={duplicate.isPending}
                   onClick={() => duplicate.mutate(template.templateId)}
                 >
