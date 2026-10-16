@@ -103,7 +103,7 @@ export function CouponListView() {
                             onClick={() => toggle(c)}
                             aria-expanded={open}
                             aria-controls="coupon-issues-panel"
-                            className="h-auto min-h-7 py-1 text-left font-medium whitespace-normal"
+                            className="-ml-3 h-auto min-h-7 py-1 text-left text-sm font-medium whitespace-normal"
                           >
                             {c.name}
                           </Button>
