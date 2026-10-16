@@ -26,11 +26,11 @@ const digitsOf = (v: string) => v.replace(/\D/g, "");
  * USB/블루투스 바코드 스캐너는 키보드처럼 숫자를 입력하고 Enter 를 보내므로, 입력칸 하나에 포커스를 두면 찍는 즉시 조회된다.
  * 조회(GET)로 쿠폰을 확인한 뒤 '사용 처리'(POST)를 눌러야 사용된다. 권한은 OWNER·MANAGER (PRD 3장).
  */
-export function CouponRedeemView() {
+export function CouponRedeemView({ initialCode }: { initialCode?: string }) {
   const queryClient = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [typed, setTyped] = useState("");
-  const [code, setCode] = useState<string | null>(null);
+  const [typed, setTyped] = useState(initialCode ?? "");
+  const [code, setCode] = useState<string | null>(initialCode ?? null);
 
   const me = useQuery({
     queryKey: queryKeys.auth.me,
