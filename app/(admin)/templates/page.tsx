@@ -138,24 +138,26 @@ export default function TemplatesPage() {
                 </Status>
               </TableCell>
               <TableCell>{formatDateTime(template.updatedAt)}</TableCell>
-              <TableCell className="flex justify-end gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="복사"
-                  disabled={duplicate.isPending}
-                  onClick={() => duplicate.mutate(template.templateId)}
-                >
-                  <Copy className="size-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="삭제"
-                  onClick={() => setDeleteTarget(template)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+              <TableCell>
+                <div className="flex justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="복사"
+                    disabled={duplicate.isPending}
+                    onClick={() => duplicate.mutate(template.templateId)}
+                  >
+                    <Copy className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="삭제"
+                    onClick={() => setDeleteTarget(template)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
