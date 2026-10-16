@@ -30,6 +30,8 @@ export type CouponRequest = {
 /** 쿠폰별 발급 목록 한 줄 (GET /coupons/{id}/issues). 토큰은 내려오지 않는다 */
 export type CouponIssue = {
   issueId: number;
+  code: string; // 매장 바코드용 12자리 쿠폰 번호
+  token: string; // 고객 쿠폰 페이지(/c/{token}) 주소용
   customerId: number;
   customerName: string | null;
   sendLogId: number | null;
