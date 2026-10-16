@@ -11,7 +11,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "withus",
-  description: "세그먼트 기반 CRM 마케팅 자동화",
+  description: "타겟팅 기반 CRM 마케팅 자동화",
 };
 
 export default function RootLayout({
