@@ -29,7 +29,7 @@ const PAGE_SIZE = 20;
 /**
  * 쿠폰 하나의 발급 현황 (API_SPEC 7장 GET /coupons/{id}/issues, 권한 O M).
  * 고객별 발급 시각·쿠폰 번호·사용 시각·상태와 사용 처리·취소 버튼.
- * 토큰은 고객 페이지 접근 수단이라 서버가 내려주지 않고, 쿠폰 번호(code)로 매장 사용 처리 화면을 새 창에 연다
+ * 쿠폰 번호 링크는 고객 쿠폰 페이지(/c/{token})를 새 창으로 연다. 사용 처리·취소는 쿠폰 번호(code)로 한다
  */
 export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose: () => void }) {
   const [page, setPage] = useState(0);
@@ -125,11 +125,11 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
                     <TableCell className="tabular-nums">{formatDateTime(issue.issuedAt)}</TableCell>
                     <TableCell className="tabular-nums">
                       <Link
-                        href={`/coupons/redeem?code=${issue.code}`}
+                        href={`/c/${issue.token}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary underline-offset-4 hover:underline"
-                        aria-label={`쿠폰 번호 ${issue.code} 쿠폰 창을 새 창으로 열기`}
+                        aria-label={`쿠폰 번호 ${issue.code} 고객 쿠폰 페이지를 새 창으로 열기`}
                       >
                         {formatCode(issue.code)}
                       </Link>
