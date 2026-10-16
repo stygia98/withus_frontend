@@ -7,7 +7,6 @@ import { useState } from "react";
 import { CAMPAIGN_STATUS_TONE } from "@/lib/status-tone";
 import { Status } from "@/components/withus-b";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -97,59 +96,55 @@ export function CampaignListView() {
         </div>
       </header>
 
-      <Card>
-        <CardContent>
-          {isError ? (
-            <p role="alert" className="text-destructive text-sm">
-              캠페인 목록을 불러오지 못했어요.
-            </p>
-          ) : (
-            <Table aria-busy={isPlaceholderData}>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>캠페인</TableHead>
-                  <TableHead>유형</TableHead>
-                  <TableHead>상태</TableHead>
-                  <TableHead>기간</TableHead>
+      {isError ? (
+        <p role="alert" className="text-destructive text-sm">
+          캠페인 목록을 불러오지 못했어요.
+        </p>
+      ) : (
+        <Table aria-busy={isPlaceholderData}>
+          <TableHeader>
+            <TableRow>
+              <TableHead>캠페인</TableHead>
+              <TableHead>유형</TableHead>
+              <TableHead>상태</TableHead>
+              <TableHead>기간</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isPending ? (
+              <EmptyRow>불러오는 중...</EmptyRow>
+            ) : data.content.length === 0 ? (
+              <EmptyRow>
+                {status
+                  ? `${CAMPAIGN_STATUS_LABEL[status]} 상태인 캠페인이 없어요.`
+                  : "아직 만든 캠페인이 없어요."}
+              </EmptyRow>
+            ) : (
+              data.content.map((c) => (
+                <TableRow key={c.campaignId}>
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/analytics/${c.campaignId}`}
+                      className="focus-visible:ring-ring/50 rounded-sm outline-none hover:underline focus-visible:ring-3"
+                    >
+                      {c.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{CAMPAIGN_TYPE_LABEL[c.type]}</TableCell>
+                  <TableCell>
+                    <Status tone={CAMPAIGN_STATUS_TONE[c.status]}>
+                      {CAMPAIGN_STATUS_LABEL[c.status]}
+                    </Status>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground tabular-nums">
+                    {describePeriod(c)}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isPending ? (
-                  <EmptyRow>불러오는 중...</EmptyRow>
-                ) : data.content.length === 0 ? (
-                  <EmptyRow>
-                    {status
-                      ? `${CAMPAIGN_STATUS_LABEL[status]} 상태인 캠페인이 없어요.`
-                      : "아직 만든 캠페인이 없어요."}
-                  </EmptyRow>
-                ) : (
-                  data.content.map((c) => (
-                    <TableRow key={c.campaignId}>
-                      <TableCell className="font-medium">
-                        <Link
-                          href={`/analytics/${c.campaignId}`}
-                          className="focus-visible:ring-ring/50 rounded-sm outline-none hover:underline focus-visible:ring-3"
-                        >
-                          {c.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell>{CAMPAIGN_TYPE_LABEL[c.type]}</TableCell>
-                      <TableCell>
-                        <Status tone={CAMPAIGN_STATUS_TONE[c.status]}>
-                          {CAMPAIGN_STATUS_LABEL[c.status]}
-                        </Status>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground tabular-nums">
-                        {describePeriod(c)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      )}
 
       {data && data.totalPages > 1 && (
         <nav aria-label="캠페인 목록 페이지" className="flex items-center justify-end gap-2">

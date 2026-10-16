@@ -90,7 +90,7 @@ export default function UsersPage() {
         {!forbidden && <Button onClick={() => setCreating(true)}>사용자 추가</Button>}
       </header>
 
-      <div className="rounded-xl border bg-card p-4">
+      <div>
         {forbidden ? (
           <p className="text-sm text-muted-foreground">사용자 관리는 OWNER 만 할 수 있어요.</p>
         ) : members.isError ? (
@@ -103,7 +103,7 @@ export default function UsersPage() {
                 <TableHead>이메일</TableHead>
                 <TableHead className="w-56">역할</TableHead>
                 <TableHead>상태</TableHead>
-                <TableHead className="text-right">관리</TableHead>
+                <TableHead>관리</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -145,26 +145,30 @@ export default function UsersPage() {
                         {m.active ? "활성" : "비활성"}
                       </Status>
                     </TableCell>
-                    <TableCell className="space-x-2 text-right">
-                      {/* 본인은 사이드바의 '비밀번호 변경'으로 바꾼다 (MEMBER_SELF_PASSWORD) */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={self}
-                        onClick={() => setResetTarget(m)}
-                      >
-                        비밀번호 재설정
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={self || update.isPending}
-                        onClick={() =>
-                          update.mutate({ memberId: m.memberId, body: { active: !m.active } })
-                        }
-                      >
-                        {m.active ? "비활성화" : "활성화"}
-                      </Button>
+                    <TableCell>
+                      {/* 왼쪽 기준에 폭을 고정해, '활성화'·'비활성화' 글자 수가 달라도 행마다 버튼 선이 같다 */}
+                      <div className="flex gap-2">
+                        {/* 본인은 사이드바의 '비밀번호 변경'으로 바꾼다 (MEMBER_SELF_PASSWORD) */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={self}
+                          onClick={() => setResetTarget(m)}
+                        >
+                          비밀번호 재설정
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-22"
+                          disabled={self || update.isPending}
+                          onClick={() =>
+                            update.mutate({ memberId: m.memberId, body: { active: !m.active } })
+                          }
+                        >
+                          {m.active ? "비활성화" : "활성화"}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
