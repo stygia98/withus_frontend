@@ -210,27 +210,30 @@ export default function CustomersPage() {
       {data && data.totalElements > 0 && (
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>총 {data.totalElements.toLocaleString()}명</span>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 0}
-              onClick={() => setPage(page - 1)}
-            >
-              이전
-            </Button>
-            <span>
-              {page + 1} / {data.totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page + 1 >= data.totalPages}
-              onClick={() => setPage(page + 1)}
-            >
-              다음
-            </Button>
-          </div>
+          {/* 전체가 10건 미만이면 넘길 페이지가 없는 것과 같아 버튼을 숨긴다 */}
+          {data.totalElements >= 10 && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === 0}
+                onClick={() => setPage(page - 1)}
+              >
+                이전
+              </Button>
+              <span>
+                {page + 1} / {data.totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page + 1 >= data.totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                다음
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
