@@ -23,7 +23,7 @@ import type { Campaign } from "@/lib/types/campaign";
 
 /**
  * 캠페인 상태 버튼 (PRD 6.7 전이표). 현재 상태에서 가능한 것만 활성화한다:
- * DRAFT 워크플로우·SCHEDULED → 지금 시작, ACTIVE → 일시정지·종료, PAUSED → 재개·종료, 복제는 어느 상태에서나 가능(새 DRAFT),
+ * DRAFT 워크플로우·SCHEDULED → 지금 시작, ACTIVE → 일시정지·종료, PAUSED → 재개·종료, 복사는 어느 상태에서나 가능(새 DRAFT),
  * 삭제는 DRAFT 만(발송 기록이 있는 캠페인은 서버가 막는다).
  * 일회성 DRAFT 의 시작·예약은 SchedulePanel 이 맡는다(시작 시각 검사가 필요해서)
  */
@@ -63,7 +63,7 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
   const duplicate = useMutation({
     mutationFn: () => api<Campaign>(`${base}/duplicate`, { method: "POST" }),
     onSuccess: (copy) => {
-      toast.success(`"${copy.name}"(으)로 복제했어요.`);
+      toast.success(`"${copy.name}"(으)로 복사했어요.`);
       refresh();
       router.push(`/campaigns/${copy.campaignId}/edit`);
     },
@@ -115,7 +115,7 @@ export function CampaignActions({ campaign }: { campaign: Campaign }) {
         </Button>
       )}
       <Button variant="outline" disabled={pending} onClick={() => duplicate.mutate()}>
-        복제
+        복사
       </Button>
       {/* 삭제는 DRAFT 만 가능하다(발송 기록 보존). 예약은 '예약 취소' 후 삭제한다 */}
       {status === "DRAFT" && (

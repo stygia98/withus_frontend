@@ -32,7 +32,7 @@ export type CampaignEstimate = {
 };
 
 export const TRIGGER_TYPE_LABEL: Record<TriggerType, string> = {
-  SEGMENT_SCHEDULED: "예약 시각에 세그먼트 전체 시작",
+  SEGMENT_SCHEDULED: "예약 시각에 타겟팅 전체 시작",
   CUSTOMER_REGISTERED: "신규 고객 등록 시 시작",
 };
 

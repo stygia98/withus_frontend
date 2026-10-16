@@ -16,7 +16,7 @@ import { errorPosition, type FieldDef, type Preview, type Rule } from "./types";
 export type SegmentForm = { name: string; description: string; rule: Rule };
 
 /**
- * 세그먼트 생성·수정 화면 본문 (PRD 4장 /segments/new, /segments/[id]).
+ * 타겟팅 생성·수정 화면 본문 (PRD 4장 /segments/new, /segments/[id]).
  * 조건을 바꾸면 500ms 뒤 대상 수를 미리 센다 (F-03). 저장 오류의 details.path 로 문제 조건을 표시한다
  */
 export function SegmentEditor({

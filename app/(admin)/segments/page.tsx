@@ -20,7 +20,7 @@ import { formatSeoul } from "@/lib/datetime";
 import { CustomerTabs } from "@/components/layout/section-tabs";
 import { queryKeys } from "@/lib/query-keys";
 
-// 세그먼트 목록 (PRD 4장 /segments): 조건 요약, 현재 대상 고객 수
+// 타겟팅 목록 (PRD 4장 /segments): 조건 요약, 현재 대상 고객 수
 const PAGE_SIZE = 20;
 
 export default function SegmentsPage() {
@@ -44,7 +44,7 @@ export default function SegmentsPage() {
           </p>
         </div>
         <Link href="/segments/new" className={buttonVariants()}>
-          세그먼트 만들기
+          타겟팅 만들기
         </Link>
       </div>
 
@@ -62,7 +62,7 @@ export default function SegmentsPage() {
         <TableBody>
           {isPending && <MessageRow text="불러오는 중..." />}
           {isError && <MessageRow text="목록을 불러오지 못했어요." />}
-          {data?.content.length === 0 && <MessageRow text="세그먼트가 없어요." />}
+          {data?.content.length === 0 && <MessageRow text="타겟팅이 없어요." />}
           {data?.content.map((s) => (
             <TableRow
               key={s.segmentId}

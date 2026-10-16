@@ -1,6 +1,6 @@
 "use client";
 
-// 목록·상세 화면이 함께 쓰는 복제·삭제 mutation (useMutation 성공 시 templates 쿼리 무효화)
+// 목록·상세 화면이 함께 쓰는 복사·삭제 mutation (useMutation 성공 시 templates 쿼리 무효화)
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -15,11 +15,11 @@ export function useTemplateActions() {
     mutationFn: (templateId: number) =>
       api<Template>(`/api/v1/templates/${templateId}/duplicate`, { method: "POST" }),
     onSuccess: (copy) => {
-      toast.success(`"${copy.name}"(으)로 복제했어요.`);
+      toast.success(`"${copy.name}"(으)로 복사했어요.`);
       queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
     },
     onError: (err) => {
-      toast.error(err instanceof ApiError ? err.message : "복제에 실패했어요.");
+      toast.error(err instanceof ApiError ? err.message : "복사에 실패했어요.");
     },
   });
 

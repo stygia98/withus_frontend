@@ -193,7 +193,7 @@ export function TemplateForm(props: TemplateFormProps) {
         <CardContent className="space-y-4">
           {locked && (
             <p className="rounded-md border bg-muted px-3 py-2 text-sm text-muted-foreground">
-              예약·진행 중인 캠페인이 사용 중이라 수정할 수 없어요. 바꾸려면 복제해서 새 템플릿을
+              예약·진행 중인 캠페인이 사용 중이라 수정할 수 없어요. 바꾸려면 복사해서 새 템플릿을
               만드세요.
             </p>
           )}

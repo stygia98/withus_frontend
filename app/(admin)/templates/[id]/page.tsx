@@ -60,7 +60,7 @@ export default function EditTemplatePage() {
                 }
               >
                 <Copy className="size-4" />
-                복제
+                복사
               </Button>
               <Button variant="outline" onClick={() => setDeleteOpen(true)}>
                 <Trash2 className="size-4" />

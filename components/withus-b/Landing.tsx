@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react";
 
 const QUEUE: [string, string, "r" | "y" | "g", string][][] = [
   [
-    ["10월 재방문 쿠폰 · 서울 세그먼트", "1,284명 · 메일", "r", "20:50 마감 임박"],
+    ["10월 재방문 쿠폰 · 서울 타겟팅", "1,284명 · 메일", "r", "20:50 마감 임박"],
     ["휴면 고객 다시 부르기", "212명 · 메일", "y", "오늘 19:00"],
     ["수신동의 2년 확인 안내", "318명 · 자동 안내", "g", "11.01 09:00"],
   ],
@@ -32,7 +32,7 @@ function Flow() {
   return (
     <ol className="flow">
       <li>
-        <i>시작</i>지정 일시 · 세그먼트 1,284명
+        <i>시작</i>지정 일시 · 타겟팅 1,284명
       </li>
       <li>
         <i>메일</i>재방문 쿠폰 안내
@@ -173,7 +173,7 @@ export default function Landing() {
               <br />팬 마케팅 <span className="em">자동화</span>
             </h1>
             <p className="rv d1">
-              세그먼트로 대상을 고르면, 메일을 열었는지, 눌렀는지에 따라 다음 메시지가 자동으로
+              타겟팅으로 대상을 고르면, 메일을 열었는지, 눌렀는지에 따라 다음 메시지가 자동으로
               나가요. 고객 DB부터 발송, 쿠폰 전환까지 한 화면에서 운영하세요.
             </p>
             <div className="cta rv d2">
@@ -233,7 +233,7 @@ export default function Landing() {
                 </h6>
                 <div className="tools" id="tools">
                   <button className="on" data-k="0">
-                    세그먼트
+                    타겟팅
                   </button>
                   <button data-k="1">템플릿</button>
                   <button data-k="2">캠페인</button>
@@ -346,7 +346,7 @@ export default function Landing() {
                 <div className="txt">
                   <div>
                     <h3>
-                      세그먼트 기반
+                      타겟팅 기반
                       <br />
                       정밀 타깃팅
                     </h3>
@@ -477,10 +477,8 @@ export default function Landing() {
                     </div>
                   </div>
                 </div>
-                <h3>세그먼트와 타깃팅</h3>
-                <p>
-                  세그먼트는 보낼 때마다 조건으로 다시 계산돼, 늘 지금 조건에 맞는 고객에게 가요.
-                </p>
+                <h3>타겟팅</h3>
+                <p>타겟팅은 보낼 때마다 조건으로 다시 계산돼, 늘 지금 조건에 맞는 고객에게 가요.</p>
               </article>
               <article className="use rv d2">
                 <div className="pic">
@@ -508,7 +506,7 @@ export default function Landing() {
                 </div>
                 <h3>휴면 고객 다시 부르기</h3>
                 <p>
-                  180일 동안 클릭 · 구매가 없는 고객을 매일 휴면으로 표시해요. 휴면 세그먼트로 다시
+                  180일 동안 클릭 · 구매가 없는 고객을 매일 휴면으로 표시해요. 휴면 타겟팅으로 다시
                   메시지를 보내요.
                 </p>
               </article>
@@ -550,9 +548,7 @@ export default function Landing() {
                   </div>
                 </div>
                 <h3>굿즈 · 사전 판매</h3>
-                <p>
-                  누적 구매액으로 VIP 세그먼트를 만들어 먼저 알리고, 오픈 · 클릭을 바로 확인해요.
-                </p>
+                <p>누적 구매액으로 VIP 타겟팅을 만들어 먼저 알리고, 오픈 · 클릭을 바로 확인해요.</p>
               </article>
               <article className="use rv d2">
                 <div className="pic">
@@ -663,7 +659,7 @@ export default function Landing() {
               <p>
                 반응에 따라 이어지는 팬 마케팅 자동화.
                 <br />
-                고객 · 세그먼트 · 워크플로우 · 쿠폰 · 성과를 한 곳에서.
+                고객 · 타겟팅 · 워크플로우 · 쿠폰 · 성과를 한 곳에서.
               </p>
             </div>
             <nav className="fc" aria-label="둘러보기">

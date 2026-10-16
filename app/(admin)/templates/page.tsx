@@ -138,24 +138,26 @@ export default function TemplatesPage() {
                 </Status>
               </TableCell>
               <TableCell>{formatDateTime(template.updatedAt)}</TableCell>
-              <TableCell className="flex justify-end gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="복제"
-                  disabled={duplicate.isPending}
-                  onClick={() => duplicate.mutate(template.templateId)}
-                >
-                  <Copy className="size-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="삭제"
-                  onClick={() => setDeleteTarget(template)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+              <TableCell>
+                <div className="flex justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="복사"
+                    disabled={duplicate.isPending}
+                    onClick={() => duplicate.mutate(template.templateId)}
+                  >
+                    <Copy className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="삭제"
+                    onClick={() => setDeleteTarget(template)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -180,18 +182,21 @@ export default function TemplatesPage() {
             ? `전체 ${data.totalElements}건 · ${data.totalPages === 0 ? 0 : page + 1}/${data.totalPages} 페이지`
             : ""}
         </span>
-        <div className="flex gap-2">
-          <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-            이전
-          </Button>
-          <Button
-            variant="outline"
-            disabled={!data || page + 1 >= data.totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            다음
-          </Button>
-        </div>
+        {/* 전체가 10건 미만이면 넘길 페이지가 없는 것과 같아 버튼을 숨긴다 */}
+        {data && data.totalElements >= 10 && (
+          <div className="flex gap-2">
+            <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
+              이전
+            </Button>
+            <Button
+              variant="outline"
+              disabled={page + 1 >= data.totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              다음
+            </Button>
+          </div>
+        )}
       </div>
     </main>
   );

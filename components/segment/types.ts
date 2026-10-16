@@ -1,4 +1,4 @@
-// 세그먼트 API 타입과 조건 표시 (백엔드 segment 패키지, DB_SCHEMA 5.1 rule_json)
+// 타겟팅 API 타입과 조건 표시 (백엔드 segment 패키지, DB_SCHEMA 5.1 rule_json)
 
 import { format, subDays } from "date-fns";
 

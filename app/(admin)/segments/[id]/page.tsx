@@ -20,7 +20,7 @@ import {
 import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 
-// 세그먼트 수정 (PRD 4장 /segments/[id])
+// 타겟팅 수정 (PRD 4장 /segments/[id])
 export default function SegmentDetailPage() {
   const id = Number(useParams<{ id: string }>().id);
   const router = useRouter();
@@ -45,14 +45,14 @@ export default function SegmentDetailPage() {
   const remove = useMutation({
     mutationFn: () => api(`/api/v1/segments/${id}`, { method: "DELETE" }),
     onSuccess: () => {
-      // 상세 쿼리를 무효화하면 지운 세그먼트를 다시 불러 404 가 난다 → 목록만
+      // 상세 쿼리를 무효화하면 지운 타겟팅을 다시 불러 404 가 난다 → 목록만
       queryClient.invalidateQueries({ queryKey: queryKeys.segments.lists });
       toast.success("삭제했어요.");
       router.replace("/segments");
     },
     onError: (err) => {
       setDeleting(false);
-      // SEGMENT_IN_USE(409): 캠페인이 쓰는 세그먼트
+      // SEGMENT_IN_USE(409): 캠페인이 쓰는 타겟팅
       toast.error(err instanceof ApiError ? err.message : "삭제하지 못했어요.");
     },
   });
@@ -61,7 +61,7 @@ export default function SegmentDetailPage() {
   if (segment.isError) {
     return (
       <div className="space-y-2">
-        <p>세그먼트를 찾을 수 없어요.</p>
+        <p>타겟팅을 찾을 수 없어요.</p>
         <Link href="/segments" className="text-sm underline">
           목록으로
         </Link>
@@ -74,7 +74,7 @@ export default function SegmentDetailPage() {
     <div className="space-y-4">
       <div>
         <Link href="/segments" className="text-sm text-muted-foreground hover:underline">
-          ← 세그먼트 목록
+          ← 타겟팅 목록
         </Link>
         <h1 className="wb-title">{s.name}</h1>
       </div>
@@ -92,9 +92,9 @@ export default function SegmentDetailPage() {
       <Dialog open={deleting} onOpenChange={setDeleting}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>세그먼트를 삭제할까요?</DialogTitle>
+            <DialogTitle>타겟팅을 삭제할까요?</DialogTitle>
             <DialogDescription>
-              이 세그먼트를 쓰는 캠페인이 있으면 삭제할 수 없어요.
+              이 타겟팅을 쓰는 캠페인이 있으면 삭제할 수 없어요.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -38,7 +38,7 @@ const formSchema = z
   .object({
     type: z.enum(["ONE_TIME", "WORKFLOW"]),
     name: z.string().min(1, "이름을 입력하세요."),
-    segmentId: z.string().min(1, "세그먼트를 선택하세요."),
+    segmentId: z.string().min(1, "타겟팅을 선택하세요."),
     templateId: z.string().optional(),
     couponId: z.string().optional(),
     triggerType: z.enum(["SEGMENT_SCHEDULED", "CUSTOMER_REGISTERED"]).optional(),
@@ -227,7 +227,7 @@ export function CampaignForm(props: CampaignFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="segmentId">대상 세그먼트</Label>
+            <Label htmlFor="segmentId">대상 타겟팅</Label>
             <Controller
               control={control}
               name="segmentId"
@@ -239,7 +239,7 @@ export function CampaignForm(props: CampaignFormProps) {
                   disabled={locked}
                 >
                   <SelectTrigger id="segmentId" className="w-full">
-                    <SelectValue placeholder="세그먼트 선택" />
+                    <SelectValue placeholder="타겟팅 선택" />
                   </SelectTrigger>
                   <SelectContent>
                     {segmentItems.map((i) => (
