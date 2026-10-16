@@ -1,7 +1,7 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { ChevronDown, ChevronRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -105,11 +105,6 @@ export function CouponListView() {
                             aria-controls="coupon-issues-panel"
                             className="h-auto min-h-7 py-1 text-left font-medium whitespace-normal"
                           >
-                            {open ? (
-                              <ChevronDown className="size-4 shrink-0" aria-hidden />
-                            ) : (
-                              <ChevronRight className="size-4 shrink-0" aria-hidden />
-                            )}
                             {c.name}
                           </Button>
                         </TableCell>
