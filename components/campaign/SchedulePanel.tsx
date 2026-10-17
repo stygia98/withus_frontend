@@ -57,15 +57,13 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
   async function confirmThen(run: () => void) {
     const at = mode === "NOW" ? formatISO(new Date()) : startAt;
     if (!at || (mode === "SCHEDULE" && new Date(at) <= new Date())) {
-      toast.error("예약 시각은 현재 이후여야 합니다.");
+      toast.error("예약 시각은 현재 이후여야 해요.");
       return;
     }
     try {
       const fresh = await fetchEstimate(at);
       if (!fresh.allowed) {
-        toast.error(
-          "광고성 메시지는 20:50 이후까지 이어질 수 없어 이 시각에는 시작할 수 없습니다.",
-        );
+        toast.error("광고성 메시지는 20:50 이후까지 이어질 수 없어 이 시각에는 시작할 수 없어요.");
         refresh();
         return;
       }
@@ -87,14 +85,14 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
       toast.error(`${err.message}${next ? ` 가능한 시각: ${formatDateTime(next)}` : ""}`);
       return;
     }
-    toast.error(err instanceof ApiError ? err.message : "요청에 실패했습니다.");
+    toast.error(err instanceof ApiError ? err.message : "요청에 실패했어요.");
   }
 
   const start = useMutation({
     mutationFn: () =>
       api<Campaign>(`/api/v1/campaigns/${campaign.campaignId}/start`, { method: "POST" }),
     onSuccess: () => {
-      toast.success("캠페인을 시작했습니다.");
+      toast.success("캠페인을 시작했어요.");
       refresh();
     },
     onError,
@@ -107,7 +105,7 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
         body: JSON.stringify({ scheduledAt: startAt }),
       }),
     onSuccess: () => {
-      toast.success("예약했습니다.");
+      toast.success("예약했어요.");
       refresh();
     },
     onError,
@@ -119,7 +117,7 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
         method: "POST",
       }),
     onSuccess: () => {
-      toast.success("예약을 취소했습니다.");
+      toast.success("예약을 취소했어요.");
       refresh();
     },
     onError,
@@ -142,7 +140,7 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm">
-            {campaign.scheduledAt ? formatDateTime(campaign.scheduledAt) : "-"} 에 시작됩니다.
+            {campaign.scheduledAt ? formatDateTime(campaign.scheduledAt) : "-"} 에 시작돼요.
           </p>
           <div className="flex gap-2">
             <Button variant="outline" disabled={cancel.isPending} onClick={() => cancel.mutate()}>
@@ -197,7 +195,7 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
         )}
         {estimateError && (
           <p className="text-sm text-destructive">
-            예상 시각을 계산하지 못했습니다.{" "}
+            예상 시각을 계산하지 못했어요.{" "}
             {estimateErr instanceof ApiError ? estimateErr.message : ""} 캠페인 설정(템플릿 등)을
             확인하세요.
           </p>
@@ -215,7 +213,7 @@ export function SchedulePanel({ campaign }: { campaign: Campaign }) {
             <p>예상 종료: {formatDateTime(estimate.expectedEndAt)}</p>
             {!estimate.allowed && (
               <p className="mt-2 font-medium text-destructive">
-                광고성 메시지는 20:50 이후까지 이어질 수 없어 이 시각에는 시작할 수 없습니다.
+                광고성 메시지는 20:50 이후까지 이어질 수 없어 이 시각에는 시작할 수 없어요.
                 {estimate.nextAvailableAt &&
                   ` 가능한 시각: ${formatDateTime(estimate.nextAvailableAt)}`}
               </p>

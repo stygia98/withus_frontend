@@ -31,8 +31,8 @@ export function DeleteTemplateDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>템플릿을 삭제할까요?</AlertDialogTitle>
           <AlertDialogDescription>
-            &ldquo;{templateName}&rdquo; 템플릿을 삭제합니다. 되돌릴 수 없고, 캠페인·워크플로우가
-            참조 중이면 삭제되지 않습니다.
+            &ldquo;{templateName}&rdquo; 템플릿을 삭제해요. 되돌릴 수 없고, 캠페인·워크플로우가 참조
+            중이면 삭제되지 않아요.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

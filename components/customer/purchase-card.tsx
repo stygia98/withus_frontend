@@ -69,7 +69,7 @@ export function PurchaseCard({ customerId }: { customerId: number }) {
             {(purchases.isError || purchases.data?.length === 0) && (
               <TableRow>
                 <TableCell colSpan={3} className="text-center text-muted-foreground">
-                  {purchases.isError ? "불러오지 못했습니다." : "구매 이력이 없습니다."}
+                  {purchases.isError ? "불러오지 못했어요." : "구매 이력이 없어요."}
                 </TableCell>
               </TableRow>
             )}
@@ -152,11 +152,11 @@ function PurchaseDialog({
       // 상세(누적구매액)·구매·활동(쿠폰 사용) 모두 이 고객 상세 키 아래에 있다
       queryClient.invalidateQueries({ queryKey: queryKeys.customers.detail(customerId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.customers.lists });
-      toast.success("구매를 등록했습니다.");
+      toast.success("구매를 등록했어요.");
       form.reset();
       onOpenChange(false);
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "등록하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "등록하지 못했어요."),
   });
 
   const errors = form.formState.errors;
@@ -167,7 +167,7 @@ function PurchaseDialog({
         <DialogHeader>
           <DialogTitle>구매 등록</DialogTitle>
           <DialogDescription>
-            금액은 누적구매액에 더해집니다. 쿠폰을 고르면 사용 처리됩니다.
+            금액은 누적구매액에 더해져요. 쿠폰을 고르면 사용 처리돼요.
           </DialogDescription>
         </DialogHeader>
         <form
@@ -194,7 +194,7 @@ function PurchaseDialog({
               max={format(new Date(), "yyyy-MM-dd'T'HH:mm")}
               {...form.register("purchasedAt")}
             />
-            <p className="text-xs text-muted-foreground">비우면 지금으로 등록합니다.</p>
+            <p className="text-xs text-muted-foreground">비우면 지금으로 등록해요.</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="couponIssueId">쿠폰</Label>
@@ -221,8 +221,7 @@ function PurchaseDialog({
               )}
             />
             <p className="text-xs text-muted-foreground">
-              이 고객에게 발급된 미사용 쿠폰 중 구매일({purchaseDate})이 유효기간 안인 것만
-              보입니다.
+              이 고객에게 발급된 미사용 쿠폰 중 구매일({purchaseDate})이 유효기간 안인 것만 보여요.
             </p>
           </div>
         </form>

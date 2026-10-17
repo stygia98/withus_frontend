@@ -1,7 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,9 +16,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
+import { formatSeoul } from "@/lib/datetime";
+import { CustomerTabs } from "@/components/layout/section-tabs";
 import { queryKeys } from "@/lib/query-keys";
 
-// 세그먼트 목록 (PRD 4장 /segments): 조건 요약, 현재 대상 고객 수
+// 타겟팅 목록 (PRD 4장 /segments): 조건 요약, 현재 대상 고객 수
 const PAGE_SIZE = 20;
 
 export default function SegmentsPage() {
@@ -29,16 +30,25 @@ export default function SegmentsPage() {
   const { data, isPending, isError } = useQuery({
     queryKey: queryKeys.segments.list(params),
     queryFn: () => api<Page<Segment>>(`/api/v1/segments?page=${page}&size=${PAGE_SIZE}`),
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   return (
-    <div className="space-y-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">세그먼트</h1>
+    <div className="space-y-4">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="wb-title">고객 타겟팅</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            조건으로 고객을 묶어요. 대상 고객은 발송할 때마다 다시 계산돼요.
+          </p>
+        </div>
         <Link href="/segments/new" className={buttonVariants()}>
-          세그먼트 만들기
+          타겟팅 만들기
         </Link>
       </div>
+
+      <CustomerTabs />
 
       <Table>
         <TableHeader>
@@ -51,8 +61,8 @@ export default function SegmentsPage() {
         </TableHeader>
         <TableBody>
           {isPending && <MessageRow text="불러오는 중..." />}
-          {isError && <MessageRow text="목록을 불러오지 못했습니다." />}
-          {data?.content.length === 0 && <MessageRow text="세그먼트가 없습니다." />}
+          {isError && <MessageRow text="목록을 불러오지 못했어요." />}
+          {data?.content.length === 0 && <MessageRow text="타겟팅이 없어요." />}
           {data?.content.map((s) => (
             <TableRow
               key={s.segmentId}
@@ -69,7 +79,7 @@ export default function SegmentsPage() {
                 {summarize(s.rule)}
               </TableCell>
               <TableCell className="text-right">{s.targetCount.toLocaleString()}명</TableCell>
-              <TableCell>{format(new Date(s.createdAt), "yyyy-MM-dd")}</TableCell>
+              <TableCell>{formatSeoul(s.createdAt, "yyyy.MM.dd")}</TableCell>
             </TableRow>
           ))}
         </TableBody>

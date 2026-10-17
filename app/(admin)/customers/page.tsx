@@ -1,14 +1,15 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { CONSENT_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { CustomerFormDialog } from "@/components/customer/customer-form-dialog";
 import { type CustomerListItem, REGIONS, regionName } from "@/components/customer/types";
 import { UploadDialog } from "@/components/customer/upload-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -27,6 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
+import { CustomerTabs } from "@/components/layout/section-tabs";
 import { queryKeys } from "@/lib/query-keys";
 
 // 고객 목록 (PRD 4장 /customers)
@@ -90,6 +92,8 @@ export default function CustomersPage() {
       api<Page<CustomerListItem>>(
         `/api/v1/customers?${new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)]))}`,
       ),
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   function apply(next: Filters) {
@@ -99,9 +103,14 @@ export default function CustomersPage() {
   }
 
   return (
-    <div className="space-y-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">고객</h1>
+    <div className="space-y-4">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="wb-title">고객 목록</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            수신동의와 휴면 여부를 확인하고, 엑셀·CSV 파일로 한 번에 등록할 수 있어요.
+          </p>
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setUploading(true)}>
             업로드
@@ -110,38 +119,46 @@ export default function CustomersPage() {
         </div>
       </div>
 
+      <CustomerTabs />
+
       <form
-        className="flex flex-wrap items-center gap-2"
+        className="w-fit max-w-full space-y-2"
         onSubmit={(e) => {
           e.preventDefault();
           apply(draft);
         }}
       >
-        <Input
-          className="w-64"
-          placeholder="이름·이메일·휴대폰 검색"
-          value={draft.keyword}
-          onChange={(e) => setDraft({ ...draft, keyword: e.target.value })}
-        />
-        <FilterSelect
-          items={REGION_ITEMS}
-          value={draft.region}
-          onChange={(v) => apply({ ...draft, region: v })}
-        />
-        {FILTER_SELECTS.map((f) => (
-          <FilterSelect
-            key={f.key}
-            items={f.items}
-            value={draft[f.key]}
-            onChange={(v) => apply({ ...draft, [f.key]: v })}
+        {/* 1줄: 검색어 + 검색, 2줄: 필터 + 초기화. 폼 폭은 필터 줄이 정하고 검색어 입력란이 그 폭을 채운다 */}
+        <div className="flex items-center gap-2">
+          <Input
+            className="flex-1"
+            placeholder="이름·이메일·휴대폰 검색"
+            value={draft.keyword}
+            onChange={(e) => setDraft({ ...draft, keyword: e.target.value })}
           />
-        ))}
-        <Button type="submit" variant="outline">
-          검색
-        </Button>
-        <Button type="button" variant="ghost" onClick={() => apply(EMPTY)}>
-          초기화
-        </Button>
+          {/* 검색·초기화 버튼 폭을 같게 해 입력란 끝이 휴면 필터 끝과 맞는다 */}
+          <Button type="submit" variant="outline" className="w-18">
+            검색
+          </Button>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <FilterSelect
+            items={REGION_ITEMS}
+            value={draft.region}
+            onChange={(v) => apply({ ...draft, region: v })}
+          />
+          {FILTER_SELECTS.map((f) => (
+            <FilterSelect
+              key={f.key}
+              items={f.items}
+              value={draft[f.key]}
+              onChange={(v) => apply({ ...draft, [f.key]: v })}
+            />
+          ))}
+          <Button type="button" variant="ghost" className="w-18" onClick={() => apply(EMPTY)}>
+            초기화
+          </Button>
+        </div>
       </form>
 
       <Table>
@@ -160,8 +177,8 @@ export default function CustomersPage() {
         </TableHeader>
         <TableBody>
           {isPending && <MessageRow text="불러오는 중..." />}
-          {isError && <MessageRow text="목록을 불러오지 못했습니다." />}
-          {data?.content.length === 0 && <MessageRow text="고객이 없습니다." />}
+          {isError && <MessageRow text="목록을 불러오지 못했어요." />}
+          {data?.content.length === 0 && <MessageRow text="고객이 없어요." />}
           {data?.content.map((c) => (
             <TableRow
               key={c.customerId}
@@ -179,14 +196,12 @@ export default function CustomersPage() {
               <TableCell>{c.joinedAt}</TableCell>
               <TableCell className="text-right">{c.totalPurchase.toLocaleString()}원</TableCell>
               <TableCell>
-                <YnBadge value={c.emailConsent} />
+                <ConsentStatus value={c.emailConsent} />
               </TableCell>
               <TableCell>
-                <YnBadge value={c.smsConsent} />
+                <ConsentStatus value={c.smsConsent} />
               </TableCell>
-              <TableCell>
-                {c.dormant === "Y" ? <Badge variant="secondary">휴면</Badge> : "-"}
-              </TableCell>
+              <TableCell>{c.dormant === "Y" ? <Status tone="warn">휴면</Status> : "-"}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -195,36 +210,35 @@ export default function CustomersPage() {
       {data && data.totalElements > 0 && (
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>총 {data.totalElements.toLocaleString()}명</span>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 0}
-              onClick={() => setPage(page - 1)}
-            >
-              이전
-            </Button>
-            <span>
-              {page + 1} / {data.totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page + 1 >= data.totalPages}
-              onClick={() => setPage(page + 1)}
-            >
-              다음
-            </Button>
-          </div>
+          {/* 전체가 10건 미만이면 넘길 페이지가 없는 것과 같아 버튼을 숨긴다 */}
+          {data.totalElements >= 10 && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === 0}
+                onClick={() => setPage(page - 1)}
+              >
+                이전
+              </Button>
+              <span>
+                {page + 1} / {data.totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page + 1 >= data.totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                다음
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
       <UploadDialog open={uploading} onOpenChange={setUploading} />
-      <CustomerFormDialog
-        open={creating}
-        onOpenChange={setCreating}
-        onSaved={(c) => router.push(`/customers/${c.customerId}`)}
-      />
+      <CustomerFormDialog open={creating} onOpenChange={setCreating} />
     </div>
   );
 }
@@ -254,8 +268,8 @@ function FilterSelect({
   );
 }
 
-function YnBadge({ value }: { value: "Y" | "N" }) {
-  return value === "Y" ? <Badge>동의</Badge> : <Badge variant="outline">거부</Badge>;
+function ConsentStatus({ value }: { value: "Y" | "N" }) {
+  return <Status tone={CONSENT_TONE[value]}>{value === "Y" ? "동의" : "거부"}</Status>;
 }
 
 function MessageRow({ text }: { text: string }) {

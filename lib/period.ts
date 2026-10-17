@@ -65,7 +65,7 @@ function minusDays(ymd: string, days: number): string {
 }
 
 /** 양 끝 포함 일수 */
-function daysInclusive(from: string, to: string): number {
+export function daysInclusive(from: string, to: string): number {
   return (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / DAY_MS + 1;
 }
 
@@ -73,9 +73,9 @@ function daysInclusive(from: string, to: string): number {
 export function customRangeError(period: Period): string | null {
   const { customFrom, customTo } = period;
   if (period.preset !== "CUSTOM" || !customFrom || !customTo) return null;
-  if (customFrom > customTo) return "종료일은 시작일보다 빠를 수 없습니다.";
+  if (customFrom > customTo) return "종료일은 시작일보다 빠를 수 없어요.";
   if (daysInclusive(customFrom, customTo) > MAX_PERIOD_DAYS)
-    return `조회 기간은 최대 ${MAX_PERIOD_DAYS}일입니다.`;
+    return `조회 기간은 최대 ${MAX_PERIOD_DAYS}일이에요.`;
   return null;
 }
 

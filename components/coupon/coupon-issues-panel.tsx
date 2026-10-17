@@ -1,10 +1,13 @@
 "use client";
 
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
-import { Badge } from "@/components/ui/badge";
+import { COUPON_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -25,10 +28,31 @@ const PAGE_SIZE = 20;
 
 /**
  * 쿠폰 하나의 발급 현황 (API_SPEC 7장 GET /coupons/{id}/issues, 권한 O M).
- * 고객별 발급 시각·사용 시각·상태. 토큰은 고객 페이지 접근 수단이라 서버가 내려주지 않는다
+ * 고객별 발급 시각·쿠폰 번호·사용 시각·상태와 사용 처리·취소 버튼.
+ * 쿠폰 번호 링크는 고객 쿠폰 페이지(/c/{token})를 새 창으로 연다. 사용 처리·취소는 쿠폰 번호(code)로 한다
  */
 export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose: () => void }) {
   const [page, setPage] = useState(0);
+  const queryClient = useQueryClient();
+  // 사용 처리·취소는 매장 바코드와 같은 by-code API 를 쓴다 (API_SPEC 8장, 권한 O M)
+  const toggleUse = useMutation({
+    mutationFn: ({ code, action }: { code: string; action: "use" | "cancel-use" }) =>
+      api(`/api/v1/coupon-issues/by-code/${code}/${action}`, { method: "POST" }),
+    onSuccess: (_, { action }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.coupons.all });
+      toast.success(action === "use" ? "사용 처리했어요" : "사용을 취소했어요");
+    },
+    onError: (err, { action }) => {
+      toast.error(
+        err instanceof ApiError
+          ? err.message
+          : action === "use"
+            ? "사용 처리하지 못했어요."
+            : "사용을 취소하지 못했어요.",
+      );
+      queryClient.invalidateQueries({ queryKey: queryKeys.coupons.all });
+    },
+  });
   const { data, error, isPending, refetch, isFetching, errorUpdateCount } = useQuery({
     queryKey: queryKeys.coupons.issues(coupon.couponId, page),
     queryFn: () =>
@@ -47,7 +71,7 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
           <CardTitle>발급 현황 · {coupon.name}</CardTitle>
           <CardDescription>
             {formatDiscount(coupon)} · 발급 {formatCount(coupon.issuedCount)} · 사용{" "}
-            {formatCount(coupon.usedCount)}. 최근 발급순입니다.
+            {formatCount(coupon.usedCount)}. 최근 발급순이에요.
           </CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={onClose} aria-label="발급 현황 닫기">
@@ -60,8 +84,8 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
             {/* key 를 바꿔 다시 그려야 재시도가 또 실패했을 때 스크린리더가 문구를 다시 읽는다 */}
             <p key={errorUpdateCount} role="alert" className="text-destructive text-sm">
               {forbidden
-                ? "발급 현황은 OWNER·MANAGER만 볼 수 있습니다."
-                : "발급 현황을 불러오지 못했습니다."}
+                ? "발급 현황은 OWNER·MANAGER만 볼 수 있어요."
+                : "발급 현황을 불러오지 못했어요."}
             </p>
             {/* 권한 문제는 다시 시도해도 같아서 버튼을 두지 않는다 */}
             {!forbidden && (
@@ -76,15 +100,17 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
               <TableRow>
                 <TableHead>고객</TableHead>
                 <TableHead>발급</TableHead>
+                <TableHead>쿠폰 번호</TableHead>
                 <TableHead>사용</TableHead>
                 <TableHead>상태</TableHead>
+                <TableHead>사용 처리</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isPending ? (
                 <EmptyRow>불러오는 중...</EmptyRow>
               ) : data.content.length === 0 ? (
-                <EmptyRow>아직 발급된 쿠폰이 없습니다. 발송 직전에 고객별로 발급됩니다.</EmptyRow>
+                <EmptyRow>아직 발급된 쿠폰이 없어요. 발송 직전에 고객별로 발급돼요.</EmptyRow>
               ) : (
                 data.content.map((issue) => (
                   <TableRow key={issue.issueId}>
@@ -98,12 +124,50 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
                     </TableCell>
                     <TableCell className="tabular-nums">{formatDateTime(issue.issuedAt)}</TableCell>
                     <TableCell className="tabular-nums">
+                      <Link
+                        href={`/c/${issue.token}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline-offset-4 hover:underline"
+                        aria-label={`쿠폰 번호 ${issue.code} 고객 쿠폰 페이지를 새 창으로 열기`}
+                      >
+                        {formatCode(issue.code)}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="tabular-nums">
                       {issue.usedAt ? formatDateTime(issue.usedAt) : "–"}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={issue.status === "USED" ? "secondary" : "outline"}>
+                      <Status tone={COUPON_STATUS_TONE[issue.status]}>
                         {ISSUE_STATUS_LABEL[issue.status]}
-                      </Badge>
+                      </Status>
+                    </TableCell>
+                    <TableCell>
+                      {issue.status === "USABLE" || issue.status === "USED" ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={toggleUse.isPending}
+                          onClick={() => {
+                            if (
+                              issue.status === "USED" &&
+                              !window.confirm(
+                                "사용 처리를 취소할까요? 쿠폰을 다시 쓸 수 있게 돼요.",
+                              )
+                            ) {
+                              return;
+                            }
+                            toggleUse.mutate({
+                              code: issue.code,
+                              action: issue.status === "USED" ? "cancel-use" : "use",
+                            });
+                          }}
+                        >
+                          {issue.status === "USED" ? "사용 취소" : "사용 처리"}
+                        </Button>
+                      ) : (
+                        <span className="text-muted-foreground">–</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))
@@ -134,10 +198,15 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
   );
 }
 
+/** 12자리 쿠폰 번호를 4자리씩 끊어 보여준다 (예: 1234 5678 9012) */
+function formatCode(code: string): string {
+  return code.replace(/(\d{4})(?=\d)/g, "$1 ");
+}
+
 function EmptyRow({ children }: { children: React.ReactNode }) {
   return (
     <TableRow>
-      <TableCell colSpan={4} className="text-muted-foreground py-8 text-center">
+      <TableCell colSpan={6} className="text-muted-foreground py-8 text-center">
         {children}
       </TableCell>
     </TableRow>

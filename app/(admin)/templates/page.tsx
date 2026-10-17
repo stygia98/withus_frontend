@@ -1,13 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Copy, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { Status } from "@/components/withus-b";
 import { DeleteTemplateDialog } from "@/components/template/DeleteTemplateDialog";
 import { useTemplateActions } from "@/components/template/useTemplateActions";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import { api, type Page } from "@/lib/api-client";
 import { formatDateTime } from "@/lib/datetime";
+import { TemplateCouponTabs } from "@/components/layout/section-tabs";
 import { queryKeys } from "@/lib/query-keys";
 import type { Channel, Template } from "@/lib/types/template";
 
@@ -51,6 +52,8 @@ export default function TemplatesPage() {
       if (apiChannel) params.set("channel", apiChannel);
       return api<Page<Template>>(`/api/v1/templates?${params}`);
     },
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   // 마지막 페이지의 마지막 한 건을 지우면 현재 페이지가 범위를 벗어난다 — 마지막 페이지로 당긴다
@@ -64,13 +67,20 @@ export default function TemplatesPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">템플릿</h1>
+    <main className="space-y-6">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="wb-title">메시지 템플릿</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            광고성 템플릿에는 (광고) 표기와 수신거부 안내가 발송할 때 자동으로 들어가요.
+          </p>
+        </div>
         <Button render={<Link href="/templates/new" />} nativeButton={false}>
           새 템플릿
         </Button>
       </div>
+
+      <TemplateCouponTabs />
 
       <Select
         items={CHANNEL_FILTERS}
@@ -110,7 +120,7 @@ export default function TemplatesPage() {
           {!isLoading && data?.content.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} className="text-center text-muted-foreground">
-                템플릿이 없습니다.
+                템플릿이 없어요.
               </TableCell>
             </TableRow>
           )}
@@ -123,29 +133,31 @@ export default function TemplatesPage() {
               </TableCell>
               <TableCell>{template.channel}</TableCell>
               <TableCell>
-                <Badge variant={template.adYn === "Y" ? "default" : "secondary"}>
+                <Status tone={template.adYn === "Y" ? "info" : "mute"}>
                   {template.adYn === "Y" ? "광고" : "비광고"}
-                </Badge>
+                </Status>
               </TableCell>
               <TableCell>{formatDateTime(template.updatedAt)}</TableCell>
-              <TableCell className="flex justify-end gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="복제"
-                  disabled={duplicate.isPending}
-                  onClick={() => duplicate.mutate(template.templateId)}
-                >
-                  <Copy className="size-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="삭제"
-                  onClick={() => setDeleteTarget(template)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+              <TableCell>
+                <div className="flex justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="복사"
+                    disabled={duplicate.isPending}
+                    onClick={() => duplicate.mutate(template.templateId)}
+                  >
+                    <Copy className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="삭제"
+                    onClick={() => setDeleteTarget(template)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -170,18 +182,21 @@ export default function TemplatesPage() {
             ? `전체 ${data.totalElements}건 · ${data.totalPages === 0 ? 0 : page + 1}/${data.totalPages} 페이지`
             : ""}
         </span>
-        <div className="flex gap-2">
-          <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-            이전
-          </Button>
-          <Button
-            variant="outline"
-            disabled={!data || page + 1 >= data.totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            다음
-          </Button>
-        </div>
+        {/* 전체가 10건 미만이면 넘길 페이지가 없는 것과 같아 버튼을 숨긴다 */}
+        {data && data.totalElements >= 10 && (
+          <div className="flex gap-2">
+            <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
+              이전
+            </Button>
+            <Button
+              variant="outline"
+              disabled={page + 1 >= data.totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              다음
+            </Button>
+          </div>
+        )}
       </div>
     </main>
   );

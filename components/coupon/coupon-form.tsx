@@ -25,7 +25,7 @@ const positiveInt = (label: string) =>
 // 서버 검증(API_SPEC 7장)과 같은 규칙을 먼저 화면에서 알려 준다. 최종 판단은 서버
 const schema = z
   .object({
-    name: z.string().trim().min(1, "쿠폰명을 입력하세요.").max(100, "쿠폰명은 100자 이하입니다."),
+    name: z.string().trim().min(1, "쿠폰명을 입력하세요.").max(100, "쿠폰명은 100자 이하예요."),
     discountType: z.enum(["AMOUNT", "RATE"]),
     discountValue: positiveInt("할인 값"),
     maxDiscountAmount: z.string().trim(),
@@ -38,14 +38,14 @@ const schema = z
         ctx.addIssue({
           code: "custom",
           path: ["discountValue"],
-          message: "정률은 100% 이하입니다.",
+          message: "정률은 100% 이하예요.",
         });
       }
       if (!/^[1-9]\d*$/.test(v.maxDiscountAmount)) {
         ctx.addIssue({
           code: "custom",
           path: ["maxDiscountAmount"],
-          message: "정률 쿠폰은 최대 할인액(1원 이상)이 필요합니다.",
+          message: "정률 쿠폰은 최대 할인액(1원 이상)이 필요해요.",
         });
       }
     }
@@ -53,7 +53,7 @@ const schema = z
       ctx.addIssue({
         code: "custom",
         path: ["validTo"],
-        message: "종료일은 시작일보다 빠를 수 없습니다.",
+        message: "종료일은 시작일보다 빠를 수 없어요.",
       });
     }
   });
@@ -92,10 +92,10 @@ export function CouponForm() {
       api<Coupon>("/api/v1/coupons", { method: "POST", body: JSON.stringify(body) }),
     onSuccess: (coupon) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.coupons.all });
-      toast.success(`"${coupon.name}" 쿠폰을 만들었습니다.`);
+      toast.success(`"${coupon.name}" 쿠폰을 만들었어요.`);
       router.push("/coupons");
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했어요."),
   });
 
   const discountType = watch("discountType");
@@ -121,11 +121,11 @@ export function CouponForm() {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
+    <div className="flex max-w-2xl flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-semibold">새 쿠폰</h1>
+        <h1 className="wb-title">새 쿠폰</h1>
         <p className="text-muted-foreground text-sm">
-          발급이 시작되면 할인 내용은 바꿀 수 없고 유효기간 연장만 할 수 있습니다.
+          발급이 시작되면 할인 내용은 바꿀 수 없고 유효기간 연장만 할 수 있어요.
         </p>
       </header>
 
@@ -133,7 +133,7 @@ export function CouponForm() {
         <CardHeader>
           <CardTitle>쿠폰 정의</CardTitle>
           <CardDescription>
-            유효기간은 발급 시점과 관계없이 모든 고객에게 같게 적용됩니다.
+            유효기간은 발급 시점과 관계없이 모든 고객에게 같게 적용돼요.
           </CardDescription>
         </CardHeader>
         <CardContent>

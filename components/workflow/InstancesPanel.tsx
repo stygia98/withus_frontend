@@ -1,10 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { INSTANCE_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { QueryError } from "@/components/common/QueryError";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -50,6 +51,8 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
       if (apiStatus) params.set("status", apiStatus);
       return api<Page<WorkflowInstance>>(`/api/v1/campaigns/${campaignId}/instances?${params}`);
     },
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   return (
@@ -99,17 +102,14 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
             {isError && (
               <TableRow>
                 <TableCell colSpan={5}>
-                  <QueryError
-                    message="진행 현황을 불러오지 못했습니다."
-                    onRetry={() => refetch()}
-                  />
+                  <QueryError message="진행 현황을 불러오지 못했어요." onRetry={() => refetch()} />
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && data?.content.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-muted-foreground">
-                  진행 중인 고객이 없습니다.
+                  진행 중인 고객이 없어요.
                 </TableCell>
               </TableRow>
             )}
@@ -117,9 +117,9 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
               <TableRow key={i.instanceId}>
                 <TableCell>{i.customerId}</TableCell>
                 <TableCell>
-                  <Badge variant={i.status === "FAILED" ? "destructive" : "secondary"}>
+                  <Status tone={INSTANCE_STATUS_TONE[i.status]}>
                     {INSTANCE_STATUS_LABEL[i.status]}
-                  </Badge>
+                  </Status>
                 </TableCell>
                 {/* next_run_at 이 비어 있는 WAITING 은 직전 발송 결과를 기다리는 중이다 */}
                 <TableCell>
@@ -142,18 +142,21 @@ export function InstancesPanel({ campaignId }: { campaignId: number }) {
               ? `전체 ${data.totalElements}건 · ${data.totalPages === 0 ? 0 : page + 1}/${data.totalPages} 페이지`
               : ""}
           </span>
-          <div className="flex gap-2">
-            <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-              이전
-            </Button>
-            <Button
-              variant="outline"
-              disabled={!data || page + 1 >= data.totalPages}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              다음
-            </Button>
-          </div>
+          {/* 전체가 10건 미만이면 넘길 페이지가 없는 것과 같아 버튼을 숨긴다 */}
+          {data && data.totalElements >= 10 && (
+            <div className="flex gap-2">
+              <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
+                이전
+              </Button>
+              <Button
+                variant="outline"
+                disabled={page + 1 >= data.totalPages}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                다음
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

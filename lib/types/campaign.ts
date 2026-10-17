@@ -32,7 +32,7 @@ export type CampaignEstimate = {
 };
 
 export const TRIGGER_TYPE_LABEL: Record<TriggerType, string> = {
-  SEGMENT_SCHEDULED: "예약 시각에 세그먼트 전체 시작",
+  SEGMENT_SCHEDULED: "예약 시각에 타겟팅 전체 시작",
   CUSTOMER_REGISTERED: "신규 고객 등록 시 시작",
 };
 
@@ -50,13 +50,3 @@ export const CAMPAIGN_STATUS_LABEL: Record<CampaignStatus, string> = {
 };
 
 // 실행 중은 강조, 종료·예약은 약하게, 일시정지는 경고색(destructive)으로 구분한다
-export const CAMPAIGN_STATUS_VARIANT: Record<
-  CampaignStatus,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  DRAFT: "outline",
-  SCHEDULED: "secondary",
-  ACTIVE: "default",
-  PAUSED: "destructive",
-  COMPLETED: "secondary",
-};

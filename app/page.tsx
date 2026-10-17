@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
+import { Landing } from "@/components/withus-b";
 
-// 첫 화면은 대시보드. 로그인하지 않았으면 (admin) 레이아웃의 인증 가드가 /login 으로 보낸다
+// 공개 서비스 소개 홈 (디자인 키트 B). 로그인은 홈의 '로그인' 버튼 → /login
 export default function Home() {
-  redirect("/dashboard");
+  return <Landing />;
 }

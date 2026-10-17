@@ -1,11 +1,10 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { CheckCircle2, LinkIcon, MailX } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { Button, CheckRow, Icon, LinkError, PublicShell } from "@/components/withus-b";
 import { ApiError, api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -17,145 +16,156 @@ import {
   type UnsubscribeResult,
 } from "./types";
 
-type Target = Channel | "ALL";
+const CHANNEL_DESC: Record<Channel, [string, string]> = {
+  EMAIL: ["이메일 광고 그만 받기", "신상품 · 쿠폰 · 이벤트 메일"],
+  SMS: ["문자(SMS) 광고 그만 받기", "(광고) 표시가 붙은 문자"],
+};
 
 /**
- * 수신거부 페이지 (PRD F-08, 8.3). 로그인 없이 메일 속 HMAC 서명 링크로 연다.
+ * 수신거부 화면 (PRD F-08, 8.3) — 디자인 키트 B의 팬 화면. 로그인 없이 메일 속 HMAC 서명 링크로 연다.
  * 링크를 여는 것(GET)으로는 아무것도 바뀌지 않고, 채널을 골라 버튼을 눌러야(POST) 처리된다.
+ * API 가 받지 않는 '거부 이유'와 주지 않는 이메일·휴대폰 값은 쓰지 않는다.
+ * 시안의 '다시 받기'는 넣지 않는다 — 수신거부(suppression)는 관리자가 증빙과 함께만 해제한다 (CLAUDE.md 6장 10번)
  */
 export function UnsubscribeCard({ token }: { token: string }) {
-  const path = `/api/v1/public/unsubscribe/${encodeURIComponent(token)}` as const;
-  const [picked, setPicked] = useState<Target | null>(null);
+  return (
+    <PublicShell>
+      <UnsubscribeBody token={token} />
+    </PublicShell>
+  );
+}
 
-  const { data, isPending, error } = useQuery({
+function UnsubscribeBody({ token }: { token: string }) {
+  const path = `/api/v1/public/unsubscribe/${encodeURIComponent(token)}` as const;
+  const [picked, setPicked] = useState<Channel[]>([]);
+
+  const { data, isPending, error, refetch } = useQuery({
     queryKey: queryKeys.customers.unsubscribe(token),
     queryFn: () => api<UnsubscribeInfo>(path),
     retry: (count, err) => !(err instanceof ApiError && err.status === 400) && count < 2,
   });
 
   const submit = useMutation({
-    mutationFn: (channel: Target) =>
+    // 두 채널을 모두 고르면 ALL 로 보낸다 (API 는 채널 하나 또는 ALL 을 받는다)
+    mutationFn: (channel: Channel | "ALL") =>
       api<UnsubscribeResult>(path, { method: "POST", body: JSON.stringify({ channel }) }),
-    onError: (err) =>
-      toast.error(err instanceof ApiError ? err.message : "잠시 후 다시 시도해 주세요."),
+    onSuccess: () => {
+      window.scrollTo(0, 0);
+      toast.success("처리됐어요");
+    },
   });
 
-  const options: Target[] = data
-    ? data.channels.length > 1
-      ? [...data.channels, "ALL"]
-      : data.channels
-    : [];
-  const alreadyAll = !!data && data.channels.every((c) => data.unsubscribedChannels.includes(c));
-  // 아직 거부하지 않은 채널을 먼저 고른다
-  const target =
-    picked ??
-    options.find((o) => o !== "ALL" && !data?.unsubscribedChannels.includes(o)) ??
-    options[0];
+  if (isPending) return <p className="wb-public__lead">불러오는 중...</p>;
+  if (error) {
+    const invalid = error instanceof ApiError && error.status === 400;
+    return <LinkError kind={invalid ? "notFound" : "network"} onRetry={() => refetch()} />;
+  }
 
-  return (
-    <main className="bg-muted/40 flex min-h-dvh items-center justify-center px-4 py-10">
-      <div className="w-full max-w-sm">
-        <section className="bg-card rounded-2xl border p-6 shadow-sm">
-          {isPending ? (
-            <p className="text-muted-foreground py-16 text-center text-sm">불러오는 중...</p>
-          ) : error ? (
-            <Notice
-              icon={<LinkIcon className="text-muted-foreground size-10" aria-hidden />}
-              title={
-                error instanceof ApiError && error.status === 400
-                  ? "유효하지 않은 링크입니다."
-                  : "정보를 불러오지 못했습니다."
-              }
-              detail="받으신 메일·문자의 링크를 다시 확인해 주세요."
-            />
-          ) : submit.data ? (
-            <Notice
-              icon={<CheckCircle2 className="size-10 text-emerald-600" aria-hidden />}
-              title="수신거부가 처리되었습니다."
-              detail={
-                <>
-                  {submit.data.channels.map((c) => CHANNEL_LABEL[c]).join(", ")} 광고성 정보를 더
-                  이상 보내지 않습니다.
-                  <br />
-                  처리 일시 {formatDateTime(submit.data.processedAt)}
-                </>
-              }
-            />
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (target) submit.mutate(target);
-              }}
-              className="space-y-6"
-            >
-              <div className="space-y-1 text-center">
-                <MailX className="text-muted-foreground mx-auto mb-2 size-10" aria-hidden />
-                <h1 className="text-lg font-semibold">광고성 정보 수신거부</h1>
-                <p className="text-muted-foreground text-sm break-keep">
-                  {data.customerName ? `${data.customerName}님,` : "고객님,"} 더 이상 받지 않을
-                  채널을 고른 뒤 버튼을 눌러 주세요.
-                </p>
+  const labels = (cs: Channel[]) => cs.map((c) => CHANNEL_LABEL[c]).join(" · ");
+  const name = data.customerName ? `${data.customerName}님` : "고객님";
+  const open = data.channels.filter((c) => !data.unsubscribedChannels.includes(c));
+  const result = submit.data;
+
+  if (result || open.length === 0) {
+    return (
+      <>
+        <span className="wb-eyebrow">수신 설정</span>
+        <h1 className="wb-public__title wb-anim">
+          {result ? "수신 거부가 끝났어요" : "이미 수신 거부한 상태예요"}
+        </h1>
+        <article className="wb-public__card">
+          <div className="wb-done">
+            <span className="wb-icon">
+              <Icon name="check" />
+            </span>
+            <h3>더 이상 광고를 보내지 않아요</h3>
+            <p>쿠폰 만료 · 주문 · 예약 같은 광고가 아닌 안내는 계속 받아요.</p>
+          </div>
+          <dl className="wb-dl" style={{ borderTop: "1px solid var(--wb-line)" }}>
+            <div>
+              <dt>받는 사람</dt>
+              <dd>{name}</dd>
+            </div>
+            <div>
+              <dt>처리 채널</dt>
+              <dd>{labels(result?.channels ?? data.unsubscribedChannels)}</dd>
+            </div>
+            {result && (
+              <div>
+                <dt>처리 일시</dt>
+                <dd>{formatDateTime(result.processedAt)}</dd>
               </div>
+            )}
+          </dl>
+        </article>
+      </>
+    );
+  }
 
-              <fieldset className="space-y-2">
-                <legend className="sr-only">수신거부할 채널</legend>
-                {options.map((o) => {
-                  const done = o !== "ALL" && data.unsubscribedChannels.includes(o);
-                  return (
-                    <label
-                      key={o}
-                      className="has-checked:border-primary has-checked:bg-primary/5 flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border px-4 text-sm"
-                    >
-                      <input
-                        type="radio"
-                        name="channel"
-                        value={o}
-                        checked={target === o}
-                        onChange={() => setPicked(o)}
-                        className="accent-primary size-4"
-                      />
-                      <span className="flex-1">
-                        {o === "ALL" ? "전체 (이메일 + SMS)" : CHANNEL_LABEL[o]}
-                      </span>
-                      {done && <span className="text-muted-foreground text-xs">수신거부됨</span>}
-                    </label>
-                  );
-                })}
-              </fieldset>
+  // 채널은 이메일 · SMS 두 개뿐이라 둘 다 고르면 ALL 이다
+  const target: Channel | "ALL" | null =
+    picked.length === 0 ? null : picked.length > 1 ? "ALL" : picked[0];
+  const toggle = (c: Channel, on: boolean) =>
+    setPicked((p) => (on ? [...p.filter((x) => x !== c), c] : p.filter((x) => x !== c)));
 
-              {alreadyAll && (
-                <p role="status" className="text-muted-foreground text-center text-sm">
-                  이미 모든 채널이 수신거부되어 있습니다.
-                </p>
-              )}
-
-              <Button type="submit" size="lg" className="w-full" disabled={submit.isPending}>
-                {submit.isPending ? "처리 중..." : "수신거부"}
-              </Button>
-            </form>
-          )}
-        </section>
-        <p className="text-muted-foreground mt-4 text-center text-xs">위드어스</p>
-      </div>
-    </main>
-  );
-}
-
-function Notice({
-  icon,
-  title,
-  detail,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  detail: React.ReactNode;
-}) {
   return (
-    <div role="status" className="flex flex-col items-center gap-3 py-12 text-center">
-      {icon}
-      <p className="font-medium">{title}</p>
-      <p className="text-muted-foreground text-sm break-keep">{detail}</p>
-    </div>
+    <>
+      <span className="wb-eyebrow">수신 설정</span>
+      <h1 className="wb-public__title wb-anim">어떤 광고를 그만 받을까요?</h1>
+      <p className="wb-public__lead">
+        고른 채널만 바로 멈춰요. 본인이 아니라면 이 화면을 닫아 주세요.
+      </p>
+      <article className="wb-public__card">
+        <div className="wb-who">
+          <span
+            className="wb-avatar"
+            style={{ background: "var(--wb-grey)", color: "var(--wb-ink)" }}
+          >
+            {(data.customerName ?? "고").slice(0, 1)}
+          </span>
+          <div>
+            <b>{name}</b>
+            <small>수신 채널 · {labels(data.channels)}</small>
+          </div>
+        </div>
+        {data.channels.map((c) => {
+          const already = data.unsubscribedChannels.includes(c);
+          return (
+            <CheckRow
+              key={c}
+              checked={already || picked.includes(c)}
+              disabled={already}
+              onChange={(on) => toggle(c, on)}
+              title={CHANNEL_DESC[c][0]}
+              desc={already ? "이미 수신 거부됨" : CHANNEL_DESC[c][1]}
+            />
+          );
+        })}
+        {submit.isError ? (
+          <p role="alert" style={{ margin: "14px 22px 0", color: "var(--wb-err)", fontSize: 13 }}>
+            {submit.error instanceof ApiError
+              ? submit.error.message
+              : "연결이 끊겨 처리되지 않았어요. 다시 시도해 주세요."}
+          </p>
+        ) : null}
+        <div className="wb-coupon__act" style={{ paddingTop: 18 }}>
+          <Button
+            size="lg"
+            block
+            disabled={!target}
+            loading={submit.isPending}
+            onClick={() => target && submit.mutate(target)}
+          >
+            {submit.isPending
+              ? "처리 중"
+              : target === "ALL"
+                ? "모든 광고 그만 받기"
+                : target
+                  ? "선택한 광고 그만 받기"
+                  : "그만 받을 광고를 골라 주세요"}
+          </Button>
+        </div>
+      </article>
+    </>
   );
 }

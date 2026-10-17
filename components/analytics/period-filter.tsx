@@ -1,11 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PERIOD_LABEL, type Period, type PeriodPreset, customRangeError } from "@/lib/period";
 
 /**
- * 기간 필터 (PRD F-09). 프리셋은 한 줄 버튼, "직접 지정"을 고르면 시작·종료 날짜 입력이 옆에 나온다.
+ * 기간 필터 (PRD F-09). 프리셋은 한 줄 버튼, "직접 지정"을 고르면 시작·종료 날짜 입력이 한 줄 위에 나온다.
  * 날짜가 비었거나 시작이 종료보다 늦으면 안내만 하고, 조회는 호출하는 쪽이 이전 결과를 유지한다.
  */
 export function PeriodFilter({
@@ -21,36 +20,23 @@ export function PeriodFilter({
   const customError = customRangeError(value);
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="relative">
       {/* 선택 상태는 aria-pressed 로 알린다 (radio 역할은 화살표 키 이동까지 구현해야 해서 쓰지 않음) */}
-      <div
-        role="group"
-        aria-label="조회 기간"
-        className="bg-muted inline-flex gap-0.5 rounded-lg p-0.5"
-      >
-        {presets.map((p) => {
-          const selected = value.preset === p;
-          return (
-            <Button
-              key={p}
-              type="button"
-              size="sm"
-              variant="ghost"
-              aria-pressed={selected}
-              onClick={() => onChange({ ...value, preset: p })}
-              className={
-                selected
-                  ? "bg-background text-foreground hover:bg-background font-medium shadow-sm"
-                  : "text-muted-foreground"
-              }
-            >
-              {PERIOD_LABEL[p]}
-            </Button>
-          );
-        })}
+      <div role="group" aria-label="조회 기간" className="wb wb-seg">
+        {presets.map((p) => (
+          <button
+            key={p}
+            type="button"
+            aria-pressed={value.preset === p}
+            onClick={() => onChange({ ...value, preset: p })}
+          >
+            {PERIOD_LABEL[p]}
+          </button>
+        ))}
       </div>
       {value.preset === "CUSTOM" && (
-        <div className="flex flex-wrap items-center gap-2">
+        // 버튼 줄은 제자리에 두고 날짜 입력은 그 위에 띄워 레이아웃이 밀리지 않게 한다
+        <div className="absolute bottom-full right-0 z-10 mb-2 flex items-center gap-2 whitespace-nowrap">
           <Input
             type="date"
             aria-label="시작일"

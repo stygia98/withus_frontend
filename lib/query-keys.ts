@@ -30,7 +30,7 @@ export const queryKeys = {
     // 미리보기는 저장된 본문 기준이라 수정 시각이 바뀌면 다시 받는다
     preview: (templateId: number, updatedAt: string) =>
       ["templates", "preview", templateId, updatedAt] as const,
-    // 캠페인 폼의 "대상 n명 중 m명은 기본값" — 세그먼트가 바뀌면 다시 받는다
+    // 캠페인 폼의 "대상 n명 중 m명은 기본값" — 타겟팅이 바뀌면 다시 받는다
     defaultValueCount: (templateId: number, segmentId: number, updatedAt: string) =>
       ["templates", "default-value-count", templateId, segmentId, updatedAt] as const,
   },
@@ -79,6 +79,8 @@ export const queryKeys = {
     issues: (couponId: number, page: number) => ["coupons", "issues", couponId, page] as const,
     // 고객 공개 페이지 /c/[token] — 관리자 쿠폰 캐시와 섞이지 않게 별도 키
     publicCard: (token: string) => ["public-coupon", token] as const,
+    // 매장 바코드 사용 처리 화면의 쿠폰 번호 조회
+    redeem: (code: string) => ["coupons", "redeem", code] as const,
   },
   // PL: auth
   auth: {

@@ -50,10 +50,10 @@ export function ConsentDialog({
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.customers.all });
-      toast.success("수신동의를 변경했습니다.");
+      toast.success("수신동의를 변경했어요.");
       close();
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "변경하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "변경하지 못했어요."),
   });
 
   function close() {
@@ -70,8 +70,8 @@ export function ConsentDialog({
           </DialogTitle>
           {needsEvidence && (
             <DialogDescription>
-              수신거부 이력이 있는 채널입니다. 고객이 다시 동의했다는 증빙을 남겨야 변경되고,
-              수신거부 목록에서 해제됩니다.
+              수신거부 이력이 있는 채널이에요. 고객이 다시 동의했다는 증빙을 남겨야 변경되고,
+              수신거부 목록에서 해제돼요.
             </DialogDescription>
           )}
         </DialogHeader>
