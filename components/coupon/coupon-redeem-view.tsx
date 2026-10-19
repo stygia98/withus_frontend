@@ -24,7 +24,7 @@ const digitsOf = (v: string) => v.replace(/\D/g, "");
 /**
  * 매장 쿠폰 사용 처리 (PRD F-10 ②, 4장 /coupons/redeem, project #51).
  * USB/블루투스 바코드 스캐너는 키보드처럼 숫자를 입력하고 Enter 를 보내므로, 입력칸 하나에 포커스를 두면 찍는 즉시 조회된다.
- * 조회(GET)로 쿠폰을 확인한 뒤 '사용 처리'(POST)를 눌러야 사용된다. 권한은 OWNER·MANAGER (PRD 3장).
+ * 조회(GET)로 쿠폰을 확인한 뒤 '사용 처리'(POST)를 눌러야 사용된다. 권한은 OWNER·MANAGER·STAFF (PRD 3장, 매장 직원 포함).
  */
 export function CouponRedeemView() {
   const queryClient = useQueryClient();
@@ -37,7 +37,9 @@ export function CouponRedeemView() {
     queryFn: () => api<Me>("/api/v1/auth/me"),
     staleTime: 5 * 60 * 1000,
   });
-  const canRedeem = me.data?.role === "OWNER" || me.data?.role === "MANAGER";
+  // 관리자 역할 셋 모두 매장에서 사용 처리할 수 있다. 역할을 아직 모르면 버튼을 잠깐 막아 둔다
+  const canRedeem =
+    me.data?.role === "OWNER" || me.data?.role === "MANAGER" || me.data?.role === "STAFF";
 
   const coupon = useQuery({
     queryKey: queryKeys.coupons.redeem(code ?? ""),
@@ -135,7 +137,7 @@ export function CouponRedeemView() {
           </form>
           {!me.isPending && !canRedeem && (
             <p className="mt-3 text-sm text-muted-foreground">
-              쿠폰 사용 처리는 OWNER·MANAGER만 할 수 있어요.
+              쿠폰 사용 처리 권한이 없는 계정이에요.
             </p>
           )}
         </CardContent>
