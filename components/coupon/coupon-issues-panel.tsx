@@ -7,7 +7,18 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { COUPON_STATUS_TONE } from "@/lib/status-tone";
+import { formatCouponCode } from "@/components/coupon/coupon-barcode";
 import { Status } from "@/components/withus-b";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -34,6 +45,8 @@ const PAGE_SIZE = 20;
 export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose: () => void }) {
   const [page, setPage] = useState(0);
   const queryClient = useQueryClient();
+  // 확인 창을 띄운 발급 건. 목록에서 잘못 누르기 쉬워 사용 처리·취소 모두 한 번 더 확인받는다
+  const [confirming, setConfirming] = useState<CouponIssue | null>(null);
   // 사용 처리·취소는 매장 바코드와 같은 by-code API 를 쓴다 (API_SPEC 8장, 권한 O M)
   const toggleUse = useMutation({
     mutationFn: ({ code, action }: { code: string; action: "use" | "cancel-use" }) =>
@@ -131,7 +144,7 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
                         className="text-primary underline-offset-4 hover:underline"
                         aria-label={`쿠폰 번호 ${issue.code} 고객 쿠폰 페이지를 새 창으로 열기`}
                       >
-                        {formatCode(issue.code)}
+                        {formatCouponCode(issue.code)}
                       </Link>
                     </TableCell>
                     <TableCell className="tabular-nums">
@@ -148,20 +161,7 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
                           variant="outline"
                           size="sm"
                           disabled={toggleUse.isPending}
-                          onClick={() => {
-                            if (
-                              issue.status === "USED" &&
-                              !window.confirm(
-                                "사용 처리를 취소할까요? 쿠폰을 다시 쓸 수 있게 돼요.",
-                              )
-                            ) {
-                              return;
-                            }
-                            toggleUse.mutate({
-                              code: issue.code,
-                              action: issue.status === "USED" ? "cancel-use" : "use",
-                            });
-                          }}
+                          onClick={() => setConfirming(issue)}
                         >
                           {issue.status === "USED" ? "사용 취소" : "사용 처리"}
                         </Button>
@@ -194,13 +194,44 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
           </nav>
         )}
       </CardContent>
+
+      <AlertDialog open={confirming != null} onOpenChange={(open) => !open && setConfirming(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirming?.status === "USED" ? "사용 처리를 취소할까요?" : "사용 처리할까요?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirming && (
+                <>
+                  쿠폰 번호 {formatCouponCode(confirming.code)} ·{" "}
+                  {confirming.customerName ?? "이름 없음"}.{" "}
+                  {confirming.status === "USED"
+                    ? "취소하면 고객이 다시 쓸 수 있고 전환 집계에서도 빠져요."
+                    : "사용 처리하면 전환 집계에 바로 반영돼요."}
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>닫기</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={toggleUse.isPending}
+              onClick={() => {
+                if (!confirming) return;
+                toggleUse.mutate({
+                  code: confirming.code,
+                  action: confirming.status === "USED" ? "cancel-use" : "use",
+                });
+              }}
+            >
+              {confirming?.status === "USED" ? "사용 취소" : "사용 처리"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
-}
-
-/** 12자리 쿠폰 번호를 4자리씩 끊어 보여준다 (예: 1234 5678 9012) */
-function formatCode(code: string): string {
-  return code.replace(/(\d{4})(?=\d)/g, "$1 ");
 }
 
 function EmptyRow({ children }: { children: React.ReactNode }) {

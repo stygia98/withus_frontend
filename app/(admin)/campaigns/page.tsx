@@ -192,8 +192,8 @@ export default function CampaignsPage() {
             ? `전체 ${data.totalElements}건 · ${data.totalPages === 0 ? 0 : page + 1}/${data.totalPages} 페이지`
             : ""}
         </span>
-        {/* 전체가 10건 미만이면 넘길 페이지가 없는 것과 같아 버튼을 숨긴다 */}
-        {data && data.totalElements >= 10 && (
+        {/* 한 페이지뿐이면 넘길 곳이 없어 버튼을 숨긴다 */}
+        {data && data.totalPages > 1 && (
           <div className="flex gap-2">
             <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
               이전
