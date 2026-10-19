@@ -5,6 +5,7 @@ import type { CampaignStatus } from "@/lib/types/campaign";
 import type { InstanceStatus } from "@/lib/types/workflow";
 import type { IssueStatus } from "@/lib/coupon";
 import type { SendStatus } from "@/components/customer/types";
+import type { RecentEvent } from "@/lib/dashboard";
 
 export const CAMPAIGN_STATUS_TONE: Record<CampaignStatus, Tone> = {
   DRAFT: "mute",
@@ -29,6 +30,12 @@ export const SEND_STATUS_TONE: Record<SendStatus, Tone> = {
   FAILED: "err",
   BOUNCED: "err",
   SKIPPED: "mute",
+};
+
+/** 대시보드 최근 이벤트. 클릭은 오픈보다 한 단계 더 나아간 반응이라 색을 달리한다 */
+export const EVENT_TYPE_TONE: Record<RecentEvent["eventType"], Tone> = {
+  OPEN: "info",
+  CLICK: "ok",
 };
 
 export const INSTANCE_STATUS_TONE: Record<InstanceStatus, Tone> = {
