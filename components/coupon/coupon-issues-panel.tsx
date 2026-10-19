@@ -65,6 +65,8 @@ export function CouponIssuesPanel({ coupon, onClose }: { coupon: Coupon; onClose
       );
       queryClient.invalidateQueries({ queryKey: queryKeys.coupons.all });
     },
+    // AlertDialogAction 은 Base UI 의 Close 가 아닌 일반 버튼이라 누른다고 닫히지 않는다. 성공·실패 모두 결과가 토스트로 나가니 끝나면 닫는다
+    onSettled: () => setConfirming(null),
   });
   const { data, error, isPending, refetch, isFetching, errorUpdateCount } = useQuery({
     queryKey: queryKeys.coupons.issues(coupon.couponId, page),

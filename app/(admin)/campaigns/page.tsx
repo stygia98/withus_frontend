@@ -1,6 +1,7 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -83,9 +84,15 @@ export default function CampaignsPage() {
           </p>
         </div>
         {canManage && (
-          <Button render={<Link href="/campaigns/new" />} nativeButton={false}>
-            새 캠페인
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" render={<Link href="/campaigns/plan" />} nativeButton={false}>
+              <Sparkles aria-hidden />
+              AI로 캠페인 생성하기
+            </Button>
+            <Button render={<Link href="/campaigns/new" />} nativeButton={false}>
+              새 캠페인
+            </Button>
+          </div>
         )}
       </div>
 

@@ -17,15 +17,6 @@ export type DashboardSummary = { from: string; to: string; kpi: SendKpi };
 
 export type DailySend = { date: string; sent: number };
 
-export type QueueStatus = {
-  pending: number;
-  sending: number;
-  retrying: number;
-  ratePerSecond: number;
-  expectedEndAt: string | null;
-  adSendWindowOpen: boolean;
-};
-
 export type RecentEvent = {
   eventId: number;
   eventType: "OPEN" | "CLICK";
