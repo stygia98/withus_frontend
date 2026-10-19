@@ -28,7 +28,7 @@ import {
   usePeriodRange,
 } from "@/lib/period";
 import { queryKeys } from "@/lib/query-keys";
-import { CAMPAIGN_STATUS_TONE } from "@/lib/status-tone";
+import { CAMPAIGN_STATUS_TONE, EVENT_TYPE_TONE } from "@/lib/status-tone";
 
 const EVENT_POLL_MS = 10_000;
 const EVENT_LIMIT = 20;
@@ -302,7 +302,9 @@ function RecentEventsCard() {
           {data?.map((e) => (
             <div className="wb-event" key={e.eventId}>
               <time dateTime={e.occurredAt}>{formatSeoul(e.occurredAt, "MM.dd HH:mm")}</time>
-              <Status tone="info">{e.eventType === "OPEN" ? "오픈" : "클릭"}</Status>
+              <Status tone={EVENT_TYPE_TONE[e.eventType]}>
+                {e.eventType === "OPEN" ? "오픈" : "클릭"}
+              </Status>
               <span>
                 {e.customerName ?? "이름 없음"} · {e.campaignName ?? "캠페인 없음"}
               </span>
