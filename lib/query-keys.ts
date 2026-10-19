@@ -56,7 +56,8 @@ export const queryKeys = {
     summary: (from: string | undefined, to: string | undefined, asOf: string) =>
       ["dashboard", "summary", from, to, asOf] as const,
     dailySends: (days: number) => ["dashboard", "daily-sends", days] as const,
-    queue: ["dashboard", "queue"] as const,
+    // AI 성과 요약 카드의 캠페인 선택 목록 (최근 100개)
+    reportCampaigns: ["dashboard", "report-campaigns"] as const,
     events: ["dashboard", "events"] as const,
     activeCampaigns: ["dashboard", "active-campaigns"] as const,
   },
