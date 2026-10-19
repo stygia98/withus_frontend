@@ -2,18 +2,27 @@
 
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useState } from "react";
 
+import { CampaignReportCard } from "@/components/analytics/campaign-report-card";
 import { PeriodFilter } from "@/components/analytics/period-filter";
 import { DailySendsChart } from "@/components/dashboard/daily-sends-chart";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button, Card, KpiCard, PageHeader, Status } from "@/components/withus-b";
 import { ApiError, api, type Page } from "@/lib/api-client";
 import {
   CAMPAIGN_STATUS_LABEL,
   CAMPAIGN_TYPE_LABEL,
+  type CampaignAnalytics,
   type CampaignSummaryItem,
   type DailySend,
   type DashboardSummary,
-  type QueueStatus,
   type RecentEvent,
   type RecentEvents,
   formatCount,
@@ -37,7 +46,7 @@ const MAX_DAILY_DAYS = 90;
 
 /**
  * 메인 대시보드 (PRD 4장 /dashboard, F-09) — 디자인 키트 B. 기간 KPI(기본 최근 7일, 7/30일·직접 지정),
- * 일별 발송(고른 기간을 따라감), 발송 큐, 활성 캠페인, 최근 이벤트. 큐·이벤트는 기간과 무관한 실시간 값이다
+ * 일별 발송(고른 기간을 따라감), AI 성과 요약(캠페인 선택), 활성 캠페인, 최근 이벤트. 이벤트는 기간과 무관한 실시간 값이다
  */
 export function DashboardView() {
   // '최근 7일'은 날짜를 보내지 않고 서버 기본값(서울 기준 오늘 포함 7일)을 쓴다
@@ -67,9 +76,11 @@ export function DashboardView() {
         }
       />
       <KpiRow query={summary} shown={shown} />
-      <div className="wb-row">
+      <div className="wb-row wb-row--single">
         <DailySendsCard range={range} today={today} />
-        <QueueCard />
+      </div>
+      <div className="wb-row wb-row--single">
+        <DashboardReportCard />
       </div>
       <div className="wb-row wb-row--even">
         <ActiveCampaignsCard />
@@ -167,56 +178,62 @@ function DailySendsCard({ range, today }: { range: DateRange; today: string }) {
   );
 }
 
-function QueueCard() {
+/**
+ * AI-03 성과 요약은 캠페인 단위라, 시작한 적 있는 캠페인(최근 100개) 중 하나를 골라 성과 리포트와 같은 카드로 보여 준다.
+ * 기본은 가장 최근 캠페인(campaign_id 내림차순 첫 항목)
+ */
+function DashboardReportCard() {
+  const [picked, setPicked] = useState<number | null>(null);
   const { data, isError } = useQuery({
-    queryKey: queryKeys.dashboard.queue,
-    queryFn: () => api<QueueStatus>("/api/v1/dashboard/queue"),
-    refetchInterval: EVENT_POLL_MS,
+    queryKey: queryKeys.dashboard.reportCampaigns,
+    queryFn: () => api<Page<CampaignSummaryItem>>("/api/v1/campaigns?page=0&size=100"),
   });
-  return (
-    <Card
-      title="발송 큐"
-      aside={
-        data ? (
-          // 광고성 발송 가능 시간 08:00~20:50 (PRD 8.4)
-          <Status tone={data.adSendWindowOpen ? "ok" : "warn"}>
-            {data.adSendWindowOpen ? "발송 가능 · 20:50 마감" : "제한 시간 · 08:00 재개"}
-          </Status>
-        ) : null
-      }
-    >
-      {isError ? (
-        <p className="text-destructive text-sm">발송 큐를 불러오지 못했어요.</p>
-      ) : (
-        <>
-          <dl className="wb-queue">
-            <QueueNumber label="대기" value={data?.pending} />
-            <QueueNumber label="재시도" value={data?.retrying} />
-            <QueueNumber label="발송 중" value={data?.sending} />
-          </dl>
-          <p className="wb-empty" style={{ paddingBottom: 0 }}>
-            {data?.expectedEndAt
-              ? `초당 ${data.ratePerSecond}건 · 예상 종료 ${formatSeoul(data.expectedEndAt, "MM.dd HH:mm")}`
-              : data
-                ? "남은 발송이 없어요."
-                : ""}
-          </p>
-        </>
-      )}
-    </Card>
-  );
-}
+  const started = data?.content.filter((c) => c.startedAt != null) ?? [];
+  const campaignId = picked ?? started[0]?.campaignId ?? null;
+  // 요약 시점 지표와 비교할 캠페인 전체 기간 지표 (성과 리포트와 같은 쿼리 키라 캐시를 같이 쓴다)
+  const whole = useQuery({
+    queryKey: queryKeys.analytics.campaign(campaignId ?? 0),
+    queryFn: () => api<CampaignAnalytics>(`/api/v1/analytics/campaigns/${campaignId}`),
+    enabled: campaignId != null,
+  });
 
-function QueueNumber({ label, value }: { label: string; value?: number }) {
+  if (isError || !data || campaignId == null) {
+    return (
+      <Card title="AI 성과 요약">
+        {isError ? (
+          <p className="text-destructive text-sm">캠페인 목록을 불러오지 못했어요.</p>
+        ) : data ? (
+          <p className="wb-empty">아직 시작한 캠페인이 없어 요약할 성과가 없어요.</p>
+        ) : (
+          <div className="h-24" />
+        )}
+      </Card>
+    );
+  }
+  const items = started.map((c) => ({ value: String(c.campaignId), label: c.name }));
   return (
-    <div>
-      <dt>
-        <small>{label}</small>
-      </dt>
-      <dd style={{ margin: 0 }}>
-        <b>{value === undefined ? "–" : formatCount(value)}</b>
-      </dd>
-    </div>
+    <CampaignReportCard
+      campaignId={campaignId}
+      kpi={whole.data?.kpi ?? null}
+      picker={
+        <Select
+          items={items}
+          value={String(campaignId)}
+          onValueChange={(next) => next && setPicked(Number(next))}
+        >
+          <SelectTrigger className="w-64" aria-label="요약할 캠페인">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {items.map((i) => (
+              <SelectItem key={i.value} value={i.value}>
+                {i.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      }
+    />
   );
 }
 

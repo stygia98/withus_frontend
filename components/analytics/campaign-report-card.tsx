@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Sparkles } from "lucide-react";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -36,10 +37,13 @@ function errorMessage(err: unknown): string {
 export function CampaignReportCard({
   campaignId,
   kpi,
+  picker,
 }: {
   campaignId: number;
   /** 캠페인 전체 기간 지표. 기간 필터가 걸려 있으면 null — 요약과 비교하지 않는다 */
   kpi: SendKpi | null;
+  /** 머리 오른쪽에 붙일 캠페인 선택 (대시보드처럼 캠페인을 고르는 화면에서만) */
+  picker?: ReactNode;
 }) {
   const queryClient = useQueryClient();
   const {
@@ -83,12 +87,19 @@ export function CampaignReportCard({
             않아요.
           </CardDescription>
         </div>
-        {report != null && (
-          <Button variant="outline" onClick={() => generate.mutate()} disabled={generate.isPending}>
-            <RefreshCw className={generate.isPending ? "animate-spin" : undefined} aria-hidden />
-            {generate.isPending ? "요약 중..." : "재생성"}
-          </Button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {picker}
+          {report != null && (
+            <Button
+              variant="outline"
+              onClick={() => generate.mutate()}
+              disabled={generate.isPending}
+            >
+              <RefreshCw className={generate.isPending ? "animate-spin" : undefined} aria-hidden />
+              {generate.isPending ? "요약 중..." : "재생성"}
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-3">
         {isPending ? (

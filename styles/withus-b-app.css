@@ -287,6 +287,10 @@
 .wb-row--even {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+/* 카드 하나가 한 줄을 다 쓴다 (대시보드 일별 발송 · AI 성과 요약) */
+.wb-row--single {
+  grid-template-columns: minmax(0, 1fr);
+}
 
 /* 화면 제목만 따로 쓰는 곳 (제목 옆에 버튼 줄이 있는 shadcn 화면) — .wb-ph h1 과 같은 글꼴 */
 .wb-title {
@@ -326,31 +330,6 @@
 /* 휴대폰: 메뉴 서랍 뒤 가림막 */
 .wb-side__scrim {
   display: none;
-}
-
-/* 발송 큐 */
-.wb-queue {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-.wb-queue div {
-  background: var(--wb-grey);
-  border-radius: var(--wb-r-md);
-  box-shadow: inset 0 0 0 1px var(--wb-line);
-  padding: 14px 12px;
-}
-.wb-queue small {
-  display: block;
-  font-size: 12px;
-  color: var(--wb-mute);
-}
-.wb-queue b {
-  display: block;
-  font: 600 28px/1.1 var(--wb-sans);
-  letter-spacing: -0.04em;
-  margin-top: 6px;
-  font-variant-numeric: tabular-nums;
 }
 
 /* 이벤트 목록 */
