@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { Copy, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -31,33 +32,41 @@ export default function EditTemplatePage() {
   });
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-6">
+    <main className="max-w-3xl space-y-4">
       {isLoading && <p className="text-muted-foreground">불러오는 중...</p>}
       {isError && (
         <QueryError
-          message={error instanceof ApiError ? error.message : "템플릿을 불러오지 못했습니다."}
+          message={error instanceof ApiError ? error.message : "템플릿을 불러오지 못했어요."}
           onRetry={() => refetch()}
         />
       )}
       {data && (
         <>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              disabled={duplicate.isPending}
-              onClick={() =>
-                duplicate.mutate(templateId, {
-                  onSuccess: (copy) => router.push(`/templates/${copy.templateId}`),
-                })
-              }
-            >
-              <Copy className="size-4" />
-              복제
-            </Button>
-            <Button variant="outline" onClick={() => setDeleteOpen(true)}>
-              <Trash2 className="size-4" />
-              삭제
-            </Button>
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <Link href="/templates" className="text-sm text-muted-foreground hover:underline">
+                ← 메시지 템플릿
+              </Link>
+              <h1 className="wb-title">{data.name}</h1>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                disabled={duplicate.isPending}
+                onClick={() =>
+                  duplicate.mutate(templateId, {
+                    onSuccess: (copy) => router.push(`/templates/${copy.templateId}`),
+                  })
+                }
+              >
+                <Copy className="size-4" />
+                복사
+              </Button>
+              <Button variant="outline" onClick={() => setDeleteOpen(true)}>
+                <Trash2 className="size-4" />
+                삭제
+              </Button>
+            </div>
           </div>
           <TemplateForm mode="edit" templateId={templateId} template={data} />
           <TemplatePreviewPanel template={data} />

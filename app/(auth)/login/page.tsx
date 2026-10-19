@@ -1,67 +1,28 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { LoginView } from "@/components/withus-b";
 import { ApiError, api } from "@/lib/api-client";
 
-// 최소 로그인 화면. 디자인은 목업 반영 시 교체한다
+// 디자인 키트 B 로그인 (components/withus-b/LoginView.tsx)
 export default function LoginPage() {
   const router = useRouter();
-  const [pending, setPending] = useState(false);
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    setPending(true);
-    try {
-      await api("/api/v1/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ email: form.get("email"), password: form.get("password") }),
-      });
-      // 인증 가드가 넘겨준 원래 화면으로 돌아간다. 다른 사이트로 보내지 않도록 내부 경로만 허용
-      const next = new URLSearchParams(window.location.search).get("next");
-      router.replace(next?.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
-    } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "로그인에 실패했습니다.");
-    } finally {
-      setPending(false);
-    }
-  }
-
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>위드어스 로그인</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">이메일</Label>
-              <Input id="email" name="email" type="email" autoComplete="username" required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">비밀번호</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? "로그인 중..." : "로그인"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </main>
+    <LoginView
+      onSubmit={async ({ email, password }) => {
+        try {
+          await api("/api/v1/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ email, password }),
+          });
+        } catch (err) {
+          return err instanceof ApiError ? err.message : "로그인에 실패했어요.";
+        }
+        // 인증 가드가 넘겨준 원래 화면으로 돌아간다. 다른 사이트로 보내지 않도록 내부 경로만 허용
+        const next = new URLSearchParams(window.location.search).get("next");
+        router.replace(next?.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
+      }}
+    />
   );
 }

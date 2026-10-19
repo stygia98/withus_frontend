@@ -81,19 +81,19 @@ export function canInsert(
   nodeType: NodeType,
 ): { ok: true } | { ok: false; reason: string } {
   const parent = nodes.find((n) => n.key === parentKey);
-  if (!parent) return { ok: false, reason: "추가할 위치를 찾을 수 없습니다." };
+  if (!parent) return { ok: false, reason: "추가할 위치를 찾을 수 없어요." };
   const growth = nodeType === "CONDITION" ? (parent[slot] ? 2 : 3) : 1;
   if (nodes.length + growth > NODE_LIMIT) {
     return {
       ok: false,
-      reason: `노드는 최대 ${NODE_LIMIT}개입니다. (이 노드는 ${growth}개가 늘어납니다)`,
+      reason: `노드는 최대 ${NODE_LIMIT}개예요. (이 노드는 ${growth}개가 늘어나요)`,
     };
   }
   if (nodeType === "CONDITION") {
     const parentDepth = flatten(nodes).find((r) => r.node.key === parentKey)?.depth ?? 0;
     const depthHere = slot === "next" ? parentDepth : parentDepth + 1; // 새 분기가 놓일 깊이
     if (depthHere + 1 + conditionLevels(nodes, parent[slot]) > BRANCH_LIMIT) {
-      return { ok: false, reason: `분기는 ${BRANCH_LIMIT}단계까지만 만들 수 있습니다.` };
+      return { ok: false, reason: `분기는 ${BRANCH_LIMIT}단계까지만 만들 수 있어요.` };
     }
   }
   return { ok: true };
@@ -228,14 +228,14 @@ export function validateNodes(nodes: BuilderNode[]): string[] {
     const c = n.config;
     if (n.nodeType === "WAIT") {
       if (!isNum(c.amount) || (c.amount as number) < 1) {
-        errors.push("대기 노드의 시간은 1 이상이어야 합니다.");
+        errors.push("대기 노드의 시간은 1 이상이어야 해요.");
       }
       if (typeof c.unit !== "string") errors.push("대기 노드의 단위를 선택하세요.");
     } else if (n.nodeType === "CONDITION") {
       if (typeof c.condition !== "string") {
         errors.push("분기 노드의 조건을 선택하세요.");
       } else if (c.condition === "PURCHASE_GTE" && (!isNum(c.amount) || (c.amount as number) < 0)) {
-        errors.push("누적 구매액 분기는 기준 금액을 입력해야 합니다.");
+        errors.push("누적 구매액 분기는 기준 금액을 입력해야 해요.");
       }
     } else if (n.nodeType === "SEND_EMAIL" || n.nodeType === "SEND_SMS") {
       if (!c.templateId) errors.push("발송 노드마다 템플릿을 선택하세요.");

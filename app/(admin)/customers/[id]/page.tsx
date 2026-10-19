@@ -6,6 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { CONSENT_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { ActivityCards } from "@/components/customer/activity-cards";
 import { ConsentDialog } from "@/components/customer/consent-dialog";
 import { CustomerFormDialog } from "@/components/customer/customer-form-dialog";
@@ -19,7 +21,6 @@ import {
   formatDateTime,
   regionName,
 } from "@/components/customer/types";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -64,22 +65,18 @@ export default function CustomerDetailPage() {
     onSuccess: () => {
       // 상세 쿼리까지 무효화하면 삭제된 고객을 다시 조회해 404 가 난다 → 목록만 갱신
       queryClient.invalidateQueries({ queryKey: queryKeys.customers.lists });
-      toast.success("삭제했습니다.");
+      toast.success("삭제했어요.");
       router.replace("/customers");
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "삭제하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "삭제하지 못했어요."),
   });
 
-  if (customer.isPending) return <div className="p-6 text-muted-foreground">불러오는 중...</div>;
+  if (customer.isPending) return <div className="text-muted-foreground">불러오는 중...</div>;
   if (customer.isError) {
     const notFound = customer.error instanceof ApiError && customer.error.status === 404;
     return (
-      <div className="space-y-2 p-6">
-        <p>
-          {notFound
-            ? "고객을 찾을 수 없습니다. 삭제된 고객일 수 있습니다."
-            : "불러오지 못했습니다."}
-        </p>
+      <div className="space-y-2">
+        <p>{notFound ? "고객을 찾을 수 없어요. 삭제된 고객일 수 있어요." : "불러오지 못했어요."}</p>
         <Link href="/customers" className="text-sm underline">
           목록으로
         </Link>
@@ -89,13 +86,13 @@ export default function CustomerDetailPage() {
   const c = customer.data;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <Link href="/customers" className="text-sm text-muted-foreground hover:underline">
             ← 고객 목록
           </Link>
-          <h1 className="text-xl font-semibold">{c.name ?? "(이름 없음)"}</h1>
+          <h1 className="wb-title">{c.name ?? "(이름 없음)"}</h1>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setEditing(true)}>
@@ -137,11 +134,9 @@ export default function CustomerDetailPage() {
               <div key={ch} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   <span className="w-12 font-medium">{CHANNEL_LABEL[ch]}</span>
-                  {yn === "Y" ? <Badge>동의</Badge> : <Badge variant="outline">거부</Badge>}
+                  <Status tone={CONSENT_TONE[yn]}>{yn === "Y" ? "동의" : "거부"}</Status>
                   {at && <span className="text-muted-foreground">{formatDateTime(at)}</span>}
-                  {c.suppressedChannels.includes(ch) && (
-                    <Badge variant="destructive">수신거부 이력</Badge>
-                  )}
+                  {c.suppressedChannels.includes(ch) && <Status tone="err">수신거부 이력</Status>}
                 </div>
                 <Button variant="outline" size="sm" onClick={() => setConsentChannel(ch)}>
                   {yn === "Y" ? "거부로 변경" : "동의로 변경"}
@@ -171,7 +166,7 @@ export default function CustomerDetailPage() {
               {history.data?.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    이력이 없습니다.
+                    이력이 없어요.
                   </TableCell>
                 </TableRow>
               )}
@@ -195,7 +190,12 @@ export default function CustomerDetailPage() {
       <PurchaseCard customerId={id} />
       <ActivityCards customerId={id} />
 
-      <CustomerFormDialog open={editing} onOpenChange={setEditing} customer={c} />
+      <CustomerFormDialog
+        open={editing}
+        onOpenChange={setEditing}
+        customer={c}
+        onSaved={() => router.push("/customers")}
+      />
       <ConsentDialog
         customer={c}
         channel={consentChannel}
@@ -206,8 +206,8 @@ export default function CustomerDetailPage() {
           <DialogHeader>
             <DialogTitle>고객을 삭제할까요?</DialogTitle>
             <DialogDescription>
-              목록과 발송 대상에서 빠집니다. 수신거부 목록과 동의 이력은 지워지지 않으며, 같은
-              이메일로 다시 등록하면 새 고객이 됩니다.
+              목록과 발송 대상에서 빠져요. 수신거부 목록과 동의 이력은 지워지지 않으며, 같은
+              이메일로 다시 등록하면 새 고객이 돼요.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

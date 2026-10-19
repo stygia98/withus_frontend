@@ -1,11 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 
+import { CAMPAIGN_STATUS_TONE } from "@/lib/status-tone";
+import { Status } from "@/components/withus-b";
 import { QueryError } from "@/components/common/QueryError";
-import { Badge } from "@/components/ui/badge";
+import { TemplateCouponTabs } from "@/components/layout/section-tabs";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -28,7 +30,6 @@ import { queryKeys } from "@/lib/query-keys";
 import { useCanManageCampaign } from "@/lib/use-can-manage-campaign";
 import {
   CAMPAIGN_STATUS_LABEL,
-  CAMPAIGN_STATUS_VARIANT,
   CAMPAIGN_TYPE_LABEL,
   type Campaign,
   type CampaignStatus,
@@ -68,18 +69,27 @@ export default function CampaignsPage() {
       if (apiStatus) params.set("status", apiStatus);
       return api<Page<Campaign>>(`/api/v1/campaigns?${params}`);
     },
+    // 페이지를 넘기는 동안 이전 목록을 유지해, 표가 사라져 문서 높이가 줄며 스크롤이 맨 위로 튀는 것을 막는다
+    placeholderData: keepPreviousData,
   });
 
   return (
-    <main className="mx-auto max-w-5xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">캠페인</h1>
+    <main className="space-y-6">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="wb-title">캠페인 목록</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            일회성 예약 발송과 워크플로우 캠페인을 만들고, 시작하거나 멈출 수 있어요.
+          </p>
+        </div>
         {canManage && (
           <Button render={<Link href="/campaigns/new" />} nativeButton={false}>
             새 캠페인
           </Button>
         )}
       </div>
+
+      <TemplateCouponTabs />
 
       <div className="flex gap-2">
         <Select
@@ -143,17 +153,14 @@ export default function CampaignsPage() {
           {isError && (
             <TableRow>
               <TableCell colSpan={5}>
-                <QueryError
-                  message="캠페인 목록을 불러오지 못했습니다."
-                  onRetry={() => refetch()}
-                />
+                <QueryError message="캠페인 목록을 불러오지 못했어요." onRetry={() => refetch()} />
               </TableCell>
             </TableRow>
           )}
           {!isLoading && data?.content.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} className="text-center text-muted-foreground">
-                캠페인이 없습니다.
+                캠페인이 없어요.
               </TableCell>
             </TableRow>
           )}
@@ -166,9 +173,9 @@ export default function CampaignsPage() {
               </TableCell>
               <TableCell>{CAMPAIGN_TYPE_LABEL[campaign.type]}</TableCell>
               <TableCell>
-                <Badge variant={CAMPAIGN_STATUS_VARIANT[campaign.status]}>
+                <Status tone={CAMPAIGN_STATUS_TONE[campaign.status]}>
                   {CAMPAIGN_STATUS_LABEL[campaign.status]}
-                </Badge>
+                </Status>
               </TableCell>
               <TableCell>
                 {campaign.scheduledAt ? formatDateTime(campaign.scheduledAt) : "-"}
@@ -185,18 +192,21 @@ export default function CampaignsPage() {
             ? `전체 ${data.totalElements}건 · ${data.totalPages === 0 ? 0 : page + 1}/${data.totalPages} 페이지`
             : ""}
         </span>
-        <div className="flex gap-2">
-          <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-            이전
-          </Button>
-          <Button
-            variant="outline"
-            disabled={!data || page + 1 >= data.totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            다음
-          </Button>
-        </div>
+        {/* 전체가 10건 미만이면 넘길 페이지가 없는 것과 같아 버튼을 숨긴다 */}
+        {data && data.totalElements >= 10 && (
+          <div className="flex gap-2">
+            <Button variant="outline" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
+              이전
+            </Button>
+            <Button
+              variant="outline"
+              disabled={page + 1 >= data.totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              다음
+            </Button>
+          </div>
+        )}
       </div>
     </main>
   );

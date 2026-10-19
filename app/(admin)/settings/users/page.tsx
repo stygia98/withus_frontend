@@ -7,8 +7,8 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { Status } from "@/components/withus-b";
 import type { Me, Role } from "@/components/layout/admin-shell";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -49,6 +49,7 @@ const ROLE_ITEMS: { value: Role; label: string }[] = [
 export default function UsersPage() {
   const queryClient = useQueryClient();
   const [creating, setCreating] = useState(false);
+  const [resetTarget, setResetTarget] = useState<Member | null>(null);
   // 로그인 정보는 레이아웃(AdminShell)이 이미 불러와 캐시에 있다
   const me = useQuery({
     queryKey: queryKeys.auth.me,
@@ -70,28 +71,30 @@ export default function UsersPage() {
       api<Member>(`/api/v1/members/${memberId}`, { method: "PATCH", body: JSON.stringify(body) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
-      toast.success("변경했습니다. 그 사용자는 늦어도 30분 안에 다시 로그인하게 됩니다.");
+      toast.success("변경했어요. 그 사용자는 늦어도 30분 안에 다시 로그인하게 돼요.");
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "변경하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "변경하지 못했어요."),
   });
 
   const forbidden = members.error instanceof ApiError && members.error.status === 403;
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
-      <header className="flex items-end justify-between">
+    <div className="flex flex-col gap-6">
+      <header className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs text-muted-foreground">시스템 설정</p>
-          <h1 className="text-2xl font-semibold">사용자 관리</h1>
+          <h1 className="wb-title">사용자 관리</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            관리자 계정을 만들고 역할(OWNER · MANAGER · STAFF)을 정해요.
+          </p>
         </div>
         {!forbidden && <Button onClick={() => setCreating(true)}>사용자 추가</Button>}
       </header>
 
-      <div className="rounded-xl border bg-card p-4">
+      <div>
         {forbidden ? (
-          <p className="text-sm text-muted-foreground">사용자 관리는 OWNER 만 할 수 있습니다.</p>
+          <p className="text-sm text-muted-foreground">사용자 관리는 OWNER 만 할 수 있어요.</p>
         ) : members.isError ? (
-          <p className="text-sm text-destructive">사용자 목록을 불러오지 못했습니다.</p>
+          <p className="text-sm text-destructive">사용자 목록을 불러오지 못했어요.</p>
         ) : (
           <Table>
             <TableHeader>
@@ -100,7 +103,7 @@ export default function UsersPage() {
                 <TableHead>이메일</TableHead>
                 <TableHead className="w-56">역할</TableHead>
                 <TableHead>상태</TableHead>
-                <TableHead className="text-right">관리</TableHead>
+                <TableHead>관리</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -138,27 +141,34 @@ export default function UsersPage() {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        className={
-                          m.active
-                            ? "bg-accent text-accent-foreground"
-                            : "bg-warning text-warning-foreground"
-                        }
-                      >
+                      <Status tone={m.active ? "ok" : "warn"}>
                         {m.active ? "활성" : "비활성"}
-                      </Badge>
+                      </Status>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={self || update.isPending}
-                        onClick={() =>
-                          update.mutate({ memberId: m.memberId, body: { active: !m.active } })
-                        }
-                      >
-                        {m.active ? "비활성화" : "활성화"}
-                      </Button>
+                    <TableCell>
+                      {/* 왼쪽 기준에 폭을 고정해, '활성화'·'비활성화' 글자 수가 달라도 행마다 버튼 선이 같다 */}
+                      <div className="flex gap-2">
+                        {/* 본인은 사이드바의 '비밀번호 변경'으로 바꾼다 (MEMBER_SELF_PASSWORD) */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={self}
+                          onClick={() => setResetTarget(m)}
+                        >
+                          비밀번호 재설정
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-22"
+                          disabled={self || update.isPending}
+                          onClick={() =>
+                            update.mutate({ memberId: m.memberId, body: { active: !m.active } })
+                          }
+                        >
+                          {m.active ? "비활성화" : "활성화"}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -169,12 +179,81 @@ export default function UsersPage() {
       </div>
 
       <CreateMemberDialog open={creating} onOpenChange={setCreating} />
+      <ResetPasswordDialog target={resetTarget} onClose={() => setResetTarget(null)} />
     </div>
   );
 }
 
+const resetSchema = z.object({
+  newPassword: z.string().min(8, "8자 이상 입력하세요.").max(72, "72자까지 입력할 수 있어요."),
+});
+type ResetValues = z.infer<typeof resetSchema>;
+
+/** 비밀번호 재설정 (API_SPEC 2장 POST /members/{id}/password). 기존 비밀번호는 알 수 없고 새 값으로 덮어쓴다 */
+function ResetPasswordDialog({ target, onClose }: { target: Member | null; onClose: () => void }) {
+  const form = useForm<ResetValues>({
+    resolver: zodResolver(resetSchema),
+    defaultValues: { newPassword: "" },
+  });
+
+  const reset = useMutation({
+    mutationFn: (v: ResetValues) =>
+      api<null>(`/api/v1/members/${target?.memberId}/password`, {
+        method: "POST",
+        body: JSON.stringify(v),
+      }),
+    onSuccess: () => {
+      toast.success("비밀번호를 재설정했어요. 새 비밀번호를 그 사용자에게 직접 전달해 주세요.");
+      close();
+    },
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "재설정하지 못했어요."),
+  });
+
+  // 닫을 때마다 입력값을 비운다 (비밀번호가 폼 상태에 남지 않게)
+  function close() {
+    form.reset({ newPassword: "" });
+    onClose();
+  }
+
+  return (
+    <Dialog open={target !== null} onOpenChange={(open) => !open && close()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>비밀번호 재설정</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={form.handleSubmit((v) => reset.mutate(v))} className="flex flex-col gap-4">
+          <p className="text-sm text-muted-foreground">
+            {target?.name} ({target?.email})의 비밀번호를 새로 정해요. 기존 비밀번호는 확인할 수
+            없고, 재설정하면 그 사용자의 현재 로그인이 해제돼요.
+          </p>
+          <Field
+            label="새 비밀번호 (8자 이상)"
+            htmlFor="resetPassword"
+            error={form.formState.errors.newPassword?.message}
+          >
+            <Input
+              id="resetPassword"
+              type="password"
+              autoComplete="new-password"
+              {...form.register("newPassword")}
+            />
+          </Field>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={close}>
+              취소
+            </Button>
+            <Button type="submit" disabled={reset.isPending}>
+              재설정
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 const schema = z.object({
-  email: z.string().trim().min(1, "이메일을 입력하세요.").email("이메일 형식이 아닙니다."),
+  email: z.string().trim().min(1, "이메일을 입력하세요.").email("이메일 형식이 아니에요."),
   name: z.string().trim().min(1, "이름을 입력하세요.").max(50),
   role: z.enum(["OWNER", "MANAGER", "STAFF"]),
   password: z.string().min(8, "8자 이상 입력하세요.").max(72),
@@ -199,11 +278,11 @@ function CreateMemberDialog({
       api<Member>("/api/v1/members", { method: "POST", body: JSON.stringify(v) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
-      toast.success("사용자를 추가했습니다. 초기 비밀번호를 직접 전달해 주세요.");
+      toast.success("사용자를 추가했어요. 초기 비밀번호를 직접 전달해 주세요.");
       form.reset();
       onOpenChange(false);
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "추가하지 못했습니다."),
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "추가하지 못했어요."),
   });
 
   const errors = form.formState.errors;

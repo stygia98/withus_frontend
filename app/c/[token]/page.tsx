@@ -4,7 +4,7 @@ import { PublicCouponCard } from "@/components/coupon/public-coupon-card";
 
 // 고객별 링크라 검색에 노출되지 않게 한다
 export const metadata: Metadata = {
-  title: "쿠폰 · 위드어스",
+  title: "쿠폰 · withus",
   robots: { index: false, follow: false },
   referrer: "no-referrer",
 };

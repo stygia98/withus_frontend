@@ -52,8 +52,11 @@ export type CampaignAnalytics = {
   funnel: FunnelStage[];
 };
 
-export type CampaignType = "ONE_TIME" | "WORKFLOW";
-export type CampaignStatus = "DRAFT" | "SCHEDULED" | "ACTIVE" | "PAUSED" | "COMPLETED";
+// 캠페인 유형·상태와 라벨은 캠페인 화면과 같은 정의를 쓴다 (PRD 6장 상태표 표기)
+import type { CampaignStatus, CampaignType } from "@/lib/types/campaign";
+
+export type { CampaignStatus, CampaignType };
+export { CAMPAIGN_STATUS_LABEL, CAMPAIGN_TYPE_LABEL } from "@/lib/types/campaign";
 
 /** 팀원2 캠페인 목록(GET /campaigns, API_SPEC 6장)에서 대시보드·성과 리포트 목록이 쓰는 필드만 */
 export type CampaignSummaryItem = {
@@ -64,19 +67,6 @@ export type CampaignSummaryItem = {
   scheduledAt: string | null;
   startedAt: string | null;
   endedAt: string | null;
-};
-
-export const CAMPAIGN_TYPE_LABEL: Record<CampaignType, string> = {
-  ONE_TIME: "일회성",
-  WORKFLOW: "워크플로우",
-};
-
-export const CAMPAIGN_STATUS_LABEL: Record<CampaignStatus, string> = {
-  DRAFT: "초안",
-  SCHEDULED: "예약",
-  ACTIVE: "진행 중",
-  PAUSED: "일시정지",
-  COMPLETED: "완료",
 };
 
 export const FUNNEL_LABEL: Record<FunnelStage["stage"], string> = {

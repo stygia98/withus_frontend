@@ -30,6 +30,8 @@ export type CouponRequest = {
 /** 쿠폰별 발급 목록 한 줄 (GET /coupons/{id}/issues). 토큰은 내려오지 않는다 */
 export type CouponIssue = {
   issueId: number;
+  code: string; // 매장 바코드용 12자리 쿠폰 번호
+  token: string; // 고객 쿠폰 페이지(/c/{token}) 주소용
   customerId: number;
   customerName: string | null;
   sendLogId: number | null;
@@ -38,8 +40,9 @@ export type CouponIssue = {
   status: IssueStatus;
 };
 
-/** 고객 쿠폰 페이지 카드. customerName 은 마스킹된 값(김**)이거나 null */
+/** 고객 쿠폰 페이지 카드. code 는 매장 바코드용 12자리 숫자 쿠폰 번호, customerName 은 마스킹된 값(김**)이거나 null */
 export type PublicCoupon = {
+  code: string;
   customerName: string | null;
   couponName: string;
   discountType: DiscountType;
@@ -49,6 +52,9 @@ export type PublicCoupon = {
   validTo: string;
   status: IssueStatus;
 };
+
+/** 매장 바코드 조회·사용 처리 응답 (API_SPEC 8장) — usedAt 은 사용 전이면 null */
+export type RedeemCoupon = PublicCoupon & { usedAt: string | null };
 
 export const ISSUE_STATUS_LABEL: Record<IssueStatus, string> = {
   USABLE: "사용 가능",
