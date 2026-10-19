@@ -35,21 +35,33 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ApiError, api } from "@/lib/api-client";
+import { formatSeoul } from "@/lib/datetime";
 import { queryKeys } from "@/lib/query-keys";
 
-type Member = { memberId: number; email: string; name: string; role: Role; active: boolean };
+type Member = {
+  memberId: number;
+  email: string;
+  name: string;
+  role: Role;
+  active: boolean;
+  deletedAt: string | null;
+};
 
 const ROLE_ITEMS: { value: Role; label: string }[] = [
   { value: "OWNER", label: "OWNER · 전체 권한" },
   { value: "MANAGER", label: "MANAGER · 운영" },
-  { value: "STAFF", label: "STAFF · 템플릿·조회" },
+  { value: "STAFF", label: "STAFF · 템플릿·조회·쿠폰 사용 처리" },
 ];
+const ROLE_LABEL: Record<Role, string> = { OWNER: "OWNER", MANAGER: "MANAGER", STAFF: "STAFF" };
 
-/** 시스템 설정 > 사용자 관리 (PRD 4장 /settings/users, 3장 OWNER 전용, API_SPEC 2장) */
+/**
+ * 시스템 설정 > 사용자 관리 (PRD 4장 /settings/users, 3장 OWNER 전용, API_SPEC 2장).
+ * 계정마다 '수정' 하나로 이름·이메일·역할·상태·비밀번호 재설정·삭제를 한 창에서 처리한다. 삭제한 계정은 '삭제된 계정'에서 복구한다
+ */
 export default function UsersPage() {
-  const queryClient = useQueryClient();
   const [creating, setCreating] = useState(false);
-  const [resetTarget, setResetTarget] = useState<Member | null>(null);
+  const [editTarget, setEditTarget] = useState<Member | null>(null);
+  const [showDeleted, setShowDeleted] = useState(false);
   // 로그인 정보는 레이아웃(AdminShell)이 이미 불러와 캐시에 있다
   const me = useQuery({
     queryKey: queryKeys.auth.me,
@@ -58,22 +70,6 @@ export default function UsersPage() {
   const members = useQuery({
     queryKey: queryKeys.members.all,
     queryFn: () => api<Member[]>("/api/v1/members"),
-  });
-
-  const update = useMutation({
-    mutationFn: ({
-      memberId,
-      body,
-    }: {
-      memberId: number;
-      body: Partial<Pick<Member, "role" | "active">>;
-    }) =>
-      api<Member>(`/api/v1/members/${memberId}`, { method: "PATCH", body: JSON.stringify(body) }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
-      toast.success("변경했어요. 그 사용자는 늦어도 30분 안에 다시 로그인하게 돼요.");
-    },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "변경하지 못했어요."),
   });
 
   const forbidden = members.error instanceof ApiError && members.error.status === 403;
@@ -87,7 +83,14 @@ export default function UsersPage() {
             관리자 계정을 만들고 역할(OWNER · MANAGER · STAFF)을 정해요.
           </p>
         </div>
-        {!forbidden && <Button onClick={() => setCreating(true)}>사용자 추가</Button>}
+        {!forbidden && (
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowDeleted(true)}>
+              삭제된 계정
+            </Button>
+            <Button onClick={() => setCreating(true)}>사용자 추가</Button>
+          </div>
+        )}
       </header>
 
       <div>
@@ -101,14 +104,13 @@ export default function UsersPage() {
               <TableRow>
                 <TableHead>이름</TableHead>
                 <TableHead>이메일</TableHead>
-                <TableHead className="w-56">역할</TableHead>
+                <TableHead>역할</TableHead>
                 <TableHead>상태</TableHead>
                 <TableHead>관리</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {members.data?.map((m) => {
-                // 자기 계정은 바꿀 수 없다 (MEMBER_SELF_CHANGE)
                 const self = m.memberId === me.data?.memberId;
                 return (
                   <TableRow key={m.memberId}>
@@ -117,58 +119,16 @@ export default function UsersPage() {
                       {self && <span className="ml-1 text-xs text-muted-foreground">(나)</span>}
                     </TableCell>
                     <TableCell>{m.email}</TableCell>
-                    <TableCell>
-                      <Select
-                        items={ROLE_ITEMS}
-                        value={m.role}
-                        disabled={self || update.isPending}
-                        onValueChange={(v) =>
-                          v &&
-                          v !== m.role &&
-                          update.mutate({ memberId: m.memberId, body: { role: v as Role } })
-                        }
-                      >
-                        <SelectTrigger aria-label={`${m.name} 역할`} className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {ROLE_ITEMS.map((r) => (
-                            <SelectItem key={r.value} value={r.value}>
-                              {r.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
+                    <TableCell>{ROLE_LABEL[m.role]}</TableCell>
                     <TableCell>
                       <Status tone={m.active ? "ok" : "warn"}>
                         {m.active ? "활성" : "비활성"}
                       </Status>
                     </TableCell>
                     <TableCell>
-                      {/* 왼쪽 기준에 폭을 고정해, '활성화'·'비활성화' 글자 수가 달라도 행마다 버튼 선이 같다 */}
-                      <div className="flex gap-2">
-                        {/* 본인은 사이드바의 '비밀번호 변경'으로 바꾼다 (MEMBER_SELF_PASSWORD) */}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={self}
-                          onClick={() => setResetTarget(m)}
-                        >
-                          비밀번호 재설정
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-22"
-                          disabled={self || update.isPending}
-                          onClick={() =>
-                            update.mutate({ memberId: m.memberId, body: { active: !m.active } })
-                          }
-                        >
-                          {m.active ? "비활성화" : "활성화"}
-                        </Button>
-                      </div>
+                      <Button variant="outline" size="sm" onClick={() => setEditTarget(m)}>
+                        수정
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
@@ -179,74 +139,325 @@ export default function UsersPage() {
       </div>
 
       <CreateMemberDialog open={creating} onOpenChange={setCreating} />
-      <ResetPasswordDialog target={resetTarget} onClose={() => setResetTarget(null)} />
+      {editTarget && (
+        <EditMemberDialog
+          key={editTarget.memberId}
+          target={editTarget}
+          self={editTarget.memberId === me.data?.memberId}
+          onClose={() => setEditTarget(null)}
+        />
+      )}
+      <DeletedMembersDialog open={showDeleted} onOpenChange={setShowDeleted} />
     </div>
   );
 }
 
-const resetSchema = z.object({
-  newPassword: z.string().min(8, "8자 이상 입력하세요.").max(72, "72자까지 입력할 수 있어요."),
+const editSchema = z.object({
+  name: z.string().trim().min(1, "이름을 입력하세요.").max(50, "이름은 50자까지예요."),
+  email: z.string().trim().min(1, "이메일을 입력하세요.").email("이메일 형식이 아니에요."),
+  role: z.enum(["OWNER", "MANAGER", "STAFF"]),
+  active: z.enum(["Y", "N"]),
+  // 비우면 비밀번호를 바꾸지 않는다
+  newPassword: z
+    .string()
+    .refine(
+      (v) => v === "" || (v.length >= 8 && v.length <= 72),
+      "8~72자로 입력하거나 비워 두세요.",
+    ),
 });
-type ResetValues = z.infer<typeof resetSchema>;
+type EditValues = z.infer<typeof editSchema>;
 
-/** 비밀번호 재설정 (API_SPEC 2장 POST /members/{id}/password). 기존 비밀번호는 알 수 없고 새 값으로 덮어쓴다 */
-function ResetPasswordDialog({ target, onClose }: { target: Member | null; onClose: () => void }) {
-  const form = useForm<ResetValues>({
-    resolver: zodResolver(resetSchema),
-    defaultValues: { newPassword: "" },
-  });
-
-  const reset = useMutation({
-    mutationFn: (v: ResetValues) =>
-      api<null>(`/api/v1/members/${target?.memberId}/password`, {
-        method: "POST",
-        body: JSON.stringify(v),
-      }),
-    onSuccess: () => {
-      toast.success("비밀번호를 재설정했어요. 새 비밀번호를 그 사용자에게 직접 전달해 주세요.");
-      close();
+/**
+ * 계정 수정 (API_SPEC 2장). 저장 한 번으로 바뀐 값만 PATCH 하고, 새 비밀번호가 있으면 재설정(POST /password)도 한다.
+ * 자기 계정은 이름·이메일만 바꾼다 — 역할·상태는 MEMBER_SELF_CHANGE, 비밀번호는 '내 비밀번호 변경', 삭제는 MEMBER_SELF_DELETE
+ */
+function EditMemberDialog({
+  target,
+  self,
+  onClose,
+}: {
+  target: Member;
+  self: boolean;
+  onClose: () => void;
+}) {
+  const queryClient = useQueryClient();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const form = useForm<EditValues>({
+    resolver: zodResolver(editSchema),
+    defaultValues: {
+      name: target.name,
+      email: target.email,
+      role: target.role,
+      active: target.active ? "Y" : "N",
+      newPassword: "",
     },
-    onError: (err) => toast.error(err instanceof ApiError ? err.message : "재설정하지 못했어요."),
   });
 
-  // 닫을 때마다 입력값을 비운다 (비밀번호가 폼 상태에 남지 않게)
-  function close() {
-    form.reset({ newPassword: "" });
-    onClose();
-  }
+  const save = useMutation({
+    mutationFn: async (v: EditValues) => {
+      const body: Record<string, unknown> = {};
+      if (v.name.trim() !== target.name) body.name = v.name.trim();
+      if (v.email.trim().toLowerCase() !== target.email) body.email = v.email.trim();
+      if (!self && v.role !== target.role) body.role = v.role;
+      if (!self && (v.active === "Y") !== target.active) body.active = v.active === "Y";
+      if (Object.keys(body).length > 0) {
+        await api<Member>(`/api/v1/members/${target.memberId}`, {
+          method: "PATCH",
+          body: JSON.stringify(body),
+        });
+      }
+      if (!self && v.newPassword) {
+        await api<null>(`/api/v1/members/${target.memberId}/password`, {
+          method: "POST",
+          body: JSON.stringify({ newPassword: v.newPassword }),
+        });
+      }
+      return { changed: Object.keys(body).length > 0, password: !self && !!v.newPassword, body };
+    },
+    onSuccess: ({ changed, password, body }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
+      // 내 이름·이메일을 바꿨으면 사이드바의 내 정보도 새로 읽는다
+      if (self) queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
+      if (!changed && !password) toast.message("바뀐 내용이 없어요.");
+      else if (password)
+        toast.success("저장했어요. 새 비밀번호를 그 사용자에게 직접 전달해 주세요.");
+      else if ("role" in body || "active" in body)
+        toast.success("저장했어요. 그 사용자는 늦어도 30분 안에 다시 로그인하게 돼요.");
+      else toast.success("저장했어요.");
+      onClose();
+    },
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "저장하지 못했어요."),
+  });
+
+  const remove = useMutation({
+    mutationFn: () => api<null>(`/api/v1/members/${target.memberId}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
+      toast.success("계정을 삭제했어요. '삭제된 계정'에서 복구할 수 있어요.");
+      onClose();
+    },
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "삭제하지 못했어요."),
+  });
+
+  const errors = form.formState.errors;
+  const busy = save.isPending || remove.isPending;
 
   return (
-    <Dialog open={target !== null} onOpenChange={(open) => !open && close()}>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>비밀번호 재설정</DialogTitle>
+          <DialogTitle>계정 수정{self && " (내 계정)"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit((v) => reset.mutate(v))} className="flex flex-col gap-4">
-          <p className="text-sm text-muted-foreground">
-            {target?.name} ({target?.email})의 비밀번호를 새로 정해요. 기존 비밀번호는 확인할 수
-            없고, 재설정하면 그 사용자의 현재 로그인이 해제돼요.
-          </p>
-          <Field
-            label="새 비밀번호 (8자 이상)"
-            htmlFor="resetPassword"
-            error={form.formState.errors.newPassword?.message}
-          >
-            <Input
-              id="resetPassword"
-              type="password"
-              autoComplete="new-password"
-              {...form.register("newPassword")}
+        <form onSubmit={form.handleSubmit((v) => save.mutate(v))} className="flex flex-col gap-4">
+          <Field label="이름" htmlFor="editName" error={errors.name?.message}>
+            <Input id="editName" {...form.register("name")} />
+          </Field>
+          <Field label="이메일" htmlFor="editEmail" error={errors.email?.message}>
+            <Input id="editEmail" type="email" autoComplete="off" {...form.register("email")} />
+          </Field>
+          <Field label="역할" htmlFor="editRole">
+            <Controller
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <Select
+                  items={ROLE_ITEMS}
+                  value={field.value}
+                  disabled={self}
+                  onValueChange={(v) => v && field.onChange(v)}
+                >
+                  <SelectTrigger id="editRole" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ROLE_ITEMS.map((r) => (
+                      <SelectItem key={r.value} value={r.value}>
+                        {r.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             />
           </Field>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={close}>
-              취소
-            </Button>
-            <Button type="submit" disabled={reset.isPending}>
-              재설정
-            </Button>
+          <Field label="상태" htmlFor="editActive">
+            <Controller
+              control={form.control}
+              name="active"
+              render={({ field }) => (
+                <Select
+                  items={ACTIVE_ITEMS}
+                  value={field.value}
+                  disabled={self}
+                  onValueChange={(v) => v && field.onChange(v)}
+                >
+                  <SelectTrigger id="editActive" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ACTIVE_ITEMS.map((a) => (
+                      <SelectItem key={a.value} value={a.value}>
+                        {a.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </Field>
+          {self ? (
+            <p className="text-xs text-muted-foreground">
+              내 계정은 이름·이메일만 바꿀 수 있어요. 비밀번호는 &lsquo;비밀번호 변경&rsquo;에서
+              바꿔 주세요.
+            </p>
+          ) : (
+            <Field
+              label="비밀번호 재설정 (비우면 그대로)"
+              htmlFor="editPassword"
+              error={errors.newPassword?.message}
+            >
+              <Input
+                id="editPassword"
+                type="password"
+                autoComplete="new-password"
+                placeholder="새 비밀번호 8자 이상"
+                {...form.register("newPassword")}
+              />
+            </Field>
+          )}
+
+          {!self &&
+            (confirmDelete ? (
+              <div className="flex flex-col gap-2 rounded-md border border-destructive/40 p-3">
+                <p className="text-sm">
+                  {target.name} 계정을 삭제할까요? 목록과 로그인에서 빠지고, 만든 캠페인 등은 그대로
+                  남아요. &lsquo;삭제된 계정&rsquo;에서 복구할 수 있어요.
+                </p>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setConfirmDelete(false)}
+                  >
+                    닫기
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() => remove.mutate()}
+                  >
+                    삭제 확정
+                  </Button>
+                </div>
+              </div>
+            ) : null)}
+
+          <DialogFooter className="sm:justify-between">
+            {!self && !confirmDelete ? (
+              <Button
+                type="button"
+                variant="ghost"
+                className="text-destructive"
+                disabled={busy}
+                onClick={() => setConfirmDelete(true)}
+              >
+                계정 삭제
+              </Button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={onClose}>
+                취소
+              </Button>
+              <Button type="submit" disabled={busy}>
+                저장
+              </Button>
+            </div>
           </DialogFooter>
         </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+const ACTIVE_ITEMS: { value: "Y" | "N"; label: string }[] = [
+  { value: "Y", label: "활성" },
+  { value: "N", label: "비활성 (로그인 불가)" },
+];
+
+/** 삭제한 계정 목록과 복구 (API_SPEC 2장 GET /members/deleted, POST /members/{id}/restore) */
+function DeletedMembersDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const queryClient = useQueryClient();
+  const deleted = useQuery({
+    queryKey: queryKeys.members.deleted,
+    queryFn: () => api<Member[]>("/api/v1/members/deleted"),
+    enabled: open,
+  });
+  const restore = useMutation({
+    mutationFn: (memberId: number) =>
+      api<Member>(`/api/v1/members/${memberId}/restore`, { method: "POST" }),
+    onSuccess: (m) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
+      toast.success(`${m.name} 계정을 복구했어요. 예전 비밀번호로 로그인할 수 있어요.`);
+    },
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : "복구하지 못했어요."),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>삭제된 계정</DialogTitle>
+        </DialogHeader>
+        {deleted.isError ? (
+          <p className="text-sm text-destructive">삭제된 계정을 불러오지 못했어요.</p>
+        ) : deleted.data && deleted.data.length === 0 ? (
+          <p className="text-sm text-muted-foreground">삭제된 계정이 없어요.</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>이름</TableHead>
+                <TableHead>이메일</TableHead>
+                <TableHead>역할</TableHead>
+                <TableHead>삭제일</TableHead>
+                <TableHead>관리</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {deleted.data?.map((m) => (
+                <TableRow key={m.memberId}>
+                  <TableCell className="font-medium">{m.name}</TableCell>
+                  <TableCell>{m.email}</TableCell>
+                  <TableCell>{ROLE_LABEL[m.role]}</TableCell>
+                  <TableCell>
+                    {m.deletedAt ? formatSeoul(m.deletedAt, "yyyy.MM.dd HH:mm") : "-"}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={restore.isPending}
+                      onClick={() => restore.mutate(m.memberId)}
+                    >
+                      복구
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </DialogContent>
     </Dialog>
   );
