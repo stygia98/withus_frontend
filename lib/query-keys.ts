@@ -89,5 +89,7 @@ export const queryKeys = {
   },
   members: {
     all: ["members"] as const,
+    // 삭제한 계정 목록 (복구용). all 을 무효화하면 함께 다시 불러온다
+    deleted: ["members", "deleted"] as const,
   },
 };
