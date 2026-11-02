@@ -57,7 +57,8 @@ async function toError(res: Response): Promise<ApiError> {
   const body = (await res.json().catch(() => null)) as ApiResponse<unknown> | null;
   return new ApiError(
     body?.error?.code ?? "UNKNOWN",
-    body?.error?.message ?? res.statusText,
+    // 프록시 504 처럼 본문이 JSON 이 아니면 message 가 없고, HTTP/2 는 statusText 도 "" 라 빈 토스트가 뜬다
+    body?.error?.message || res.statusText || `요청에 실패했어요 (${res.status}). 잠시 후 다시 시도해 주세요.`,
     res.status,
     body?.error?.details,
   );
