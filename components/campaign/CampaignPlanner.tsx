@@ -190,6 +190,21 @@ export function CampaignPlanner() {
                 onChange={(e) => update({ segment: { ...plan.segment, name: e.target.value } })}
               />
               <p className="text-sm">{summarize(plan.segment.rule)}</p>
+              {draft.unsupported.length > 0 && (
+                <div
+                  role="status"
+                  className="space-y-1 rounded-md border border-[color:var(--wb-warn)] bg-warning p-3 text-sm text-warning-foreground"
+                >
+                  <p>
+                    ⚠ 목표 중 이 내용은 초안에 반영하지 못했어요. 대상과 발송 채널을 확인해 주세요.
+                  </p>
+                  <ul className="list-disc pl-5">
+                    {draft.unsupported.map((u) => (
+                      <li key={u}>{u}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <p className="text-sm text-muted-foreground">
                 대상 {draft.target.total.toLocaleString()}명 · 조건은 저장한 뒤 타겟팅 화면에서 바꿀
                 수 있어요.
