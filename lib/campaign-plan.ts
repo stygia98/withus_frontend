@@ -21,7 +21,12 @@ export type CampaignPlan = {
   template: { name: string; subject: string | null; body: string };
 };
 
-export type CampaignPlanResponse = { plan: CampaignPlan; target: Preview };
+export type CampaignPlanResponse = {
+  plan: CampaignPlan;
+  target: Preview;
+  /** 목표에 있었지만 초안에 반영하지 못한 내용 (예: 생일, 성별, 카카오톡 발송). 없으면 빈 배열 */
+  unsupported: string[];
+};
 
 export type CampaignPlanApplyResponse = {
   campaignId: number;
